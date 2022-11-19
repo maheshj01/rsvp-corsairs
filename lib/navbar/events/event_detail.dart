@@ -13,9 +13,18 @@ class EventDetail extends StatefulWidget {
 class _EventDetailState extends State<EventDetail> {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        color: Colors.red,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.event.name!),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network(widget.event.coverImage),
+          const Center(
+            child: Text('Event Detail'),
+          ),
+        ],
       ),
     );
   }

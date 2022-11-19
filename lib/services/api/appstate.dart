@@ -53,7 +53,7 @@ class AppStateWidgetState extends State<AppStateWidget> {
   AppState _data = AppState();
   final _userStore = UserService();
 
-  void setWords(List<Event> events) {
+  void setEvents(List<Event> events) {
     if (events != _data.events) {
       setState(() {
         _data = _data.copyWith(

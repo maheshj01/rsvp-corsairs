@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/base_home.dart';
 import 'package:rsvp/utils/navigator.dart';
-
-import '../navbar/events/corsair_events.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -42,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 20),
           ElevatedButton(
               onPressed: () {
-                Navigate.pushAndPopAll(context, const CorsairEvents());
+                Navigate.pushAndPopAll(context, const AdaptiveLayout());
               },
               child: const Text('Login')),
         ],

@@ -26,7 +26,7 @@ const FEEDBACK_EMAIL_TO = 'maheshmn121@gmail.com';
 
 /// TABLES
 const VOCAB_TABLE_NAME = 'vocabsheet_mobile';
-const USER_TABLE_NAME = 'users_mobile';
+const USER_TABLE_NAME = 'user';
 // const VOCAB_TABLE_NAME = 'vocabsheet_copy';
 // const USER_TABLE_NAME = 'users_test';
 const FEEDBACK_TABLE_NAME = 'feedback';
@@ -72,7 +72,7 @@ enum EditState {
   final String state;
   const EditState(this.state);
 
-  String toName() => "$state";
+  String toName() => state;
 }
 
 enum WordState { known, unknown, unanswered }

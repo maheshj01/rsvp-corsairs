@@ -76,7 +76,7 @@ class EventService {
 
   /// ```Select * from words```
 
-  static Future<List<Event>> getAllWords({bool sort = false}) async {
+  static Future<List<Event>> getAllEvents({bool sort = false}) async {
     final response = await DatabaseService.findAll(tableName: tableName);
     List<Event> words = [];
     if (response.status == 200) {
@@ -150,7 +150,7 @@ class EventService {
     }
   }
 
-  static Future<List<Event>> searchWord(String query,
+  static Future<List<Event>> searchEvents(String query,
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsContaining(query,
         columnName: WORD_COLUMN, tableName: tableName);
@@ -178,24 +178,24 @@ class EventService {
     }
   }
 
-  static Future<PostgrestResponse> updateWord({
+  static Future<PostgrestResponse> updateEvent({
     required String id,
-    required Event word,
+    required Event event,
   }) async {
-    final Map<String, dynamic> json = word.toJson();
+    final Map<String, dynamic> json = event.toJson();
     final response = await DatabaseService.updateRow(
         colValue: id, data: json, columnName: ID_COLUMN, tableName: tableName);
     return response;
   }
 
-  Future<PostgrestResponse> updateMeaning({
+  Future<PostgrestResponse> updateDescription({
     required String id,
-    required Event word,
+    required Event event,
   }) async {
     final response = await DatabaseService.updateColumn(
         searchColumn: ID_COLUMN,
         searchValue: id,
-        columnValue: word.description,
+        columnValue: event.description,
         columnName: MEANING_COLUMN,
         tableName: tableName);
     return response;

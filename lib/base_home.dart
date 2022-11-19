@@ -7,6 +7,7 @@ import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/pages/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/utils/utils.dart';
@@ -29,16 +30,16 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   @override
   void initState() {
     super.initState();
+    getEvents();
     isUpdateAvailable();
   }
 
-  // Future<void> getWords() async {
-  //   final words = await VocabStoreService.getAllWords();
-  //   if (words.isNotEmpty) {
-  //     AppStateWidget.of(context).setWords(words);
-  //     // updateWord(words);
-  //   }
-  // }
+  Future<void> getEvents() async {
+    final events = await EventService.getAllEvents();
+    if (events.isNotEmpty) {
+      AppStateWidget.of(context).setEvents(events);
+    }
+  }
 
   Future<void> isUpdateAvailable() async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -113,9 +114,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
               MediaQuery.of(context).padding.bottom;
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            floatingActionButton: !user.isLoggedIn ||
-                    currentIndex > 1 ||
-                    hasUpdate
+            floatingActionButton: hasUpdate
                 ? null
                 : Padding(
                     padding: (kBottomNavigationBarHeight * 0.9).bottomPadding,
@@ -195,7 +194,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                       ),
                   ],
                 ),
-                if (hasUpdate || !user.isLoggedIn)
+                if (hasUpdate)
                   AnimatedPositioned(
                       duration: const Duration(milliseconds: 300),
                       bottom: bannerHeight,

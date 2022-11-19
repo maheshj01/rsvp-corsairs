@@ -10,8 +10,11 @@ class AddEvent extends StatefulWidget {
 class _AddEventState extends State<AddEvent> {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Event'),
+      ),
+      body: Container(
         color: Colors.red,
       ),
     );

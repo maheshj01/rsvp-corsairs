@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rsvp/utils/utils.dart';
 import 'package:rsvp/utils/size_utils.dart';
+import 'package:rsvp/utils/utils.dart';
 
 class ResponsiveBuilder extends StatefulWidget {
   final WidgetBuilder desktopBuilder;
