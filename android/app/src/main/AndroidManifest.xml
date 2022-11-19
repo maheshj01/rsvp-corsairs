@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flutter_create">
+    package="com.wml.rsvp">
    <application
         android:label="flutter_create"
         android:icon="@mipmap/ic_launcher">

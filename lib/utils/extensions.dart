@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_template/constants/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/constants/constants.dart';
+import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/user.dart';
 
 extension StringExtension on String {
   String? capitalize() {
@@ -9,8 +13,37 @@ extension StringExtension on String {
 
   String initals() {
     /// Returns the first letter of each word in the string.
-    return this.split(' ').map((e) => e.capitalize()!.substring(0, 1)).join();
+    return split(' ').map((e) => e.capitalize()!.substring(0, 1)).join();
   }
+}
+
+extension CompareEvents on Event {
+  bool equals(Event other) =>
+      runtimeType == other.runtimeType &&
+      id == other.id &&
+      name == other.name &&
+      description == other.description &&
+      createdAt == other.createdAt &&
+      startsAt == other.startsAt &&
+      endsAt == other.endsAt &&
+      coverImage == other.coverImage &&
+      listEquals(attendees, other.attendees);
+}
+
+extension CompareUsers on UserModel {
+  bool equals(UserModel other) =>
+      runtimeType == other.runtimeType &&
+      idToken == other.idToken &&
+      accessToken == other.accessToken &&
+      listEquals(events, other.events) &&
+      listEquals(interested, other.interested) &&
+      email == other.email &&
+      name == other.name &&
+      avatarUrl == other.avatarUrl &&
+      isLoggedIn == other.isLoggedIn &&
+      isAdmin == other.isAdmin &&
+      username == other.username &&
+      created_at == other.created_at;
 }
 
 extension DateHelper on DateTime {
@@ -35,6 +68,11 @@ extension DateHelper on DateTime {
   int getDifferenceInDaysWithNow() {
     final now = DateTime.now();
     return now.difference(this).inDays;
+  }
+
+  String standardDate() {
+    final formatter = DateFormat(dateFormatter);
+    return formatter.format(this);
   }
 }
 

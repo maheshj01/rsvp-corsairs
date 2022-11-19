@@ -1,4 +1,4 @@
-package com.example.flutter_create
+package com.wml.rsvp
 
 import io.flutter.embedding.android.FlutterActivity
 

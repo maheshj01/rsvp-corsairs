@@ -1,4 +1,4 @@
-# flutter_template
+# RSVP_CORSAIRS
 
 A Flutter Template to start working directly on your application. The counter app provided by flutter is great to start playing with flutter, But when it comes to building a real application, You do certain things that are very common to most of your applications This is created with an intention to save your time doing repetative work with your new project like creating folder structure, adding files to gitignore, adding localization networking capabilities. Doing these things with every new project is repetetive and time consuming. This template repo just helps you solve this problem.
 
@@ -27,7 +27,7 @@ Feel free to fork this repo and modify this template as you like. If this templa
 
     Still stuck [look here](https://stackoverflow.com/questions/49353199/how-can-i-change-the-app-display-name-build-with-flutter)
 
- 2. Change the package name, The default package name is (```com.example.flutter_create```)
+ 2. Change the package name, The default package name is (```com.wml.rsvp```)
     Use search and replace feature of your IDE to get this done.
 
  3. If your app does not need localization delete ```lib/localization``` directory and also delete the corresponding packages

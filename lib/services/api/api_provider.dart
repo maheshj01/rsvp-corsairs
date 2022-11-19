@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_template/services/api/exception.dart';
+import 'package:rsvp/services/api/exception.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_template/constants/constants.dart' as constant
-    show baseUrl;
+import 'package:rsvp/constants/const.dart' as constant show BASE_URL;
 
 enum HttpMethod { get, post, put, delete, patch }
 
 class ApiProvider {
-  static String baseUrl = constant.baseUrl;
+  static String baseUrl = constant.BASE_URL;
   static Duration timeoutDuration = const Duration(seconds: 5);
 
   static FutureOr<void> retryOnTimeOut(

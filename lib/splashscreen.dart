@@ -1,0 +1,112 @@
+import 'package:animations/animations.dart';
+import 'package:flutter/material.dart';
+import 'package:rsvp/base_home.dart';
+import 'package:rsvp/models/user.dart';
+import 'package:rsvp/pages/login.dart';
+import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/themes/theme.dart';
+import 'package:rsvp/utils/navigator.dart';
+import 'package:rsvp/utils/settings.dart';
+import 'package:rsvp/utils/size_utils.dart';
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 1500),
+    vsync: this,
+  );
+
+  late final Animation<double> _animation = Tween<double>(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(CurvedAnimation(
+    parent: _controller,
+    curve: Curves.bounceIn,
+  ));
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.forward();
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        handleNavigation();
+      }
+    });
+  }
+
+  Future<void> handleNavigation() async {
+    UserModel? user = AppStateScope.of(context).user;
+    final String _email = await Settings.email;
+    final int count = await Settings.skipCount + 1;
+    user ??= UserModel.init();
+    user.email = _email;
+    if (_email.isNotEmpty) {
+      user.isLoggedIn = true;
+      AppStateWidget.of(context).setUser(user);
+      Navigate().pushReplace(context, const AdaptiveLayout());
+    } else {
+      user.isLoggedIn = false;
+      AppStateWidget.of(context).setUser(user);
+      if (count % 3 != 0) {
+        Settings.setSkipCount = count;
+        Navigate().pushReplace(context, const AdaptiveLayout());
+      } else {
+        Navigate().pushReplace(context, const LoginPage());
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SizeUtils.size = MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                CorsairsTheme.primaryColor.withOpacity(0.5),
+                CorsairsTheme.secondaryColor,
+              ]),
+        ),
+        alignment: Alignment.center,
+        child: FadeScaleTransition(
+            animation: _animation,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 4,
+                  left: 2,
+                  child: Text('Vocabhub',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline2!
+                          .copyWith(color: Colors.grey)),
+                ),
+                Text('Vocabhub',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline2!
+                        .copyWith(color: Colors.white)),
+              ],
+            )),
+      ),
+    );
+  }
+}
