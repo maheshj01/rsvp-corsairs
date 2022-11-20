@@ -45,6 +45,7 @@ doc/api/
 .pub/
 /build/
 /lib/models/*.g.dart
+/lib/utils/secrets.dart
 
 # Android related
 **/android/**/gradle-wrapper.jar

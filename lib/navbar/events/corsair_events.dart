@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:navbar_router/navbar_router.dart';
 import 'package:rsvp/constants/strings.dart';
 import 'package:rsvp/models/event.dart';
+import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
+import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/widgets/event_parallax.dart';
@@ -16,11 +20,6 @@ class CorsairEvents extends StatefulWidget {
 }
 
 class _CorsairEventsState extends State<CorsairEvents> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   /// get latest word of the day sort by descending order of created_at
   /// check current DateTime UTC and compare with the latest word of the day
   /// if the date is same, then don't publish a new word of the day
@@ -61,16 +60,37 @@ class _CorsairEventsState extends State<CorsairEvents> {
     return Material(
         child: ResponsiveBuilder(
       desktopBuilder: (context) => const CorsairEventsDesktop(),
-      mobileBuilder: (context) => CorsairEventsMobile(),
+      mobileBuilder: (context) => const CorsairEventsMobile(),
     ));
   }
 }
 
-class CorsairEventsMobile extends StatelessWidget {
+class CorsairEventsMobile extends StatefulWidget {
   static String route = '/';
-  CorsairEventsMobile({Key? key, this.event}) : super(key: key);
+  const CorsairEventsMobile({Key? key}) : super(key: key);
 
-  Event? event = Event.init().copyWith(name: "New Event");
+  @override
+  State<CorsairEventsMobile> createState() => _CorsairEventsMobileState();
+}
+
+class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      //  listen to scroll direction
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        //  hide the appbar
+        NavbarNotifier.hideBottomNavBar = true;
+      } else {
+        //  show the appbar
+        NavbarNotifier.hideBottomNavBar = false;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +170,7 @@ class CorsairEventsMobile extends StatelessWidget {
     ];
 
     return CustomScrollView(
-      primary: true,
+      controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
             pinned: false,
@@ -162,7 +182,7 @@ class CorsairEventsMobile extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 16, top: 16),
                 child: Text(
                   'CorsairEvents',
-                  style: CorsairsTheme.googleFontsTextTheme.subtitle2!
+                  style: CorsairsTheme.googleFontsTextTheme.titleSmall!
                       .copyWith(fontSize: 28, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -179,9 +199,14 @@ class CorsairEventsMobile extends StatelessWidget {
             ]),
         SliverList(
             delegate: SliverChildListDelegate([
-          for (event in events)
-            EventParallaxTile(
-              event: event!,
+          for (Event event in events)
+            InkWell(
+              onTap: () {
+                Navigate.push(context, EventDetail(event: event));
+              },
+              child: EventParallaxTile(
+                event: event,
+              ),
             )
         ]))
       ],
@@ -226,7 +251,7 @@ class EventCard extends StatelessWidget {
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: CorsairsTheme.googleFontsTextTheme.headline2!
+            style: CorsairsTheme.googleFontsTextTheme.displayMedium!
                 .copyWith(fontSize: fontSize),
           )),
     );

@@ -173,10 +173,12 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                   destinationAnimationDuration: 600,
                   onChanged: (x) {},
                   decoration: NavbarDecoration(
-                      backgroundColor: CorsairsTheme.navigationBarColor,
+                      backgroundColor: CorsairsTheme.primaryBlue,
                       isExtended: SizeUtils.isExtendedDesktop,
                       // showUnselectedLabels: false,
-                      selectedLabelTextStyle: const TextStyle(fontSize: 12),
+                      unselectedItemColor: Colors.white38,
+                      selectedLabelTextStyle: const TextStyle(
+                          fontSize: 12, color: CorsairsTheme.primaryYellow),
                       unselectedLabelTextStyle: const TextStyle(fontSize: 10),
                       navbarType: BottomNavigationBarType.fixed),
                   destinations: [

@@ -7,12 +7,9 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findRowByColumnValue(String columnValue,
       {String columnName = ID_COLUMN,
-      String tableName = VOCAB_TABLE_NAME}) async {
-    final response = await _supabase
-        .from(tableName)
-        .select()
-        .eq(columnName, columnValue)
-        .execute();
+      String tableName = EVENTS_TABLE_NAME}) async {
+    final response =
+        await _supabase.from(tableName).select().eq(columnName, columnValue);
     return response;
   }
 
@@ -21,7 +18,7 @@ class DatabaseService {
     String column2Value, {
     String column1Name = ID_COLUMN,
     String column2Name = USER_EMAIL_COLUMN,
-    String tableName = VOCAB_TABLE_NAME,
+    String tableName = EVENTS_TABLE_NAME,
     bool ascending = false,
   }) async {
     final response = await _supabase
@@ -36,7 +33,7 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findRowsContaining(String columnValue,
       {String columnName = ID_COLUMN,
-      String tableName = VOCAB_TABLE_NAME}) async {
+      String tableName = EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -98,7 +95,7 @@ class DatabaseService {
 
   //     ) async {
   //   final response = await _supabase
-  //       .from('$VOCAB_TABLE_NAME')
+  //       .from('$EVENTS_TABLE_NAME')
   //       .select()
   //       .select('*, $WORD_STATE_TABLE_NAME!inner(*)')
   //       // .eq('$table2.$innerJoinColumn1', '$value1')
@@ -109,18 +106,17 @@ class DatabaseService {
   // }
 
   static Future<PostgrestResponse> findAll(
-      {String tableName = VOCAB_TABLE_NAME}) async {
+      {String tableName = EVENTS_TABLE_NAME}) async {
     final response = await _supabase.from(tableName).select().execute();
     return response;
   }
 
   static Future<PostgrestResponse> findLimitedWords(
-      {String tableName = VOCAB_TABLE_NAME, int page = 0}) async {
+      {String tableName = EVENTS_TABLE_NAME, int page = 0}) async {
     final response = await _supabase
         .from(tableName)
         .select()
-        .range(page * 20, (page + 1) * 20)
-        .execute();
+        .range(page * 20, (page + 1) * 20);
     return response;
   }
 
@@ -140,7 +136,7 @@ class DatabaseService {
   static Future<PostgrestResponse> findSingleRowByColumnValue(
       String columnValue,
       {String columnName = ID_COLUMN,
-      String tableName = VOCAB_TABLE_NAME}) async {
+      String tableName = EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -151,7 +147,7 @@ class DatabaseService {
   }
 
   static Future<PostgrestResponse> insertIntoTable(Map<String, dynamic> data,
-      {String table = VOCAB_TABLE_NAME}) async {
+      {String table = EVENTS_TABLE_NAME}) async {
     final response = await _supabase.from(table).insert(data).execute();
     return response;
   }
@@ -160,7 +156,7 @@ class DatabaseService {
   /// conflict column refers to the columns which should be unique across all the rows
   /// it is responsible to determine whether insert or update is called.
   static Future<PostgrestResponse> upsertIntoTable(Map<String, dynamic> data,
-      {String table = VOCAB_TABLE_NAME,
+      {String table = EVENTS_TABLE_NAME,
       String conflictColumn = ID_COLUMN}) async {
     final response = await _supabase
         .from(table)
@@ -177,7 +173,7 @@ class DatabaseService {
       {required String colValue,
       required Map<String, dynamic> data,
       String columnName = ID_COLUMN,
-      String tableName = VOCAB_TABLE_NAME}) async {
+      String tableName = EVENTS_TABLE_NAME}) async {
     final response =
         await _supabase.from(tableName).update(data).eq(columnName, colValue);
     return response;
@@ -201,14 +197,14 @@ class DatabaseService {
   }
 
   static Future<PostgrestResponse> upsertRow(Map<String, dynamic> data,
-      {String tableName = VOCAB_TABLE_NAME}) async {
+      {String tableName = EVENTS_TABLE_NAME}) async {
     final response = await _supabase.from(tableName).upsert(data).execute();
     return response;
   }
 
   static Future<PostgrestResponse> deleteRow(String columnValue,
       {String columnName = ID_COLUMN,
-      String tableName = VOCAB_TABLE_NAME}) async {
+      String tableName = EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .delete()

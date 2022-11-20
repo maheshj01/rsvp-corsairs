@@ -5,34 +5,35 @@ import 'package:rsvp/utils/settings.dart';
 class CorsairsTheme {
   static final CorsairsTheme _singleton = CorsairsTheme._internal();
   CorsairsTheme._internal();
+  static const Color primaryBlue = Color(0xff013764);
+  static const Color primaryYellow = Color(0xffFEC14E);
 
   static Color primaryGrey = Colors.grey;
-  static Color primaryBlue = Colors.blueAccent;
-  static Color primaryColor = Color(0xff4c9648);
+  static Color primaryColor = primaryBlue;
   static Color secondaryColor = primaryColor.withOpacity(0.6);
   static Color primaryDark = Colors.black.withOpacity(0.6);
   static Color secondaryDark = Colors.black.withOpacity(0.7);
-  static Color shrinePink = Color(0xffFEDBD0);
-  static Color navbarSurfaceGrey = Color(0xffF2F4F7);
+  static Color shrinePink = const Color(0xffFEDBD0);
+  static Color navbarSurfaceGrey = const Color(0xffF2F4F7);
   static Color? surfaceGreen = Colors.green[50];
   static Color? surfaceGrey = Colors.grey[850];
-  static Color? background = Color(0XFFF8F8F8);
+  static Color? background = const Color(0XFFF8F8F8);
   static Color errorColor = Colors.red;
-  static Color lightblue = Color(0XFF142D94);
+  static Color lightblue = const Color(0XFF142D94);
 
   /// notification states color
-  static Color approvedColor = Color(0xffD6F1E4);
-  static Color rejectedColor = Color(0xffFFD2C8);
-  static Color pendingColor = Color(0xffE2EBF9);
-  static Color cancelColor = Color(0xffF2F2F2);
+  static Color approvedColor = const Color(0xffD6F1E4);
+  static Color rejectedColor = const Color(0xffFFD2C8);
+  static Color pendingColor = const Color(0xffE2EBF9);
+  static Color cancelColor = const Color(0xffF2F2F2);
 
-  static Color color1 = Color(0xff1D976C);
-  static Color color2 = Color(0xff93F9B9);
+  static Color color1 = const Color(0xff1D976C);
+  static Color color2 = const Color(0xff93F9B9);
   static LinearGradient primaryGradient = LinearGradient(
       colors: [color1.withOpacity(0.1), color2.withOpacity(0.2)]);
   static LinearGradient secondaryGradient = LinearGradient(
       colors: [primaryBlue.withOpacity(0.1), primaryColor.withOpacity(0.2)]);
-  static TextStyle listSubtitleStyle = TextStyle(fontSize: 12);
+  static TextStyle listSubtitleStyle = const TextStyle(fontSize: 12);
 
   static const _lightFillColor = Colors.black;
   static const _darkFillColor = Colors.white;
@@ -58,19 +59,19 @@ class CorsairsTheme {
   static BoxShadow primaryShadow = BoxShadow(
     color: Colors.black.withOpacity(0.1),
     blurRadius: 10,
-    offset: Offset(0, 5),
+    offset: const Offset(0, 5),
   );
 
   static BoxShadow secondaryShadow = BoxShadow(
     color: Colors.black.withOpacity(0.2),
     blurRadius: 10,
-    offset: Offset(0, 5),
+    offset: const Offset(0, 5),
   );
   static BoxShadow notificationCardShadow = BoxShadow(
       color: Colors.black.withOpacity(0.1),
       blurRadius: 4.0,
       spreadRadius: 0,
-      offset: Offset(0, 4));
+      offset: const Offset(0, 4));
 
   static ThemeData _themeData(ColorScheme colorScheme, Color focusColor) {
     return ThemeData(
@@ -81,18 +82,11 @@ class CorsairsTheme {
       primaryColor: const Color(0xFF030303),
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.background,
-        titleTextStyle: googleFontsTextTheme.headline4,
+        titleTextStyle: googleFontsTextTheme.headlineMedium,
         elevation: 2.2,
-        iconTheme: IconThemeData(color: primaryColor),
+        iconTheme: const IconThemeData(color: primaryYellow),
       ),
-      navigationRailTheme: NavigationRailThemeData(
-          backgroundColor: colorScheme.surface,
-          unselectedIconTheme: IconThemeData(
-            color: Colors.black87,
-          ),
-          unselectedLabelTextStyle: googleFontsTextTheme.headline6,
-          indicatorColor: colorScheme.primary),
-      iconTheme: IconThemeData(color: colorScheme.primary),
+      iconTheme: const IconThemeData(color: primaryYellow),
       canvasColor: colorScheme.background,
       scaffoldBackgroundColor: colorScheme.background,
       highlightColor: Colors.transparent,
@@ -105,7 +99,7 @@ class CorsairsTheme {
           _darkFillColor,
         ),
         contentTextStyle:
-            googleFontsTextTheme.subtitle1!.apply(color: _darkFillColor),
+            googleFontsTextTheme.titleMedium!.apply(color: _darkFillColor),
       ),
     );
   }
@@ -123,10 +117,10 @@ class CorsairsTheme {
     onError: _lightFillColor,
     onPrimary: _lightFillColor,
     onSecondary: const Color(0xFF322942),
-    onSurface: Color.fromRGBO(76, 150, 72, 1.0),
+    onSurface: const Color.fromRGBO(76, 150, 72, 1.0),
   );
 
-  static ColorScheme darkColorScheme = ColorScheme(
+  static ColorScheme darkColorScheme = const ColorScheme(
     brightness: Brightness.dark,
     primary: Color(0xFFFF8383),
     primaryContainer: Color(0xFF1CDEC9),
@@ -144,34 +138,34 @@ class CorsairsTheme {
 
   static TextTheme googleFontsTextTheme =
       GoogleFonts.quicksandTextTheme(TextTheme(
-    headline1: GoogleFonts.quicksand(
+    displayLarge: GoogleFonts.quicksand(
         fontSize: 72.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    headline2: GoogleFonts.quicksand(
+    displayMedium: GoogleFonts.quicksand(
         fontSize: 48.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    headline3: GoogleFonts.quicksand(
+    displaySmall: GoogleFonts.quicksand(
         fontSize: 36.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    headline4: GoogleFonts.quicksand(
+    headlineMedium: GoogleFonts.quicksand(
         fontSize: 22,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w400),
-    headline5: GoogleFonts.quicksand(
+    headlineSmall: GoogleFonts.quicksand(
         fontSize: 16.0, color: isDark ? Colors.white : Colors.black),
-    headline6: GoogleFonts.quicksand(
+    titleLarge: GoogleFonts.quicksand(
         fontSize: 12.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
-    caption: GoogleFonts.quicksand(color: Colors.grey, fontSize: 12),
-    subtitle1: GoogleFonts.quicksand(
+    bodySmall: GoogleFonts.quicksand(color: Colors.grey, fontSize: 12),
+    titleMedium: GoogleFonts.quicksand(
         fontSize: 20,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
-    subtitle2: GoogleFonts.quicksand(
+    titleSmall: GoogleFonts.quicksand(
         fontSize: 16, color: lightblue, fontWeight: FontWeight.w300),
   ));
 }

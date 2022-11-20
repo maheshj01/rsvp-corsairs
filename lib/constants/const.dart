@@ -25,7 +25,7 @@ const String profileUrl = 'assets/profile.png';
 const FEEDBACK_EMAIL_TO = 'maheshmn121@gmail.com';
 
 /// TABLES
-const VOCAB_TABLE_NAME = 'vocabsheet_mobile';
+const EVENTS_TABLE_NAME = 'events';
 const USER_TABLE_NAME = 'user';
 // const VOCAB_TABLE_NAME = 'vocabsheet_copy';
 // const USER_TABLE_NAME = 'users_test';

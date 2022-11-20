@@ -12,7 +12,7 @@ import 'package:supabase/supabase.dart';
 
 /// Global Vocabulary table's api.
 class EventService {
-  static String tableName = VOCAB_TABLE_NAME;
+  static String tableName = EVENTS_TABLE_NAME;
   static final _logger = log.Logger();
   static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
 
@@ -113,7 +113,7 @@ class EventService {
       email,
       'state',
       isBookmark ? 'unknown' : 'known',
-      table1: VOCAB_TABLE_NAME,
+      table1: EVENTS_TABLE_NAME,
       table2: WORD_STATE_TABLE_NAME,
     );
     List<Event> events = [];
@@ -137,11 +137,11 @@ class EventService {
     final response = await DatabaseService.findRecentlyUpdatedRow(
         'created_at', '',
         table1: WORD_OF_THE_DAY_TABLE_NAME,
-        table2: VOCAB_TABLE_NAME,
+        table2: EVENTS_TABLE_NAME,
         ascending: false);
     if (response.status == 200) {
       Event lastWordOfTheDay =
-          Event.fromJson(response.data[0][VOCAB_TABLE_NAME]);
+          Event.fromJson(response.data[0][EVENTS_TABLE_NAME]);
       lastWordOfTheDay.createdAt =
           DateTime.parse(response.data[0]['created_at']);
       return lastWordOfTheDay;

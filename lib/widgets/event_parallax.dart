@@ -1,9 +1,7 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:rsvp/models/event.dart';
-import 'package:rsvp/pages/add_event.dart';
-import 'package:rsvp/utils/extensions.dart';
+import 'package:rsvp/widgets/widgets.dart';
 
 class EventParallaxTile extends StatelessWidget {
   EventParallaxTile({
@@ -16,31 +14,22 @@ class EventParallaxTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OpenContainer<bool>(
-        openBuilder: (BuildContext context, VoidCallback openContainer) {
-          return const AddEvent();
-        },
-        tappable: true,
-        closedShape: 22.0.rounded,
-        transitionType: ContainerTransitionType.fadeThrough,
-        closedBuilder: (BuildContext context, VoidCallback openContainer) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  children: [
-                    _buildParallaxBackground(context),
-                    _buildGradient(),
-                    _buildTitleAndSubtitle(),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              _buildParallaxBackground(context),
+              buildGradient(),
+              _buildTitleAndSubtitle(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildParallaxBackground(BuildContext context) {
@@ -57,21 +46,6 @@ class EventParallaxTile extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ],
-    );
-  }
-
-  Widget _buildGradient() {
-    return Positioned.fill(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.6, 0.95],
-          ),
-        ),
-      ),
     );
   }
 

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/const.dart';
@@ -7,7 +5,6 @@ import 'package:rsvp/main.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/size_utils.dart';
-
 import 'package:rsvp/utils/utility.dart';
 
 void removeFocus(BuildContext context) => FocusScope.of(context).unfocus();
@@ -18,7 +15,7 @@ void showCircularIndicator(BuildContext context, {Color? color}) {
       barrierColor: color,
       context: context,
       barrierDismissible: false,
-      builder: (x) => LoadingWidget());
+      builder: (x) => const LoadingWidget());
 }
 
 void stopCircularIndicator(BuildContext context) {
@@ -53,7 +50,7 @@ Widget vLine({Color? color}) {
 }
 
 SelectableText buildExample(String example, String word, {TextStyle? style}) {
-  final textSpans = [TextSpan(text: ' - ')];
+  final textSpans = [const TextSpan(text: ' - ')];
   final iterable = example
       .split(' ')
       .toList()
@@ -66,7 +63,7 @@ SelectableText buildExample(String example, String word, {TextStyle? style}) {
                       : FontWeight.normal)))
       .toList();
   textSpans.addAll(iterable);
-  textSpans.add(TextSpan(text: '\n'));
+  textSpans.add(const TextSpan(text: '\n'));
   return SelectableText.rich(TextSpan(
       style: TextStyle(color: darkNotifier.value ? Colors.white : Colors.black),
       children: textSpans));
@@ -85,7 +82,7 @@ Widget storeRedirect(BuildContext context,
     },
     child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        child: Image.asset('$assetUrl', height: 50)),
+        child: Image.asset(assetUrl, height: 50)),
   );
 }
 
@@ -116,94 +113,19 @@ Widget heading(String title) {
   );
 }
 
-RichText differenceVisualizerByWord(String editedText, String oldText,
-    {bool isOldVersion = true, TextAlign textAlign = TextAlign.start}) {
-  final oldTextList = oldText.split(' ');
-  final newTextList = editedText.split(' ');
-  final oldTextLength = oldTextList.length;
-  final newTextLength = newTextList.length;
-  final minLengthList = min(newTextLength, oldTextLength);
-
-  return RichText(
-    textAlign: textAlign,
-    text: TextSpan(
-      style: TextStyle(
-        fontSize: 16.0,
-        color: Colors.black,
+Widget buildGradient(
+    {Color top = Colors.transparent, Color bottom = Colors.black}) {
+  return Positioned.fill(
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.transparent, bottom],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          tileMode: TileMode.mirror,
+          stops: const [0.6, 0.95],
+        ),
       ),
-      children: <TextSpan>[
-        for (int i = 0; i < minLengthList; i++)
-          if (oldTextList[i] == newTextList[i])
-            TextSpan(text: newTextList[i] + ' ')
-          else
-            TextSpan(
-                text:
-                    isOldVersion ? oldTextList[i] + ' ' : newTextList[i] + ' ',
-                style: TextStyle(
-                  color: isOldVersion ? Colors.red : Colors.green,
-                  decoration: isOldVersion ? TextDecoration.lineThrough : null,
-                )),
-        if (oldTextLength > newTextLength && isOldVersion)
-          for (int i = minLengthList; i < oldTextLength; i++)
-            TextSpan(
-                text: oldTextList[i] + ' ',
-                style: TextStyle(
-                  color: Colors.red,
-                  decoration: TextDecoration.lineThrough,
-                )),
-        if (newTextLength > oldTextLength && !isOldVersion)
-          for (int i = minLengthList; i < newTextLength; i++)
-            TextSpan(
-                text: newTextList[i] + ' ',
-                style: TextStyle(color: Colors.green)),
-      ],
-    ),
-  );
-}
-
-RichText differenceVisualizerGranular(String editedText, String oldText,
-    {bool isOldVersion = true, TextAlign textAlign = TextAlign.start}) {
-  final oldTextLength = oldText.length;
-  final newTextLength = editedText.length;
-  final minLength = min(newTextLength, oldTextLength);
-
-  return RichText(
-    textAlign: textAlign,
-    text: TextSpan(
-      style: TextStyle(
-        fontSize: 16.0,
-        color: Colors.black,
-      ),
-      children: <TextSpan>[
-        for (int i = 0; i < minLength; i++)
-          if (oldText[i] == editedText[i])
-            TextSpan(text: editedText[i])
-          else
-            TextSpan(
-                text: isOldVersion ? oldText[i] : editedText[i],
-                style: TextStyle(
-                  color: isOldVersion ? Colors.red : Colors.white,
-                  decoration: isOldVersion ? TextDecoration.lineThrough : null,
-                  backgroundColor: isOldVersion ? Colors.red : Colors.green,
-                )),
-        if (oldTextLength > newTextLength && isOldVersion)
-          for (int i = minLength; i < oldTextLength; i++)
-            TextSpan(
-                text: oldText[i],
-                style: TextStyle(
-                  color: Colors.white,
-                  decoration: TextDecoration.lineThrough,
-                  backgroundColor: Colors.red,
-                )),
-        if (newTextLength > oldTextLength && !isOldVersion)
-          for (int i = minLength; i < newTextLength; i++)
-            TextSpan(
-                text: editedText[i],
-                style: TextStyle(
-                  color: Colors.white,
-                  backgroundColor: Colors.green,
-                )),
-      ],
     ),
   );
 }
@@ -226,13 +148,13 @@ class VersionBuilder extends StatelessWidget {
           future: getAppDetails(),
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             return snapshot.data == null
-                ? Text('$VERSION', style: Theme.of(context).textTheme.caption)
+                ? Text(VERSION, style: Theme.of(context).textTheme.bodySmall)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('v', style: Theme.of(context).textTheme.caption),
+                      Text('v', style: Theme.of(context).textTheme.bodySmall),
                       Text(snapshot.data!,
-                          style: Theme.of(context).textTheme.caption),
+                          style: Theme.of(context).textTheme.bodySmall),
                     ],
                   );
           }),
