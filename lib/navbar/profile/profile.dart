@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rsvp/exports.dart';
-import 'package:rsvp/navbar/profile/edit.dart';
 import 'package:rsvp/navbar/profile/settings.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
@@ -69,7 +67,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
     super.dispose();
   }
 
-  ValueNotifier<List<int>> _statsNotifier = ValueNotifier([0, 0, 0]);
+  final ValueNotifier<List<int>> _statsNotifier = ValueNotifier([0, 0, 0]);
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -130,7 +128,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       onTap: () {
                                         Navigate.push(
                                           context,
-                                          SettingsPageMobile(),
+                                          const SettingsPageMobile(),
                                         );
                                       },
                                     ),
@@ -155,21 +153,8 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                     Positioned(
                                         right: 8,
                                         bottom: 16,
-                                        child: VHIcon(
-                                          Icons.edit,
-                                          size: 30,
-                                          onTap: () {
-                                            Navigate.push(
-                                              context,
-                                              EditProfile(
-                                                user: user,
-                                                onClose: () async {
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        ))
+                                        child: VHIcon(Icons.edit,
+                                            size: 30, onTap: () {}))
                                   ],
                                 ),
                                 Padding(
@@ -183,7 +168,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline4!
+                                      .headlineMedium!
                                       .copyWith(
                                           fontSize: 26,
                                           fontWeight: FontWeight.w500),
@@ -195,7 +180,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       text: 'Joined ',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .subtitle2!
+                                          .titleSmall!
                                           .copyWith(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 12)),
@@ -203,7 +188,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                     text: user.created_at!.formatDate(),
                                     style: Theme.of(context)
                                         .textTheme
-                                        .subtitle2!
+                                        .titleSmall!
                                         .copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ])),
@@ -239,7 +224,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       '${stats[i]}',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .headline4!
+                                          .headlineMedium!
                                           .copyWith(
                                               fontSize: 28,
                                               fontWeight: FontWeight.w500),
@@ -253,7 +238,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                               : 'Under Review',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .subtitle2!
+                                          .titleSmall!
                                           .copyWith(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600),
@@ -279,7 +264,7 @@ class UserProfileDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Desktop'),
+        title: const Text('Profile Desktop'),
       ),
       body: ListView.builder(
           padding: EdgeInsets.zero,

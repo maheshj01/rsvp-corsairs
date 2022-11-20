@@ -83,7 +83,6 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
     _lastScrollDirection = ScrollDirection.idle;
     _lastScrollOffset = 0;
     _scrollController.addListener(() {
-      //  listen to scroll direction
       if (_scrollController.position.userScrollDirection !=
           _lastScrollDirection) {
         _lastScrollDirection = _scrollController.position.userScrollDirection;
@@ -200,14 +199,25 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
               ),
             ),
             actions: [
-              user!.isLoggedIn
-                  ? IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.notifications_on,
-                        color: CorsairsTheme.primaryColor,
-                      ))
-                  : const SizedBox.shrink()
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.notifications_on,
+                    color: CorsairsTheme.primaryYellow,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        barrierColor: Colors.transparent,
+                        useRootNavigator: false,
+                        builder: (context) => const NewPage());
+                  },
+                  icon: const Icon(
+                    Icons.search,
+                    color: CorsairsTheme.primaryYellow,
+                  ))
             ]),
         SliverList(
             delegate: SliverChildListDelegate([
@@ -299,6 +309,34 @@ class CorsairEventsDesktop extends StatelessWidget {
               ))
         ],
       ),
+    );
+  }
+}
+
+class NewPage extends StatefulWidget {
+  const NewPage({Key? key}) : super(key: key);
+
+  @override
+  State<NewPage> createState() => _NewPageState();
+}
+
+class _NewPageState extends State<NewPage> {
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Material(
+      child: SizedBox(
+          height: size.height * 0.9,
+          child: ListView(
+            children: [
+              for (int i = 0; i < 100; i++)
+                ListTile(
+                    title: Text('Item $i'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    })
+            ],
+          )),
     );
   }
 }

@@ -10,16 +10,19 @@ class CorsairsTheme {
 
   static Color primaryGrey = Colors.grey;
   static Color primaryColor = primaryBlue;
-  static Color secondaryColor = primaryColor.withOpacity(0.6);
-  static Color primaryDark = Colors.black.withOpacity(0.6);
-  static Color secondaryDark = Colors.black.withOpacity(0.7);
-  static Color shrinePink = const Color(0xffFEDBD0);
-  static Color navbarSurfaceGrey = const Color(0xffF2F4F7);
-  static Color? surfaceGreen = Colors.green[50];
-  static Color? surfaceGrey = Colors.grey[850];
   static Color? background = const Color(0XFFF8F8F8);
-  static Color errorColor = Colors.red;
-  static Color lightblue = const Color(0XFF142D94);
+  static Color secondaryColor = primaryColor.withOpacity(0.6);
+
+  //  kids colors
+  static Color primaryGreen = const Color(0xff00A86B);
+  static Color primaryRed = const Color(0xffE60000);
+  static Color primaryPurple = const Color(0xff7F00FF);
+  static Color primaryOrange = const Color(0xffFF6600);
+  static Color primaryPink = const Color(0xffFF00CC);
+  static Color primaryTeal = const Color(0xff00CCCC);
+  static Color primaryBrown = const Color(0xff663300);
+  static Color primaryBlack = const Color(0xff000000);
+  static Color primaryWhite = const Color(0xffFFFFFF);
 
   /// notification states color
   static Color approvedColor = const Color(0xffD6F1E4);
@@ -166,6 +169,8 @@ class CorsairsTheme {
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
     titleSmall: GoogleFonts.quicksand(
-        fontSize: 16, color: lightblue, fontWeight: FontWeight.w300),
+        fontSize: 16,
+        color: isDark ? Colors.white : Colors.black,
+        fontWeight: FontWeight.w300),
   ));
 }

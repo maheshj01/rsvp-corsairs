@@ -1,5 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/animate.dart';
+import 'package:flutter_animate/effects/effects.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/pages/login.dart';
@@ -18,28 +19,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 1500),
-    vsync: this,
-  );
-
-  late final Animation<double> _animation = Tween<double>(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.bounceIn,
-  ));
-
   @override
   void initState() {
     super.initState();
-    _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        handleNavigation();
-      }
-    });
   }
 
   Future<void> handleNavigation() async {
@@ -65,48 +47,35 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     SizeUtils.size = MediaQuery.of(context).size;
+    Widget title = Text('Welcome\nCorsairs',
+        textAlign: TextAlign.center,
+        style: Theme.of(context)
+            .textTheme
+            .displayMedium!
+            .copyWith(color: Colors.white));
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                CorsairsTheme.primaryColor.withOpacity(0.5),
-                CorsairsTheme.secondaryColor,
-              ]),
-        ),
-        alignment: Alignment.center,
-        child: FadeScaleTransition(
-            animation: _animation,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 4,
-                  left: 2,
-                  child: Text('Vocabhub',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline2!
-                          .copyWith(color: Colors.grey)),
-                ),
-                Text('Vocabhub',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline2!
-                        .copyWith(color: Colors.white)),
-              ],
-            )),
-      ),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  CorsairsTheme.primaryYellow,
+                  CorsairsTheme.primaryYellow,
+                ]),
+          ),
+          alignment: Alignment.center,
+          child: Animate(
+            onComplete: (x) async {
+              await Future.delayed(const Duration(milliseconds: 300));
+              handleNavigation();
+            },
+            effects: const [SlideEffect(), ScaleEffect(), FadeEffect()],
+            child: title,
+          )),
     );
   }
 }

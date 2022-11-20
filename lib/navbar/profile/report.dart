@@ -3,12 +3,10 @@ import 'package:rsvp/exports.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
-import 'package:rsvp/utils/responsive.dart';
-import 'package:uuid/uuid.dart';
-import 'package:rsvp/navbar/profile/edit.dart';
 import 'package:rsvp/utils/extensions.dart';
-import 'package:rsvp/utils/utility.dart';
+import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/widgets/button.dart';
+import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
 class ReportABug extends StatefulWidget {
@@ -27,9 +25,9 @@ class _ReportABugState extends State<ReportABug> {
   Widget build(BuildContext context) {
     final user = AppStateScope.of(context).user;
     return ResponsiveBuilder(
-        desktopBuilder: (context) => ReportABugDesktop(),
+        desktopBuilder: (context) => const ReportABugDesktop(),
         mobileBuilder: (context) =>
-            user!.isAdmin ? ViewBugReports() : ReportABugMobile());
+            user!.isAdmin ? const ViewBugReports() : const ReportABugMobile());
   }
 }
 
@@ -83,7 +81,8 @@ class _ViewBugReportsState extends State<ViewBugReports> {
     getReports();
   }
 
-  ValueNotifier<Request> _request = ValueNotifier(Request(RequestState.none));
+  final ValueNotifier<Request> _request =
+      ValueNotifier(Request(RequestState.none));
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +94,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
             valueListenable: _request,
             builder: (BuildContext context, Request request, Widget? child) {
               if (request.state == RequestState.active) {
-                return LoadingWidget();
+                return const LoadingWidget();
               }
               if (request.state == RequestState.error) {
                 return Center(
@@ -106,7 +105,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
                         onPressed: () {
                           getReports();
                         },
-                        child: Text('Try Again'),
+                        child: const Text('Try Again'),
                       ),
                       Text(request.message!),
                     ],
@@ -115,7 +114,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
               }
               List<Event> reports = request.data as List<Event>;
               if (reports.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text('No reports yet'),
                 );
               }
@@ -135,7 +134,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
                           padding: 16.0.horizontalPadding,
                           child: Text(reports[index].name!),
                         ),
-                        Divider(),
+                        const Divider(),
                       ],
                     );
                   },
@@ -152,7 +151,8 @@ class ReportABugMobile extends StatefulWidget {
 }
 
 class _ReportABugMobileState extends State<ReportABugMobile> {
-  ValueNotifier<Request> _request = ValueNotifier(Request(RequestState.none));
+  final ValueNotifier<Request> _request =
+      ValueNotifier(Request(RequestState.none));
 
   @override
   void dispose() {
@@ -161,7 +161,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
     super.dispose();
   }
 
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final user = AppStateScope.of(context).user;
@@ -175,7 +175,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
             return Column(
               children: [
                 24.0.vSpacer(),
-                VHTextfield(
+                CSField(
                   hint: 'Description of the bug',
                   hasLabel: false,
                   controller: _controller,
@@ -210,7 +210,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
                 Expanded(child: Container()),
                 Padding(
                   padding: 16.0.allPadding,
-                  child: Text(
+                  child: const Text(
                       'Note: We may contact you for more information about the bug you reported.'),
                 ),
                 24.0.vSpacer(),

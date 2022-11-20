@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class LeaderBoard extends StatefulWidget {
-  static String route = '/leaderboard';
-  const LeaderBoard({Key? key,}) : super(key: key);
+  static String route = '/';
+  const LeaderBoard({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<LeaderBoard> createState() => _LeaderBoardState();

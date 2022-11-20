@@ -5,6 +5,7 @@ import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/user.dart';
+import 'package:rsvp/themes/theme.dart';
 
 extension StringExtension on String {
   String? capitalize() {
@@ -206,6 +207,64 @@ extension RoundedShape on double {
   ShapeBorder get roundedTopRightBottomLeft => RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(this), bottomLeft: Radius.circular(this)));
+}
+
+extension RoundedBorderSide on dynamic {
+  Border get rounded => Border.all();
+
+  Border get roundedTop => const Border(
+      top: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedBottom => const Border(
+      bottom: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedLeft => const Border(
+      left: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedRight => const Border(
+      right: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedTopLeft => const Border(
+      top: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid),
+      left: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedTopRight => const Border(
+      top: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid),
+      right: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
+
+  Border get roundedBottomLeft => const Border(
+      bottom: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid),
+      left: BorderSide(
+          color: CorsairsTheme.primaryYellow,
+          width: 1,
+          style: BorderStyle.solid));
 }
 
 extension SizedBoxSpacer on double {

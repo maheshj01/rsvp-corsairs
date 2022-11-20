@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/utils/extensions.dart';
 
 class VHButton extends StatefulWidget {
-  VHButton(
+  const VHButton(
       {Key? key,
       this.backgroundColor = Colors.white,
       this.foregroundColor = Colors.black,
@@ -62,11 +62,11 @@ class _VHButtonState extends State<VHButton> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                widget.leading ?? SizedBox.shrink(),
+                widget.leading ?? const SizedBox.shrink(),
                 (widget.leading == null ? 0.0 : 20.0).hSpacer(),
                 Text(
-                  '${widget.label}',
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
+                  widget.label,
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: widget.fontSize,
                       color: widget.foregroundColor),

@@ -5,7 +5,7 @@ import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/event.dart';
-import 'package:rsvp/pages/add_event.dart';
+import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
@@ -121,25 +121,26 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                     child: OpenContainer<bool>(
                         openBuilder:
                             (BuildContext context, VoidCallback openContainer) {
-                          return const AddEvent();
+                          return AddEvent();
                         },
                         tappable: true,
                         closedShape: 22.0.rounded,
+                        openShape: 22.0.rounded,
                         transitionType: ContainerTransitionType.fadeThrough,
                         closedBuilder:
                             (BuildContext context, VoidCallback openContainer) {
                           return FloatingActionButton.extended(
-                              elevation: 3.5,
+                              shape: 22.0.rounded,
                               isExtended: true,
-                              icon: const Icon(Icons.add,
-                                  color: Colors.white, size: 28),
+                              icon: const Icon(Icons.music_note,
+                                  color: CorsairsTheme.primaryYellow, size: 28),
                               backgroundColor: CorsairsTheme.primaryColor,
                               onPressed: null,
                               label: const Text(
-                                'Add Word',
+                                'Host Event',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white,
+                                  color: CorsairsTheme.primaryYellow,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ));
@@ -294,6 +295,33 @@ class _DesktopHomeState extends State<DesktopHome> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ScrollableEvent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('DraggableScrollableSheet'),
+      ),
+      body: SizedBox.expand(
+        child: DraggableScrollableSheet(
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              color: Colors.blue[100],
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: 25,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(title: Text('Item $index'));
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

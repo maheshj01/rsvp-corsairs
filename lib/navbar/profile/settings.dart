@@ -46,9 +46,9 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
       minVerticalPadding: 24.0,
       title: Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 20,
-          color: CorsairsTheme.lightblue,
+          color: CorsairsTheme.primaryBlue,
           fontWeight: FontWeight.w600,
         ),
       ),

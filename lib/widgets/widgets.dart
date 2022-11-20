@@ -105,9 +105,9 @@ RichText buildNotification(String notification, String word,
 Widget heading(String title) {
   return Text(
     title,
-    style: TextStyle(
+    style: const TextStyle(
       fontSize: 20,
-      color: CorsairsTheme.lightblue,
+      color: CorsairsTheme.primaryBlue,
       fontWeight: FontWeight.w600,
     ),
   );
