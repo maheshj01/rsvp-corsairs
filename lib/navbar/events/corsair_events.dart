@@ -75,22 +75,34 @@ class CorsairEventsMobile extends StatefulWidget {
 
 class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
   final ScrollController _scrollController = ScrollController();
-
+  late ScrollDirection _lastScrollDirection;
+  late double _lastScrollOffset;
   @override
   void initState() {
     super.initState();
+    _lastScrollDirection = ScrollDirection.idle;
+    _lastScrollOffset = 0;
     _scrollController.addListener(() {
       //  listen to scroll direction
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        //  hide the appbar
-        NavbarNotifier.hideBottomNavBar = true;
-      } else {
-        //  show the appbar
-        NavbarNotifier.hideBottomNavBar = false;
+      if (_scrollController.position.userScrollDirection !=
+          _lastScrollDirection) {
+        _lastScrollDirection = _scrollController.position.userScrollDirection;
+        _lastScrollOffset = _scrollController.offset;
+      }
+      double difference = (_scrollController.offset - _lastScrollOffset).abs();
+      if (difference > _offsetThreshold) {
+        _lastScrollOffset = _scrollController.offset;
+        if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+          NavbarNotifier.hideBottomNavBar = false;
+        } else {
+          NavbarNotifier.hideBottomNavBar = true;
+        }
       }
     });
   }
+
+  final double _offsetThreshold = 50.0;
 
   @override
   Widget build(BuildContext context) {
