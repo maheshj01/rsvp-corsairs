@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^3.0.1
   google_sign_in: ^5.4.2
   image_cropper: ^3.0.1
+  image_picker: ^0.8.6
   intl: ^0.17.0
   json_annotation: ^4.7.0
   navbar_router: ^0.3.2

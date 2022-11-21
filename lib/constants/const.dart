@@ -89,6 +89,7 @@ enum EditType {
 }
 
 const String dateFormatter = 'MMMM dd, y';
+const String timeFormatter = 'h:mm a';
 
 enum Status { success, notfound, error }
 

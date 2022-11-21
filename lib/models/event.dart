@@ -44,33 +44,42 @@ class Event extends ChangeNotifier {
         host: w.host);
   }
 
+  // copy with constructor
   Event copyWith({
     String? name,
     String? description,
     List<UserModel>? attendees,
-    DateTime? created_at,
-    DateTime? dateTime,
+    DateTime? createdAt,
+    DateTime? startsAt,
+    DateTime? endsAt,
     String? coverImage,
     String? host,
   }) {
     return Event(
-      name: name ?? this.name,
-    );
+        name: name ?? this.name,
+        description: description ?? this.description,
+        attendees: attendees ?? this.attendees,
+        createdAt: createdAt ?? this.createdAt,
+        startsAt: startsAt ?? this.startsAt,
+        endsAt: endsAt ?? this.endsAt,
+        coverImage: coverImage ?? this.coverImage,
+        host: host ?? this.host);
   }
 
   factory Event.init() {
+    final now = DateTime.now();
     return Event(
         name: '',
         description: '',
         attendees: [],
-        createdAt: DateTime.now().subtract(const Duration(days: 1)),
-        startsAt: DateTime.now(),
-        endsAt: DateTime.now().add(const Duration(days: 1)),
+        createdAt: now.subtract(const Duration(days: 1)),
+        startsAt: now,
+        endsAt: now.add(const Duration(days: 1)),
         coverImage: '',
         host: '');
   }
 
-  /// TODO: add a method to convert a User to JSON object
+  //  TODO: add a method to convert a User to JSON object
 //  Map<String, dynamic> toJson() => {
 //         'id': id,
 //         'email': email,

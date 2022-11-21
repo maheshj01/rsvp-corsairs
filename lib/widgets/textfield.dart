@@ -11,6 +11,7 @@ class CSField extends StatefulWidget {
   double fontSize;
   final Function(String)? onChanged;
   final bool isTransparent;
+  final bool autoFocus;
   CSField(
       {super.key,
       required this.hint,
@@ -21,6 +22,7 @@ class CSField extends StatefulWidget {
       this.fontSize = 16,
       this.isTransparent = false,
       this.maxLines = 1,
+      this.autoFocus = false,
       this.keyboardType = TextInputType.text});
 
   @override
@@ -79,6 +81,8 @@ class _CSFieldState extends State<CSField> {
             controller: _controller,
             keyboardType: widget.keyboardType,
             readOnly: widget.isReadOnly,
+            autofocus:widget.autoFocus ,
+            minLines: 1,
             maxLines: widget.maxLines,
             onChanged: (x) {
               if (widget.onChanged != null) {
@@ -92,7 +96,7 @@ class _CSFieldState extends State<CSField> {
               border: InputBorder.none,
               hintText: widget.hint,
               hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Colors.grey.shade400,
                 fontSize: widget.fontSize,
               ),
             ),

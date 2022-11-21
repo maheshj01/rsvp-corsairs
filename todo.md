@@ -1,5 +1,7 @@
 ### TODO
 
+### App
+- [ ] Use fonts similar to duolingo
 
 ### Events
 - [] Create a new Event

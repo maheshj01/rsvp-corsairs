@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/main.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/themes/theme.dart';
-import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/utils/utility.dart';
+import 'package:rsvp/utils/utils.dart';
 
 void removeFocus(BuildContext context) => FocusScope.of(context).unfocus();
 
@@ -102,11 +103,11 @@ RichText buildNotification(String notification, String word,
   return RichText(text: TextSpan(text: '', children: textSpans));
 }
 
-Widget heading(String title) {
+Widget heading(String title, {double fontSize = 20}) {
   return Text(
     title,
-    style: const TextStyle(
-      fontSize: 20,
+    style: TextStyle(
+      fontSize: fontSize,
       color: CorsairsTheme.primaryBlue,
       fontWeight: FontWeight.w600,
     ),
@@ -160,4 +161,42 @@ class VersionBuilder extends StatelessWidget {
           }),
     ));
   }
+}
+
+Future<void> showCSPickerSheet(BuildContext context,
+    Function(DateTime) onChange, String title, DateTime initialDate) async {
+  final now = initialDate;
+  showModalBottomSheet(
+      context: context,
+      shape: 24.0.rounded,
+      builder: (BuildContext builder) {
+        return SizedBox(
+          height: 300,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Text(title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  initialDateTime: initialDate,
+                  onDateTimeChanged: (DateTime newdate) => onChange(newdate),
+                  use24hFormat: true,
+                  maximumDate: now.add(const Duration(days: 365 * 10)),
+                  minimumYear: now.year,
+                  maximumYear: now.year + 10,
+                  minuteInterval: 1,
+                  mode: CupertinoDatePickerMode.dateAndTime,
+                ),
+              ),
+            ],
+          ),
+        );
+      });
 }
