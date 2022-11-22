@@ -1,7 +1,7 @@
 name: rsvp
 description: A event management app for corsairs
-homepage: https://github.com/maheshmnj/flutter_create
-issue_tracker: https://github.com/maheshmnj/flutter_create/issues
+homepage: https://github.com/maheshmnj/rsvp-corsairs
+issue_tracker: https://github.com/maheshmnj/rsvp-corsairs/issues
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
