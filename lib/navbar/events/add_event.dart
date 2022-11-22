@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
+import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
@@ -29,25 +32,18 @@ class _AddEventState extends State<AddEvent> {
 
   Future<void> pickImage() async {
     final ImagePicker _picker = ImagePicker();
-    // Pick an image
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
+        aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
+        aspectRatioPresets: [CropAspectRatioPreset.ratio16x9],
         uiSettings: [
           AndroidUiSettings(
               toolbarTitle: 'Cropper',
               toolbarColor: Colors.deepOrange,
               toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
+              initAspectRatio: CropAspectRatioPreset.ratio16x9,
               lockAspectRatio: false),
           IOSUiSettings(
             title: 'Cropper',
@@ -60,6 +56,8 @@ class _AddEventState extends State<AddEvent> {
       setState(() {
         coverFile = XFile(croppedFile!.path);
       });
+    } else {
+      print('No image selected.');
     }
   }
 
@@ -82,6 +80,35 @@ class _AddEventState extends State<AddEvent> {
     //   }
     // }
   }
+
+  Future<void> _publishPost() async {
+    showCircularIndicator(context);
+    final _event = _eventNotifier.value;
+    if (_event.name!.isEmpty) {
+      showMessage(context, 'Title cannot be empty');
+      stopCircularIndicator(context);
+      return;
+    }
+    if (_event.description!.isEmpty) {
+      showMessage(context, 'Description cannot be empty');
+      stopCircularIndicator(context);
+      return;
+    }
+    if (_event.address.isEmpty) {
+      showMessage(context, 'Location cannot be empty');
+      stopCircularIndicator(context);
+      return;
+    }
+    if (_event.description!.split(' ').length < 10) {
+      showMessage(context, 'Description should be at least 10 words long.');
+      stopCircularIndicator(context);
+      return;
+    }
+    await uploadImage();
+    stopCircularIndicator(context);
+    Navigator.of(context).pop(_eventNotifier.value);
+  }
+
   XFile? coverFile;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -108,7 +135,7 @@ class _AddEventState extends State<AddEvent> {
         actions: [
           // post button
           TextButton(
-            onPressed: () {},
+            onPressed: _publishPost,
             child: const Text(
               'Publish',
               style: TextStyle(
@@ -132,6 +159,9 @@ class _AddEventState extends State<AddEvent> {
               maxLines: 2,
               autoFocus: true,
               fontSize: 24,
+              onChanged: (x) {
+                _eventNotifier.value = _eventNotifier.value.copyWith(name: x);
+              },
               controller: _titleController,
             ),
             _uploadImage(() {
@@ -143,6 +173,10 @@ class _AddEventState extends State<AddEvent> {
               isTransparent: true,
               fontSize: 16,
               maxLines: 4,
+              onChanged: (x) {
+                _eventNotifier.value =
+                    _eventNotifier.value.copyWith(description: x);
+              },
               controller: _descriptionController,
             ),
             8.0.vSpacer(),
@@ -158,10 +192,17 @@ class _AddEventState extends State<AddEvent> {
                         color: CorsairsTheme.primaryYellow),
                     onTap: () {
                       final now = DateTime.now();
-                      showCSPickerSheet(context, (newDate) {
-                        _eventNotifier.value =
-                            _event.copyWith(startsAt: newDate, createdAt: now);
-                      }, 'Event Starts At', _event.startsAt!);
+                      showCSPickerSheet(
+                          context,
+                          (newDate) {
+                            _eventNotifier.value = _event.copyWith(
+                                startsAt: newDate, createdAt: now);
+                          },
+                          'Event Starts At',
+                          _event.startsAt!,
+                          onClosed: () {
+                            print('closed');
+                          });
                     },
                     title: Text(_event.startsAt!.formatDate()),
                     subtitle: Text(_event.startsAt!.standardTime()),
@@ -179,10 +220,17 @@ class _AddEventState extends State<AddEvent> {
                     leading: const Icon(Icons.calendar_today,
                         color: CorsairsTheme.primaryYellow),
                     onTap: () {
-                      final now = DateTime.now();
-                      showCSPickerSheet(context, (newDate) {
-                        _eventNotifier.value = _event.copyWith(endsAt: newDate);
-                      }, 'Event Ends At', _event.endsAt!);
+                      showCSPickerSheet(
+                        context,
+                        (newDate) {
+                          _eventNotifier.value =
+                              _event.copyWith(endsAt: newDate);
+                        },
+                        'Event Ends At',
+                        _event.startsAt!.add(
+                          const Duration(hours: 1),
+                        ),
+                      );
                     },
                     title: Text(_event.endsAt!.formatDate()),
                     subtitle: Text(_event.endsAt!.standardTime()),
@@ -196,6 +244,10 @@ class _AddEventState extends State<AddEvent> {
               fontSize: 16,
               maxLines: 4,
               controller: _locationController,
+              onChanged: (x) {
+                _eventNotifier.value =
+                    _eventNotifier.value.copyWith(address: x);
+              },
             ),
             // TODO INVITE BOTTOM SHEET
             const SizedBox(
@@ -209,7 +261,6 @@ class _AddEventState extends State<AddEvent> {
 
   Widget _uploadImage(Function onUpload) {
     return Container(
-      height: 200,
       margin: 16.0.allPadding,
       decoration: BoxDecoration(
         border: Border.all(color: CorsairsTheme.primaryYellow, width: 2),
@@ -217,17 +268,18 @@ class _AddEventState extends State<AddEvent> {
       ),
       child: InkWell(
         onTap: () => onUpload(),
-        child: Center(
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
           child: coverFile != null
-              ? Image.asset(
-                  coverFile!.path,
-                )
-              : const Text(
-                  'Upload Image',
-                  style: TextStyle(
-                    color: CorsairsTheme.primaryYellow,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+              ? Image.file(File(coverFile!.path))
+              : const Center(
+                  child: Text(
+                    'Upload Image',
+                    style: TextStyle(
+                      color: CorsairsTheme.primaryYellow,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
         ),

@@ -14,6 +14,7 @@ class Event extends ChangeNotifier {
   DateTime? startsAt;
   DateTime? endsAt;
   String coverImage;
+  String address;
   String host;
 
   Event(
@@ -23,6 +24,7 @@ class Event extends ChangeNotifier {
       this.createdAt,
       this.startsAt,
       this.endsAt,
+      this.address = '',
       this.coverImage = '',
       this.host = ''});
   // : assert(name != null),
@@ -40,21 +42,22 @@ class Event extends ChangeNotifier {
         createdAt: w.createdAt,
         startsAt: w.startsAt,
         endsAt: w.endsAt,
+        address: w.address,
         coverImage: w.coverImage,
         host: w.host);
   }
 
   // copy with constructor
-  Event copyWith({
-    String? name,
-    String? description,
-    List<UserModel>? attendees,
-    DateTime? createdAt,
-    DateTime? startsAt,
-    DateTime? endsAt,
-    String? coverImage,
-    String? host,
-  }) {
+  Event copyWith(
+      {String? name,
+      String? description,
+      List<UserModel>? attendees,
+      DateTime? createdAt,
+      DateTime? startsAt,
+      DateTime? endsAt,
+      String? coverImage,
+      String? host,
+      String? address}) {
     return Event(
         name: name ?? this.name,
         description: description ?? this.description,
@@ -63,6 +66,7 @@ class Event extends ChangeNotifier {
         startsAt: startsAt ?? this.startsAt,
         endsAt: endsAt ?? this.endsAt,
         coverImage: coverImage ?? this.coverImage,
+        address: address ?? this.address,
         host: host ?? this.host);
   }
 
@@ -76,6 +80,7 @@ class Event extends ChangeNotifier {
         startsAt: now,
         endsAt: now.add(const Duration(days: 1)),
         coverImage: '',
+        address: '',
         host: '');
   }
 

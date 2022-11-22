@@ -40,7 +40,9 @@ class _CSFieldState extends State<CSField> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
@@ -81,7 +83,7 @@ class _CSFieldState extends State<CSField> {
             controller: _controller,
             keyboardType: widget.keyboardType,
             readOnly: widget.isReadOnly,
-            autofocus:widget.autoFocus ,
+            autofocus: widget.autoFocus,
             minLines: 1,
             maxLines: widget.maxLines,
             onChanged: (x) {

@@ -164,7 +164,8 @@ class VersionBuilder extends StatelessWidget {
 }
 
 Future<void> showCSPickerSheet(BuildContext context,
-    Function(DateTime) onChange, String title, DateTime initialDate) async {
+    Function(DateTime) onChange, String title, DateTime initialDate,
+    {Function? onClosed}) async {
   final now = initialDate;
   showModalBottomSheet(
       context: context,
@@ -198,5 +199,9 @@ Future<void> showCSPickerSheet(BuildContext context,
             ],
           ),
         );
-      });
+      }).whenComplete(() {
+    if (onClosed != null) {
+      onClosed();
+    }
+  });
 }
