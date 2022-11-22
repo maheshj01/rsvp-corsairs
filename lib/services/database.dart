@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {
   static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
-
+  static const String _bucketName = 'event-covers';
   static Future<PostgrestResponse> findRowByColumnValue(String columnValue,
       {String columnName = ID_COLUMN,
       String tableName = EVENTS_TABLE_NAME}) async {
@@ -212,6 +214,33 @@ class DatabaseService {
         .execute();
     return response;
   }
+
+  static Future<Response> uploadImage(File imageFile,
+      {String tableName = EVENTS_TABLE_NAME}) async {
+    Response response = Response.init();
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final fileExt = imageFile.path.split('.').last;
+      final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
+      await _supabase.storage.from(_bucketName).uploadBinary(
+            fileName,
+            bytes,
+            fileOptions: const FileOptions(contentType: 'image/jpeg'),
+          );
+      final String imageUrlResponse = await _supabase.storage
+          .from(_bucketName)
+          .createSignedUrl(fileName, 60 * 60 * 24 * 365 * 10);
+      response.message = 'image uploaded successfully';
+      response.data = imageUrlResponse;
+    } on StorageException {
+      response.didSucced = false;
+      response.message = 'Failed to upload image';
+    } catch (error) {
+      response.didSucced = false;
+      response.message = 'Failed to upload image';
+    }
+    return response;
+  }
 }
 
 class ResponseObject {
@@ -223,11 +252,23 @@ class ResponseObject {
 }
 
 class Response {
+  RequestState? state;
   bool didSucced;
   String message;
   int? status;
   Object? data;
 
+  Response.init(
+      {this.didSucced = true,
+      this.state = RequestState.none,
+      this.message = 'Success',
+      this.status,
+      this.data});
+
   Response(
-      {required this.didSucced, required this.message, this.status, this.data});
+      {required this.didSucced,
+      required this.message,
+      this.status,
+      this.data,
+      this.state});
 }

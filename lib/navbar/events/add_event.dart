@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rsvp/models/event.dart';
+import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/utility.dart';
@@ -31,54 +31,33 @@ class _AddEventState extends State<AddEvent> {
   }
 
   Future<void> pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
-        aspectRatioPresets: [CropAspectRatioPreset.ratio16x9],
-        uiSettings: [
-          AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.ratio16x9,
-              lockAspectRatio: false),
-          IOSUiSettings(
-            title: 'Cropper',
-          ),
-          WebUiSettings(
-            context: context,
-          ),
-        ],
-      );
+    final XFile? file = await pickImageAndCrop(context);
+    if (file != null) {
       setState(() {
-        coverFile = XFile(croppedFile!.path);
+        coverFile = XFile(file.path);
       });
+      await uploadImage();
     } else {
       print('No image selected.');
     }
   }
 
   Future<void> uploadImage() async {
-    // SupabaseClient client = SupabaseClient('https://zqjzjzjzjzjz.supabase.co', 'public-anon-key');
-    // final String? path = _eventNotifier.value.image;
-    // if(path != null){
-    //   final String fileName = path.split('/').last;
-    //   final String fileExt = fileName.split('.').last;
-    //   final String filePath = 'public/$fileName';
-    //   final Uint8List fileBytes = File(path).readAsBytesSync();
-    //   final StorageUploadOptions options = StorageUploadOptions(
-    //     contentType: 'image/$fileExt',
-    //     cacheControl: '3600',
-    //     upsert: false,
-    //   );
-    //   final StorageUploadFileResponse response = await client.storage.from('rsvp').uploadFile(filePath, fileBytes, options: options);
-    //   if(response.error == null){
-    //     _eventNotifier.value = _eventNotifier.value.copyWith(image: response.data!.url);
-    //   }
-    // }
+    showCircularIndicator(context);
+    File imageFile = File(coverFile!.path);
+    final resp = await DatabaseService.uploadImage(imageFile);
+    if (resp.didSucced) {
+      imageUploadSuccess = true;
+      _eventNotifier.value =
+          _eventNotifier.value.copyWith(coverImage: resp.data as String);
+      showMessage(context, 'Image uploaded successfully');
+      stopCircularIndicator(context);
+    } else {
+      imageUploadSuccess = false;
+      showMessage(context, resp.message);
+      _eventNotifier.value = _eventNotifier.value.copyWith(coverImage: '');
+      stopCircularIndicator(context);
+    }
   }
 
   Future<void> _publishPost() async {
@@ -94,21 +73,26 @@ class _AddEventState extends State<AddEvent> {
       stopCircularIndicator(context);
       return;
     }
+    if (_event.description!.split(' ').toList().length < 10) {
+      showMessage(context, 'Description should be at least 10 words long.');
+      stopCircularIndicator(context);
+      return;
+    }
+    if (_event.startsAt!.isAfter(_event.endsAt!)) {
+      showMessage(context, 'Start date cannot be after end date.');
+      stopCircularIndicator(context);
+      return;
+    }
     if (_event.address.isEmpty) {
       showMessage(context, 'Location cannot be empty');
       stopCircularIndicator(context);
       return;
     }
-    if (_event.description!.split(' ').length < 10) {
-      showMessage(context, 'Description should be at least 10 words long.');
-      stopCircularIndicator(context);
-      return;
-    }
-    await uploadImage();
     stopCircularIndicator(context);
     Navigator.of(context).pop(_eventNotifier.value);
   }
 
+  bool imageUploadSuccess = true;
   XFile? coverFile;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -167,6 +151,22 @@ class _AddEventState extends State<AddEvent> {
             _uploadImage(() {
               pickImage();
             }),
+            ValueListenableBuilder<Event>(
+                valueListenable: _eventNotifier,
+                builder: (context, _event, snapshot) {
+                  if (!imageUploadSuccess) {
+                    return Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                            onPressed: uploadImage,
+                            child: const Text(
+                              'Retry Upload',
+                              style: TextStyle(color: Colors.red),
+                            )));
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
             CSField(
               hint: 'In few lines explain what the event is about',
               hasLabel: false,

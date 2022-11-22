@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/exports.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/responsive.dart';
@@ -81,8 +82,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
     getReports();
   }
 
-  final ValueNotifier<Request> _request =
-      ValueNotifier(Request(RequestState.none));
+  final ValueNotifier<Response> _request = ValueNotifier(Response.init());
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +90,9 @@ class _ViewBugReportsState extends State<ViewBugReports> {
         appBar: AppBar(
           title: const Text('Reports and Feedbacks'),
         ),
-        body: ValueListenableBuilder<Request>(
+        body: ValueListenableBuilder<Response>(
             valueListenable: _request,
-            builder: (BuildContext context, Request request, Widget? child) {
+            builder: (BuildContext context, Response request, Widget? child) {
               if (request.state == RequestState.active) {
                 return const LoadingWidget();
               }
@@ -107,7 +107,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
                         },
                         child: const Text('Try Again'),
                       ),
-                      Text(request.message!),
+                      Text(request.message),
                     ],
                   ),
                 );
@@ -151,8 +151,7 @@ class ReportABugMobile extends StatefulWidget {
 }
 
 class _ReportABugMobileState extends State<ReportABugMobile> {
-  final ValueNotifier<Request> _request =
-      ValueNotifier(Request(RequestState.none));
+  final ValueNotifier<Response> _request = ValueNotifier(Response.init());
 
   @override
   void dispose() {
@@ -169,7 +168,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
       appBar: AppBar(
         title: const Text('Report a bug'),
       ),
-      body: ValueListenableBuilder<Request>(
+      body: ValueListenableBuilder<Response>(
           valueListenable: _request,
           builder: (context, value, snapshot) {
             return Column(

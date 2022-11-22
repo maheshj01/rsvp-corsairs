@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -133,3 +135,32 @@ Widget _buildNewTransition(
 // bool isDisplaySmallDesktop(BuildContext context) {
 //   return getWindowType(context) == AdaptiveWindowType.xsmall;
 // }
+
+Future<XFile?> pickImageAndCrop(context) async {
+  final ImagePicker _picker = ImagePicker();
+  final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  if (image != null) {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: image.path,
+      aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
+      aspectRatioPresets: [CropAspectRatioPreset.ratio16x9],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.ratio16x9,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    return XFile(croppedFile!.path);
+  } else {
+    return null;
+  }
+}
