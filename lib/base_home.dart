@@ -11,6 +11,7 @@ import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/utils/utils.dart';
+import 'package:rsvp/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'navbar/events/event_detail.dart';
@@ -35,10 +36,15 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   }
 
   Future<void> getEvents() async {
+    await Duration.zero;
+    showCircularIndicator(context);
     final events = await EventService.getAllEvents();
     if (events.isNotEmpty) {
       AppStateWidget.of(context).setEvents(events);
+    } else {
+      AppStateWidget.of(context).setEvents([]);
     }
+    stopCircularIndicator(context);
   }
 
   Future<void> isUpdateAvailable() async {

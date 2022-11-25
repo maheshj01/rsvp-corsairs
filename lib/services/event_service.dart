@@ -77,16 +77,16 @@ class EventService {
 
   /// ```Select * from words```
 
-  static Future<List<Event>> getAllEvents({bool sort = false}) async {
+  static Future<List<EventModel>> getAllEvents({bool sort = false}) async {
     final response = await DatabaseService.findAll(tableName: tableName);
-    List<Event> words = [];
+    List<EventModel> events = [];
     if (response.status == 200) {
-      words = (response.data as List).map((e) => Event.fromJson(e)).toList();
+      events = (response.data as List).map((e) => EventModel.fromJson(e)).toList();
       // if (sort) {
       //   words.sort((a, b) => a.created_at.isBefore(b.created_at) ? 1 : -1);
       // }
     }
-    return words;
+    return events;
   }
 
   static Future<List<Event>> exploreWords(String email, {int page = 0}) async {

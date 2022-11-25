@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/api/user.dart';
 
 class AppState {
   final UserModel? user;
-  final List<Event>? events;
+  final List<EventModel>? events;
 
   const AppState({this.user, this.events});
 
   AppState copyWith({
-    List<Event>? events,
+    List<EventModel>? events,
     UserModel? user,
   }) {
     return AppState(events: events ?? this.events, user: user ?? this.user);
@@ -53,7 +54,7 @@ class AppStateWidgetState extends State<AppStateWidget> {
   AppState _data = AppState();
   final _userStore = UserService();
 
-  void setEvents(List<Event> events) {
+  void setEvents(List<EventModel> events) {
     if (events != _data.events) {
       setState(() {
         _data = _data.copyWith(

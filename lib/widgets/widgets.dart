@@ -31,7 +31,7 @@ class LoadingWidget extends StatelessWidget {
     return Center(
         child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
-      color ?? CorsairsTheme.primaryColor,
+      color ?? CorsairsTheme.primaryYellow,
     )));
   }
 }
