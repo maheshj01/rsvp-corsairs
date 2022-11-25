@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:logger/logger.dart' as log;
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/services/analytics.dart';
@@ -13,6 +12,7 @@ import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/splashscreen.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/firebase_options.dart';
+import 'package:rsvp/utils/logger.dart';
 
 import 'constants/constants.dart';
 import 'services/authentication.dart';
@@ -40,7 +40,7 @@ Future<void> main() async {
 //   print('Handling a background message ${message.messageId}');
 // }
 
-final logger = log.Logger();
+const _logger = Logger('CorsairsApp');
 final ValueNotifier<bool> darkNotifier = ValueNotifier<bool>(false);
 final ValueNotifier<int> totalNotifier = ValueNotifier<int>(0);
 final ValueNotifier<List<Event>?> listNotifier = ValueNotifier<List<Event>>([]);
@@ -74,7 +74,6 @@ class _CorsairsAppState extends State<CorsairsApp> {
     totalNotifier.dispose();
     searchController.dispose();
     listNotifier.dispose();
-    logger.close();
     super.dispose();
   }
 

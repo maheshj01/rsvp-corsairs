@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/constants.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/event_service.dart';
@@ -85,13 +85,13 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     List<NavbarItem> items = const [
       NavbarItem(Icons.event, 'Events'),
       NavbarItem(Icons.leaderboard, 'Leaderboard'),
-      NavbarItem(Icons.people, 'Profile'),
+      NavbarItem(Icons.person, 'Profile'),
     ];
 
     final Map<int, Map<String, Widget>> _routes = {
       0: {
         CorsairEvents.route: const CorsairEvents(),
-        EventDetail.route: EventDetail(event: Event.init()),
+        EventDetail.route: EventDetail(event: EventModel.init()),
       },
       1: {
         LeaderBoard.route: const LeaderBoard(),

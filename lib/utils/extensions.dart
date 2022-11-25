@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/constants/constants.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/themes/theme.dart';
 
@@ -18,8 +18,8 @@ extension StringExtension on String {
   }
 }
 
-extension CompareEvents on Event {
-  bool equals(Event other) =>
+extension CompareEvents on EventModel {
+  bool equals(EventModel other) =>
       runtimeType == other.runtimeType &&
       id == other.id &&
       name == other.name &&
@@ -78,6 +78,21 @@ extension DateHelper on DateTime {
   String standardTime() {
     final formatter = DateFormat(timeFormatter);
     return formatter.format(this);
+  }
+
+  String standardTimeDifference(DateTime date) {
+    if (difference(date).inMinutes < 60) {
+      return "${difference(date).inMinutes} mins";
+    } else if (difference(date).inMinutes < 1440) {
+      final hours = difference(date).inHours;
+      final mins = difference(date).inMinutes - (hours * 60);
+      return "$hours hrs $mins mins";
+    } else {
+      final days = difference(date).inDays;
+      final hours = difference(date).inHours - (days * 24);
+      final mins = difference(date).inMinutes - (hours * 60) - (days * 1440);
+      return "$days days $hours hrs $mins mins";
+    }
   }
 }
 

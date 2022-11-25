@@ -192,26 +192,21 @@ class DatabaseService {
       required String tableName}) async {
     final response = await _supabase
         .from(tableName)
-        .update({columnName: columnValue})
-        .eq(searchColumn, searchValue)
-        .execute();
+        .update({columnName: columnValue}).eq(searchColumn, searchValue);
     return response;
   }
 
   static Future<PostgrestResponse> upsertRow(Map<String, dynamic> data,
       {String tableName = EVENTS_TABLE_NAME}) async {
-    final response = await _supabase.from(tableName).upsert(data).execute();
+    final response = await _supabase.from(tableName).upsert(data);
     return response;
   }
 
   static Future<PostgrestResponse> deleteRow(String columnValue,
       {String columnName = ID_COLUMN,
       String tableName = EVENTS_TABLE_NAME}) async {
-    final response = await _supabase
-        .from(tableName)
-        .delete()
-        .eq(columnName, columnValue)
-        .execute();
+    final response =
+        await _supabase.from(tableName).delete().eq(columnName, columnValue);
     return response;
   }
 
@@ -219,25 +214,26 @@ class DatabaseService {
       {String tableName = EVENTS_TABLE_NAME}) async {
     Response response = Response.init();
     try {
-      final bytes = await imageFile.readAsBytes();
+      // final bytes = await imageFile.readAsBytes();
       final fileExt = imageFile.path.split('.').last;
       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
-      await _supabase.storage.from(_bucketName).uploadBinary(
+      await _supabase.storage.from(_bucketName).upload(
             fileName,
-            bytes,
+            imageFile,
             fileOptions: const FileOptions(contentType: 'image/jpeg'),
           );
-      final String imageUrlResponse = await _supabase.storage
-          .from(_bucketName)
-          .createSignedUrl(fileName, 60 * 60 * 24 * 365 * 10);
+      final String imageUrlResponse =
+          _supabase.storage.from(_bucketName).getPublicUrl(fileName);
       response.message = 'image uploaded successfully';
       response.data = imageUrlResponse;
-    } on StorageException {
+    } on StorageException catch (error) {
       response.didSucced = false;
       response.message = 'Failed to upload image';
+      response.data = 'error: ${error.message}';
     } catch (error) {
       response.didSucced = false;
       response.message = 'Failed to upload image';
+      response.data = error;
     }
     return response;
   }

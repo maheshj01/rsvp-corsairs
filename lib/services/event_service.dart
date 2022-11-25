@@ -1,21 +1,21 @@
 import 'dart:convert';
 
-import 'package:logger/logger.dart' as log;
 import 'package:rsvp/constants/const.dart';
-import 'package:rsvp/main.dart';
 import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
+    // ignore: library_prefixes
     if (dart.library.html) 'package:rsvp/platform/web.dart' as platformOnly;
 import 'package:rsvp/services/database.dart';
+import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 /// Global Vocabulary table's api.
 class EventService {
   static String tableName = EVENTS_TABLE_NAME;
-  static final _logger = log.Logger();
   static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
-
+  static const _logger = Logger('EventService');
   static Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,
         columnName: ID_COLUMN, tableName: tableName);
@@ -36,24 +36,25 @@ class EventService {
     return null;
   }
 
-  static Future<Response> addWord(Event word) async {
-    final json = word.toJson();
-    final vocabresponse = Response(didSucced: false, message: "Failed");
+  static Future<Response> addEvent(Event event) async {
+    final json = event.toJson();
+    final eventResponse = Response(didSucced: false, message: "Failed");
     try {
       final response =
           await DatabaseService.insertIntoTable(json, table: tableName);
       if (response.status == 201) {
-        vocabresponse.didSucced = true;
-        vocabresponse.message = 'Success';
-        final word = Event.fromJson(response.data[0]);
-        vocabresponse.data = word;
+        eventResponse.didSucced = true;
+        eventResponse.message = 'Success';
+        eventResponse.data = response.data;
       }
-      vocabresponse.status = response.status;
-      vocabresponse.message = 'Error';
+      eventResponse.status = response.status;
+      eventResponse.message = 'Error';
     } catch (_) {
-      throw "Failed to add word,error:$_";
+      _logger.e('Error adding event $_');
+      eventResponse.didSucced = false;
+      eventResponse.message = 'Error: $_';
     }
-    return vocabresponse;
+    return eventResponse;
   }
 
   /// ```Select * from words Where state = 'approved';```
@@ -106,7 +107,7 @@ class EventService {
     return exploreWords;
   }
 
-  static Future<List<Event>> getBookmarks(String email,
+  static Future<List<EventModel>> getBookmarks(String email,
       {bool isBookmark = true}) async {
     final response = await DatabaseService.findRowsByInnerJoinOn2ColumnValue(
       'email',
@@ -116,9 +117,10 @@ class EventService {
       table1: EVENTS_TABLE_NAME,
       table2: WORD_STATE_TABLE_NAME,
     );
-    List<Event> events = [];
+    List<EventModel> events = [];
     if (response.status == 200) {
-      events = (response.data as List).map((e) => Event.fromJson(e)).toList();
+      events =
+          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
     }
     return events;
   }
@@ -173,7 +175,7 @@ class EventService {
       }
       return false;
     } catch (x) {
-      logger.d(x);
+      _logger.e(x.toString());
       throw 'x';
     }
   }

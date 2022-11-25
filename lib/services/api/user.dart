@@ -1,14 +1,14 @@
 import 'package:rsvp/constants/constants.dart';
-import 'package:rsvp/main.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/database.dart';
+import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class UserService {
   static const String _tableName = USER_TABLE_NAME;
   final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
-
+  static const _logger = Logger('UserService');
   Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,
         columnName: ID_COLUMN, tableName: _tableName);
@@ -24,11 +24,11 @@ class UserService {
         final user = UserModel.fromJson(response.data);
         return user;
       } else {
-        logger.d('existing user not found');
+        _logger.d('existing user not found');
         return UserModel.init();
       }
     } catch (_) {
-      logger.e(_);
+      _logger.e(_.toString());
       return UserModel.init();
     }
   }
@@ -82,7 +82,7 @@ class UserService {
         users = (response.data as List).map((e) => User.fromJson(e)!).toList();
       }
     } catch (_) {
-      logger.e(_);
+      _logger.e(_.toString());
     }
     return users;
   }
@@ -91,7 +91,7 @@ class UserService {
 //: and verify
 
   static Future<PostgrestResponse> deleteById(String email) async {
-    logger.i(_tableName);
+    _logger.i(_tableName);
     final response = await DatabaseService.deleteRow(email,
         columnName: USER_EMAIL_COLUMN, tableName: _tableName);
     return response;

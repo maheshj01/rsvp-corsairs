@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:rsvp/models/event.dart';
+
 part 'user.g.dart';
 
 @JsonSerializable()
@@ -77,16 +78,17 @@ class UserModel extends ChangeNotifier {
         events: events ?? this.events);
   }
 
-  factory UserModel.init() {
+  factory UserModel.init({String email = '', String name = ''}) {
+    final now = DateTime.now();
     return UserModel(
-        name: '',
-        email: '',
+        name: name,
+        email: email,
         avatarUrl: '',
         idToken: '',
         accessToken: '',
         events: [],
         interested: [],
-        created_at: DateTime.now(),
+        created_at: now,
         username: '',
         isAdmin: false,
         isLoggedIn: false);
