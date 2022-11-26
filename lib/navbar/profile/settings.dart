@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/exports.dart';
 import 'package:rsvp/navbar/profile/about.dart';
 import 'package:rsvp/navbar/profile/report.dart';
-import 'package:rsvp/pages/login.dart';
+import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/authentication.dart';
 import 'package:rsvp/themes/theme.dart';

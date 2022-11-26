@@ -181,7 +181,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
                   maxLines: 8,
                 ),
                 24.0.vSpacer(),
-                VHButton(
+                CSButton(
                     height: 48,
                     onTap: () async {
                       // _request.value = Request(RequestState.active);

@@ -3,7 +3,8 @@ import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/models/user.dart';
-import 'package:rsvp/pages/login.dart';
+import 'package:rsvp/pages/authentication/login.dart';
+import 'package:rsvp/pages/authentication/signup.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/navigator.dart';
@@ -37,6 +38,11 @@ class _SplashScreenState extends State<SplashScreen>
     } else {
       user.isLoggedIn = false;
       AppStateWidget.of(context).setUser(user);
+      if (count == 1) {
+        Settings.setSkipCount = count;
+        Navigate().pushReplace(context, const SignUp());
+        return;
+      }
       if (count % 3 != 0) {
         Settings.setSkipCount = count;
         Navigate().pushReplace(context, const AdaptiveLayout());

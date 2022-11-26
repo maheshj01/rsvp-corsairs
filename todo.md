@@ -4,14 +4,14 @@
 - [ ] Use fonts similar to duolingo
 
 ### Events
-- [] Create a new Event
-- [] Hide navbar bar on scroll
-- [] Add a new Event (Cover image crop)
-- [] View event detail
+- [X] Create a new Event
+- [X] Hide navbar bar on scroll
+- [X] Add a new Event (Cover image crop)
+- [X] View event detail
+- [X] Edit an event
 - [] RSVP to an event
 - [] Bookmark an event
 - [] Share an event
-- [] Edit an event
 - [] Delete an event
 - [] View attendees
 - [] Search Events

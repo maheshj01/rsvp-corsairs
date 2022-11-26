@@ -267,4 +267,18 @@ class Response {
       this.status,
       this.data,
       this.state});
+
+  Response copyWith(
+      {bool? didSucced,
+      String? message,
+      int? status,
+      Object? data,
+      RequestState? state}) {
+    return Response(
+        didSucced: didSucced ?? this.didSucced,
+        message: message ?? this.message,
+        status: status ?? this.status,
+        data: data ?? this.data,
+        state: state ?? this.state);
+  }
 }

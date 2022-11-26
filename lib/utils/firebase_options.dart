@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,43 +49,22 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCeoO3BACxhCcm8Sq2oGkZR2uRbca6VHRE',
-    appId: '1:726058956773:web:7fcbf23d2ea0e1c246610c',
-    messagingSenderId: '726058956773',
-    projectId: 'vocabhub-34c7f',
-    authDomain: 'vocabhub-34c7f.firebaseapp.com',
-    storageBucket: 'vocabhub-34c7f.appspot.com',
-    measurementId: 'G-PX6FK67F2P',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB0HNRQzSBOg_xM7EhiafasmGKc1ppn9z8',
-    appId: '1:726058956773:android:8936f0697afa6bc546610c',
-    messagingSenderId: '726058956773',
-    projectId: 'vocabhub-34c7f',
-    storageBucket: 'vocabhub-34c7f.appspot.com',
+    apiKey: 'AIzaSyCanGtJ3y2wqMjbrSCV5o5mCf761jSCG70',
+    appId: '1:729827175436:android:f540b086aadc42575a1229',
+    messagingSenderId: '729827175436',
+    projectId: 'rsvp-22bdf',
+    storageBucket: 'rsvp-22bdf.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAYo7FXd_J3OmBozNGmLTaWlH4tzT_hCJ8',
-    appId: '1:726058956773:ios:8a95b2206666c84146610c',
-    messagingSenderId: '726058956773',
-    projectId: 'vocabhub-34c7f',
-    storageBucket: 'vocabhub-34c7f.appspot.com',
-    androidClientId: '726058956773-4ne1tc35bt4qqr4r8c2juba5hs1lekrq.apps.googleusercontent.com',
-    iosClientId: '726058956773-r2pi1l5jiiglm9bu586hc396k58vqp9u.apps.googleusercontent.com',
-    iosBundleId: 'com.vocabhub.app',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAYo7FXd_J3OmBozNGmLTaWlH4tzT_hCJ8',
-    appId: '1:726058956773:ios:8a95b2206666c84146610c',
-    messagingSenderId: '726058956773',
-    projectId: 'vocabhub-34c7f',
-    storageBucket: 'vocabhub-34c7f.appspot.com',
-    androidClientId: '726058956773-4ne1tc35bt4qqr4r8c2juba5hs1lekrq.apps.googleusercontent.com',
-    iosClientId: '726058956773-r2pi1l5jiiglm9bu586hc396k58vqp9u.apps.googleusercontent.com',
-    iosBundleId: 'com.vocabhub.app',
+    apiKey: 'AIzaSyCf799uQC6NvfI8c2PxKFM4G7IA6u1cDQs',
+    appId: '1:729827175436:ios:5a97bbefba52ac745a1229',
+    messagingSenderId: '729827175436',
+    projectId: 'rsvp-22bdf',
+    storageBucket: 'rsvp-22bdf.appspot.com',
+    androidClientId: '729827175436-j7ha49c27992635jvfp70i49fp1rc79k.apps.googleusercontent.com',
+    iosClientId: '729827175436-7g2nb0lut0t5fbjnlh8irn5m8bkqjh7i.apps.googleusercontent.com',
+    iosBundleId: 'com.wml.rsvpcorsairs',
   );
 }

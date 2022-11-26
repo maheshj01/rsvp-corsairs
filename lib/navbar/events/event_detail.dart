@@ -185,7 +185,7 @@ class _EventDetailState extends State<EventDetail> {
             ]),
           ),
           Center(
-            child: VHButton(
+            child: CSButton(
               width: size!.width * 0.8,
               onTap: () {},
               backgroundColor: CorsairsTheme.primaryYellow,

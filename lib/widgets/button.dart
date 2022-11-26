@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rsvp/utils/extensions.dart';
 
-class VHButton extends StatefulWidget {
-  const VHButton(
+class CSButton extends StatefulWidget {
+  const CSButton(
       {Key? key,
       this.backgroundColor = Colors.white,
       this.foregroundColor = Colors.black,
@@ -34,10 +34,10 @@ class VHButton extends StatefulWidget {
   final bool isLoading;
 
   @override
-  _VHButtonState createState() => _VHButtonState();
+  _CSButtonState createState() => _CSButtonState();
 }
 
-class _VHButtonState extends State<VHButton> {
+class _CSButtonState extends State<CSButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
