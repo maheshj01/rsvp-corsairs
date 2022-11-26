@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/exports.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:url_launcher/link.dart';
-import 'package:rsvp/exports.dart';
 
-class AboutVocabhub extends StatefulWidget {
+class AboutAppWidget extends StatefulWidget {
   static const String route = '/about';
 
-  const AboutVocabhub({
+  const AboutAppWidget({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AboutVocabhub> createState() => _AboutVocabhubState();
+  State<AboutAppWidget> createState() => _AboutAppWidgetState();
 }
 
-class _AboutVocabhubState extends State<AboutVocabhub> {
+class _AboutAppWidgetState extends State<AboutAppWidget> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
-        desktopBuilder: (context) => AboutVocabhubDesktop(),
-        mobileBuilder: (context) => AboutVocabhubMobile());
+        desktopBuilder: (context) => const AboutAppWidgetDesktop(),
+        mobileBuilder: (context) => const AboutAppWidgetMobile());
   }
 }
 
-class AboutVocabhubDesktop extends StatefulWidget {
-  const AboutVocabhubDesktop({Key? key}) : super(key: key);
+class AboutAppWidgetDesktop extends StatefulWidget {
+  const AboutAppWidgetDesktop({Key? key}) : super(key: key);
 
   @override
-  State<AboutVocabhubDesktop> createState() => _AboutVocabhubDesktopState();
+  State<AboutAppWidgetDesktop> createState() => _AboutAppWidgetDesktopState();
 }
 
-class _AboutVocabhubDesktopState extends State<AboutVocabhubDesktop> {
+class _AboutAppWidgetDesktopState extends State<AboutAppWidgetDesktop> {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -42,14 +42,14 @@ class _AboutVocabhubDesktopState extends State<AboutVocabhubDesktop> {
   }
 }
 
-class AboutVocabhubMobile extends StatefulWidget {
-  const AboutVocabhubMobile({Key? key}) : super(key: key);
+class AboutAppWidgetMobile extends StatefulWidget {
+  const AboutAppWidgetMobile({Key? key}) : super(key: key);
 
   @override
-  State<AboutVocabhubMobile> createState() => _AboutVocabhubMobileState();
+  State<AboutAppWidgetMobile> createState() => _AboutAppWidgetMobileState();
 }
 
-class _AboutVocabhubMobileState extends State<AboutVocabhubMobile> {
+class _AboutAppWidgetMobileState extends State<AboutAppWidgetMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +67,7 @@ class _AboutVocabhubMobileState extends State<AboutVocabhubMobile> {
             16.0.vSpacer(),
             // open source repo link
             16.0.vSpacer(),
-            Expanded(child: SizedBox.shrink()),
+            const Expanded(child: SizedBox.shrink()),
             Link(
                 uri: Uri.parse(SOURCE_CODE_URL),
                 target: LinkTarget.blank,

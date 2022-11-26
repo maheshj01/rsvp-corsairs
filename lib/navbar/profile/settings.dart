@@ -73,7 +73,7 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
           settingTile(
             'About',
             onTap: () {
-              Navigate.push(context, const AboutVocabhub());
+              Navigate.push(context, const AboutAppWidget());
             },
           ),
           hLine(),
