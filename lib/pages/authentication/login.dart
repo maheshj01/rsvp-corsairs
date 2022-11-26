@@ -152,7 +152,11 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
                   20.0.vSpacer(),
                   _signInButton(),
-                  CSButton(onTap: () {}, label: 'Login')
+                  CSButton(
+                      onTap: () {
+                        Navigate.pushAndPopAll(context, const AdaptiveLayout());
+                      },
+                      label: 'Login')
                 ],
               ),
             ),
