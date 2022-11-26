@@ -6,6 +6,7 @@ import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
+import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
@@ -152,8 +153,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
               child: EventParallaxTile(
                 event: event,
               ),
-            )
-        ]))
+            ),
+        ])),
+        SliverToBoxAdapter(
+          child: 100.0.vSpacer(),
+        )
       ],
     );
   }

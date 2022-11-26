@@ -127,7 +127,11 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                     child: OpenContainer<bool>(
                         openBuilder:
                             (BuildContext context, VoidCallback openContainer) {
-                          return AddEvent();
+                          return AddEvent(
+                            onDone: () {
+                              getEvents();
+                            },
+                          );
                         },
                         tappable: true,
                         closedShape: 22.0.rounded,

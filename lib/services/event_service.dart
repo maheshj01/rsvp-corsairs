@@ -81,7 +81,8 @@ class EventService {
     final response = await DatabaseService.findAll(tableName: tableName);
     List<EventModel> events = [];
     if (response.status == 200) {
-      events = (response.data as List).map((e) => EventModel.fromJson(e)).toList();
+      events =
+          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
       // if (sort) {
       //   words.sort((a, b) => a.created_at.isBefore(b.created_at) ? 1 : -1);
       // }

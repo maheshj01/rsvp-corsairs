@@ -13,10 +13,10 @@ class Event extends ChangeNotifier {
   DateTime? createdAt;
   DateTime? startsAt;
   DateTime? endsAt;
-  String coverImage;
-  String address;
-  bool private;
-  bool deleted;
+  String? coverImage;
+  String? address;
+  bool? private;
+  bool? deleted;
 
   Event({
     this.id = '',

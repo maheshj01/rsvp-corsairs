@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/user.dart';
@@ -8,61 +9,70 @@ part 'event_schema.g.dart';
 // Class for the event table in the database
 // with two additional fields: attendees and host
 @JsonSerializable()
-class EventModel extends Event {
+class EventModel extends ChangeNotifier {
   List<UserModel>? attendees;
   UserModel? host;
+  String? id;
+  String? name;
+  String? description;
+  DateTime? createdAt;
+  DateTime? startsAt;
+  DateTime? endsAt;
+  String? coverImage;
+  String? address;
+  bool? private;
+  bool? deleted;
 
   EventModel({
-    super.id,
-    super.name,
-    super.description,
-    super.createdAt,
-    super.startsAt,
-    super.endsAt,
-    super.address,
-    super.coverImage,
-    super.private,
-    super.deleted,
+    this.id,
+    this.name,
+    this.description,
+    this.createdAt,
+    this.startsAt,
+    this.endsAt,
+    this.address,
+    this.coverImage,
+    this.private,
+    this.deleted,
     this.attendees,
     this.host,
   });
 
   EventModel.init() {
-    super.id = const Uuid().v4();
-    super.name = '';
-    super.description = '';
-    super.createdAt = DateTime.now();
-    super.startsAt = DateTime.now();
-    super.endsAt = DateTime.now();
-    super.address = '';
-    super.coverImage = '';
-    super.private = false;
-    super.deleted = false;
+    id = const Uuid().v4();
+    name = '';
+    description = '';
+    createdAt = DateTime.now();
+    startsAt = DateTime.now();
+    endsAt = DateTime.now();
+    address = '';
+    coverImage = '';
+    private = false;
+    deleted = false;
     attendees = [];
     host = UserModel.init();
   }
 
   EventModel.fromEvent(Event event) {
-    super.id = event.id;
-    super.name = event.name;
-    super.description = event.description;
-    super.createdAt = event.createdAt;
-    super.startsAt = event.startsAt;
-    super.endsAt = event.endsAt;
-    super.address = event.address;
-    super.coverImage = event.coverImage;
-    super.private = event.private;
-    super.deleted = event.deleted;
+    id = event.id;
+    name = event.name;
+    description = event.description;
+    createdAt = event.createdAt;
+    startsAt = event.startsAt;
+    endsAt = event.endsAt;
+    address = event.address;
+    coverImage = event.coverImage;
+    private = event.private;
+    deleted = event.deleted;
     attendees = [];
     host = UserModel.init();
   }
 
   // copy with constructor
-  EventModel copy(
+  EventModel copyWith(
       {String? id,
       String? name,
       String? description,
-      List<UserModel>? attendees,
       DateTime? createdAt,
       DateTime? startsAt,
       DateTime? endsAt,
@@ -70,20 +80,21 @@ class EventModel extends Event {
       String? coverImage,
       bool? private,
       bool? deleted,
+      List<UserModel>? attendees,
       UserModel? host}) {
     return EventModel(
-      id: id ?? id,
-      name: name ?? name,
-      description: description ?? description,
-      createdAt: createdAt ?? createdAt,
-      startsAt: startsAt ?? startsAt,
-      endsAt: endsAt ?? endsAt,
-      address: address ?? address!,
-      coverImage: coverImage ?? coverImage!,
-      private: private ?? private!,
-      deleted: deleted ?? deleted!,
-      attendees: attendees ?? attendees,
-      host: host ?? host,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      startsAt: startsAt ?? this.startsAt,
+      endsAt: endsAt ?? this.endsAt,
+      address: address ?? this.address,
+      coverImage: coverImage ?? this.coverImage,
+      private: private ?? this.private,
+      deleted: deleted ?? this.deleted,
+      attendees: attendees ?? this.attendees,
+      host: host ?? this.host,
     );
   }
 

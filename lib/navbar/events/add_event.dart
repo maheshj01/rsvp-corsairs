@@ -16,7 +16,9 @@ import 'package:rsvp/widgets/widgets.dart';
 class AddEvent extends StatefulWidget {
   bool isEdit;
   EventModel? event;
-  AddEvent({Key? key, this.isEdit = false, this.event}) : super(key: key);
+  VoidCallback? onDone;
+  AddEvent({Key? key, this.isEdit = false, this.event, this.onDone})
+      : super(key: key);
 
   @override
   State<AddEvent> createState() => _AddEventState();
@@ -55,19 +57,19 @@ class _AddEventState extends State<AddEvent> {
       if (resp.didSucced) {
         imageUploadSuccess = true;
         _eventNotifier.value =
-            _eventNotifier.value.copy(coverImage: resp.data as String);
+            _eventNotifier.value.copyWith(coverImage: resp.data as String);
         showMessage(context, 'Image uploaded successfully');
         stopCircularIndicator(context);
       } else {
         imageUploadSuccess = false;
         showMessage(context, resp.message);
-        _eventNotifier.value = _eventNotifier.value.copy(coverImage: '');
+        _eventNotifier.value = _eventNotifier.value.copyWith(coverImage: '');
         stopCircularIndicator(context);
       }
     } catch (e) {
       imageUploadSuccess = false;
       showMessage(context, e.toString());
-      _eventNotifier.value = _eventNotifier.value.copy(coverImage: '');
+      _eventNotifier.value = _eventNotifier.value.copyWith(coverImage: '');
       stopCircularIndicator(context);
     }
   }
@@ -95,8 +97,13 @@ class _AddEventState extends State<AddEvent> {
       stopCircularIndicator(context);
       return;
     }
-    if (_event.address.isEmpty) {
+    if (_event.address!.isEmpty) {
       showMessage(context, 'Location cannot be empty');
+      stopCircularIndicator(context);
+      return;
+    }
+    if (_event.coverImage!.isEmpty) {
+      showMessage(context, 'Cover image cannot be empty');
       stopCircularIndicator(context);
       return;
     }
@@ -106,6 +113,7 @@ class _AddEventState extends State<AddEvent> {
       showMessage(context, 'Event added successfully');
       stopCircularIndicator(context);
       await Future.delayed(const Duration(seconds: 3), () {
+        widget.onDone!();
         Navigator.pop(context);
       });
     } else {
@@ -127,7 +135,7 @@ class _AddEventState extends State<AddEvent> {
       _eventNotifier.value = widget.event!;
       _titleController.text = widget.event!.name!;
       _descriptionController.text = widget.event!.description!;
-      _locationController.text = widget.event!.address;
+      _locationController.text = widget.event!.address!;
     }
   }
 
@@ -178,14 +186,14 @@ class _AddEventState extends State<AddEvent> {
               autoFocus: true,
               fontSize: 24,
               onChanged: (x) {
-                _eventNotifier.value = _eventNotifier.value.copy(name: x);
+                _eventNotifier.value = _eventNotifier.value.copyWith(name: x);
               },
               controller: _titleController,
             ),
             _uploadImage(() {
               pickImage();
             }),
-            ValueListenableBuilder<Event>(
+            ValueListenableBuilder<EventModel>(
                 valueListenable: _eventNotifier,
                 builder: (context, _event, snapshot) {
                   if (!imageUploadSuccess) {
@@ -209,7 +217,7 @@ class _AddEventState extends State<AddEvent> {
               maxLines: 4,
               onChanged: (x) {
                 _eventNotifier.value =
-                    _eventNotifier.value.copy(description: x);
+                    _eventNotifier.value.copyWith(description: x);
               },
               controller: _descriptionController,
             ),
@@ -229,8 +237,8 @@ class _AddEventState extends State<AddEvent> {
                       showCSPickerSheet(
                           context,
                           (newDate) {
-                            _eventNotifier.value =
-                                _event.copy(startsAt: newDate, createdAt: now);
+                            _eventNotifier.value = _event.copyWith(
+                                startsAt: newDate, createdAt: now);
                           },
                           'Event Starts At',
                           _event.startsAt!,
@@ -257,7 +265,8 @@ class _AddEventState extends State<AddEvent> {
                       showCSPickerSheet(
                         context,
                         (newDate) {
-                          _eventNotifier.value = _event.copy(endsAt: newDate);
+                          _eventNotifier.value =
+                              _event.copyWith(endsAt: newDate);
                         },
                         'Event Ends At',
                         _event.endsAt!,
@@ -277,7 +286,8 @@ class _AddEventState extends State<AddEvent> {
               maxLines: 4,
               controller: _locationController,
               onChanged: (x) {
-                _eventNotifier.value = _eventNotifier.value.copy(address: x);
+                _eventNotifier.value =
+                    _eventNotifier.value.copyWith(address: x);
               },
             ),
             8.0.vSpacer(),
@@ -293,13 +303,13 @@ class _AddEventState extends State<AddEvent> {
                         subtitle: const Text(
                             'Only invited members can see this event'),
                         trailing: CupertinoSwitch(
-                          value: _event.private,
+                          value: _event.private!,
                           onChanged: (x) {
-                            _eventNotifier.value = _event.copy(private: x);
+                            _eventNotifier.value = _event.copyWith(private: x);
                           },
                         ),
                       ),
-                      !_event.private
+                      !_event.private!
                           ? const SizedBox.shrink()
                           : Column(
                               children: [
@@ -350,7 +360,7 @@ class _AddEventState extends State<AddEvent> {
           aspectRatio: 16 / 9,
           child: widget.isEdit
               ? Image.network(
-                  widget.event!.coverImage,
+                  widget.event!.coverImage!,
                 )
               : coverFile != null
                   ? Image.file(

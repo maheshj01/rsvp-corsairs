@@ -138,7 +138,7 @@ class _EventDetailState extends State<EventDetail> {
               leading: const Icon(Icons.location_on,
                   color: CorsairsTheme.primaryYellow),
               onTap: () {},
-              title: Text(widget.event.address,
+              title: Text(widget.event.address!,
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
             ),
@@ -149,7 +149,7 @@ class _EventDetailState extends State<EventDetail> {
     }
 
     return Material(
-      color: Color.fromRGBO(0, 0, 0, 1),
+      color: const Color.fromRGBO(0, 0, 0, 1),
       child: Column(
         children: [
           Expanded(
@@ -203,7 +203,7 @@ class _EventDetailState extends State<EventDetail> {
       fit: StackFit.expand,
       children: [
         Image.network(
-          widget.event.coverImage,
+          widget.event.coverImage!,
           fit: BoxFit.cover,
         ),
         buildGradient(top: Colors.transparent, bottom: Colors.black),

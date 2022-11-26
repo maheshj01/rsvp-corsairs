@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
 class EventParallaxTile extends StatelessWidget {
@@ -9,7 +9,7 @@ class EventParallaxTile extends StatelessWidget {
     required this.event,
   });
 
-  final Event event;
+  final EventModel event;
   final GlobalKey _backgroundImageKey = GlobalKey();
 
   @override
@@ -41,7 +41,7 @@ class EventParallaxTile extends StatelessWidget {
       ),
       children: [
         Image.network(
-          event.coverImage,
+          event.coverImage!,
           key: _backgroundImageKey,
           fit: BoxFit.cover,
         ),
