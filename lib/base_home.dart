@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -32,11 +32,11 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   void initState() {
     super.initState();
     getEvents();
-    isUpdateAvailable();
+    fetchAppVersion();
   }
 
   Future<void> getEvents() async {
-    await Duration.zero;
+    await Future.delayed(const Duration(milliseconds: 100));
     showCircularIndicator(context);
     final events = await EventService.getAllEvents();
     if (events.isNotEmpty) {
@@ -47,26 +47,20 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     stopCircularIndicator(context);
   }
 
-  Future<void> isUpdateAvailable() async {
+  Future<void> fetchAppVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    String appVersion = packageInfo.version;
-    int appBuildNumber = int.parse(packageInfo.buildNumber);
-    final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(seconds: 1),
-    ));
-    await remoteConfig.fetchAndActivate();
-    final version = remoteConfig.getString(VERSION_KEY);
-    final buildNumber = remoteConfig.getInt(BUILD_NUMBER_KEY);
-    if (appVersion != version || buildNumber > appBuildNumber) {
-      hasUpdate = true;
-    } else {
-      hasUpdate = false;
-    }
-    // todo: remove this line once ready
-    hasUpdate = false;
-    setState(() {});
+    appVersion = packageInfo.version;
+    appBuildNumber = int.parse(packageInfo.buildNumber);
+
+    /// final remoteConfig = FirebaseRemoteConfig.instance;
+    // await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    //   fetchTimeout: const Duration(minutes: 1),
+    //   minimumFetchInterval: const Duration(seconds: 1),
+    // ));
+    // await remoteConfig.fetchAndActivate();
+    // final version = remoteConfig.getString(VERSION_KEY);
+    // final buildNumber = remoteConfig.getInt(BUILD_NUMBER_KEY);
+    // // listen firebase document for update
   }
 
   late AppState state;
@@ -75,7 +69,8 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   DateTime oldTime = DateTime.now();
   DateTime newTime = DateTime.now();
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
-
+  late String appVersion;
+  late int appBuildNumber;
   @override
   void dispose() {
     _selectedIndex.dispose();
@@ -84,6 +79,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
 
   double bannerHeight = 0;
   bool hasUpdate = false;
+  bool isForceUpdate = false;
 
   @override
   Widget build(BuildContext context) {
@@ -113,141 +109,175 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     } else {
       bannerHeight = 0;
     }
+
+    final configStream = FirebaseFirestore.instance
+        .collection(CONFIG_COLLECTION_KEY)
+        .snapshots();
     return ValueListenableBuilder<int>(
         valueListenable: _selectedIndex,
         builder: (context, int currentIndex, Widget? child) {
           bannerHeight = kBottomNavigationBarHeight +
               MediaQuery.of(context).padding.bottom;
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            floatingActionButton: hasUpdate
-                ? null
-                : Padding(
-                    padding: (kBottomNavigationBarHeight * 0.9).bottomPadding,
-                    child: OpenContainer<bool>(
-                        openBuilder:
-                            (BuildContext context, VoidCallback openContainer) {
-                          return AddEvent(
-                            onDone: () {
-                              getEvents();
+          return StreamBuilder<QuerySnapshot>(
+              stream: configStream,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  final Map<String, dynamic> data =
+                      snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                  final version = data[VERSION_KEY];
+                  final buildNumber = int.parse(data[BUILD_NUMBER_KEY]);
+                  if (appVersion == version && appBuildNumber == buildNumber) {
+                    hasUpdate = false;
+                  } else {
+                    hasUpdate = true;
+                    isForceUpdate = data[FORCE_UPDATE_KEY];
+                  }
+                }
+                return Scaffold(
+                    resizeToAvoidBottomInset: false,
+                    floatingActionButton: hasUpdate
+                        ? null
+                        : Padding(
+                            padding: (kBottomNavigationBarHeight * 0.9)
+                                .bottomPadding,
+                            child: OpenContainer<bool>(
+                                openBuilder: (BuildContext context,
+                                    VoidCallback openContainer) {
+                                  return AddEvent(
+                                    onDone: () {
+                                      getEvents();
+                                    },
+                                  );
+                                },
+                                tappable: true,
+                                closedShape: 22.0.rounded,
+                                openShape: 22.0.rounded,
+                                transitionType:
+                                    ContainerTransitionType.fadeThrough,
+                                closedBuilder: (BuildContext context,
+                                    VoidCallback openContainer) {
+                                  return FloatingActionButton.extended(
+                                      shape: 22.0.rounded,
+                                      isExtended: true,
+                                      icon: const Icon(Icons.music_note,
+                                          color: CorsairsTheme.primaryYellow,
+                                          size: 28),
+                                      backgroundColor:
+                                          CorsairsTheme.primaryColor,
+                                      onPressed: null,
+                                      label: const Text(
+                                        'Host Event',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: CorsairsTheme.primaryYellow,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ));
+                                }),
+                          ),
+                    body: Stack(
+                      children: [
+                        IgnorePointer(
+                          ignoring: hasUpdate && isForceUpdate,
+                          child: NavbarRouter(
+                            errorBuilder: (context) {
+                              return const Center(child: Text('Error 404'));
                             },
-                          );
-                        },
-                        tappable: true,
-                        closedShape: 22.0.rounded,
-                        openShape: 22.0.rounded,
-                        transitionType: ContainerTransitionType.fadeThrough,
-                        closedBuilder:
-                            (BuildContext context, VoidCallback openContainer) {
-                          return FloatingActionButton.extended(
-                              shape: 22.0.rounded,
-                              isExtended: true,
-                              icon: const Icon(Icons.music_note,
-                                  color: CorsairsTheme.primaryYellow, size: 28),
-                              backgroundColor: CorsairsTheme.primaryColor,
-                              onPressed: null,
-                              label: const Text(
-                                'Host Event',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: CorsairsTheme.primaryYellow,
-                                  fontWeight: FontWeight.w600,
+                            onBackButtonPressed: (isExiting) {
+                              if (isExiting) {
+                                newTime = DateTime.now();
+                                int difference =
+                                    newTime.difference(oldTime).inMilliseconds;
+                                oldTime = newTime;
+                                if (difference < 1000) {
+                                  hideToast();
+                                  return isExiting;
+                                } else {
+                                  showToast('Press back button to exit');
+                                  return false;
+                                }
+                              } else {
+                                return isExiting;
+                              }
+                            },
+                            isDesktop: !SizeUtils.isMobile,
+                            destinationAnimationCurve: Curves.fastOutSlowIn,
+                            destinationAnimationDuration: 600,
+                            onChanged: (x) {},
+                            decoration: NavbarDecoration(
+                                backgroundColor: CorsairsTheme.primaryBlue,
+                                isExtended: SizeUtils.isExtendedDesktop,
+                                // showUnselectedLabels: false,
+                                unselectedItemColor: Colors.white38,
+                                selectedLabelTextStyle: const TextStyle(
+                                    fontSize: 12,
+                                    color: CorsairsTheme.primaryYellow),
+                                unselectedLabelTextStyle:
+                                    const TextStyle(fontSize: 10),
+                                navbarType: BottomNavigationBarType.fixed),
+                            destinations: [
+                              for (int i = 0; i < items.length; i++)
+                                DestinationRouter(
+                                  navbarItem: items[i],
+                                  destinations: [
+                                    for (int j = 0;
+                                        j < _routes[i]!.keys.length;
+                                        j++)
+                                      Destination(
+                                        route: _routes[i]!.keys.elementAt(j),
+                                        widget: _routes[i]!.values.elementAt(j),
+                                      ),
+                                  ],
+                                  initialRoute: _routes[i]!.keys.elementAt(0),
                                 ),
-                              ));
-                        }),
-                  ),
-            body: Stack(
-              children: [
-                NavbarRouter(
-                  errorBuilder: (context) {
-                    return const Center(child: Text('Error 404'));
-                  },
-                  onBackButtonPressed: (isExiting) {
-                    if (isExiting) {
-                      newTime = DateTime.now();
-                      int difference =
-                          newTime.difference(oldTime).inMilliseconds;
-                      oldTime = newTime;
-                      if (difference < 1000) {
-                        hideToast();
-                        return isExiting;
-                      } else {
-                        showToast('Press back button to exit');
-                        return false;
-                      }
-                    } else {
-                      return isExiting;
-                    }
-                  },
-                  isDesktop: !SizeUtils.isMobile,
-                  destinationAnimationCurve: Curves.fastOutSlowIn,
-                  destinationAnimationDuration: 600,
-                  onChanged: (x) {},
-                  decoration: NavbarDecoration(
-                      backgroundColor: CorsairsTheme.primaryBlue,
-                      isExtended: SizeUtils.isExtendedDesktop,
-                      // showUnselectedLabels: false,
-                      unselectedItemColor: Colors.white38,
-                      selectedLabelTextStyle: const TextStyle(
-                          fontSize: 12, color: CorsairsTheme.primaryYellow),
-                      unselectedLabelTextStyle: const TextStyle(fontSize: 10),
-                      navbarType: BottomNavigationBarType.fixed),
-                  destinations: [
-                    for (int i = 0; i < items.length; i++)
-                      DestinationRouter(
-                        navbarItem: items[i],
-                        destinations: [
-                          for (int j = 0; j < _routes[i]!.keys.length; j++)
-                            Destination(
-                              route: _routes[i]!.keys.elementAt(j),
-                              widget: _routes[i]!.values.elementAt(j),
-                            ),
-                        ],
-                        initialRoute: _routes[i]!.keys.elementAt(0),
-                      ),
-                  ],
-                ),
-                if (hasUpdate)
-                  AnimatedPositioned(
-                      duration: const Duration(milliseconds: 300),
-                      bottom: bannerHeight,
-                      left: 0,
-                      right: 0,
-                      child: VocabBanner(
-                        description: hasUpdate
-                            ? 'New update available'
-                            : 'Sign in for better experience',
-                        actions: [
-                          !hasUpdate
-                              ? const SizedBox.shrink()
-                              : TextButton(
-                                  onPressed: () {
-                                    launchUrl(Uri.parse(PLAY_STORE_URL),
-                                        mode: LaunchMode.externalApplication);
-                                  },
-                                  child: Text('Update',
-                                      style: TextStyle(
-                                        color: CorsairsTheme.primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                      )),
-                                ),
-                          user.isLoggedIn
-                              ? const SizedBox.shrink()
-                              : TextButton(
-                                  onPressed: () async {},
-                                  child: Text('Sign In',
-                                      style: TextStyle(
-                                        color: CorsairsTheme.primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                      )),
-                                ),
-                        ],
-                      ))
-              ],
-            ),
-          );
+                            ],
+                          ),
+                        ),
+                        if (hasUpdate)
+                          AnimatedPositioned(
+                              duration: const Duration(milliseconds: 300),
+                              bottom: bannerHeight,
+                              left: 0,
+                              right: 0,
+                              child: VocabBanner(
+                                description: hasUpdate
+                                    ? 'New update available'
+                                    : 'Sign in for better experience',
+                                actions: [
+                                  !hasUpdate
+                                      ? const SizedBox.shrink()
+                                      : TextButton(
+                                          onPressed: () {
+                                            launchUrl(Uri.parse(PLAY_STORE_URL),
+                                                mode: LaunchMode
+                                                    .externalApplication);
+                                          },
+                                          child: Text('Update',
+                                              style: TextStyle(
+                                                color:
+                                                    CorsairsTheme.primaryColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              )),
+                                        ),
+                                  user.isLoggedIn
+                                      ? const SizedBox.shrink()
+                                      : TextButton(
+                                          onPressed: () async {},
+                                          child: Text('Sign In',
+                                              style: TextStyle(
+                                                color:
+                                                    CorsairsTheme.primaryColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              )),
+                                        ),
+                                ],
+                              ))
+                      ],
+                    ));
+              });
         });
   }
 }

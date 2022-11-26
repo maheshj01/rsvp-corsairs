@@ -120,7 +120,7 @@ class _SignUpState extends State<SignUp> {
                   const Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'RSVP',
+                      'Sign Up',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 50,
