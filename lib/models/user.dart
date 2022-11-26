@@ -6,6 +6,7 @@ part 'user.g.dart';
 
 @JsonSerializable()
 class UserModel extends ChangeNotifier {
+  String? id;
   String? idToken;
   String? accessToken;
   // events hosted or attended by user
@@ -20,7 +21,8 @@ class UserModel extends ChangeNotifier {
   DateTime? created_at;
 
   UserModel(
-      {this.name = '',
+      {this.id,
+      this.name = '',
       this.email = '',
       this.avatarUrl,
       this.idToken,
@@ -49,6 +51,20 @@ class UserModel extends ChangeNotifier {
         isLoggedIn: w.isLoggedIn,
         interested: w.interested,
         events: w.events);
+  }
+  factory UserModel.schema(UserModel w) {
+    return UserModel(
+      name: w.name,
+      email: w.email,
+      avatarUrl: w.avatarUrl,
+      idToken: w.idToken,
+      accessToken: w.accessToken,
+      isAdmin: w.isAdmin,
+      username: w.username,
+      created_at: w.created_at,
+      isLoggedIn: w.isLoggedIn,
+      interested: w.interested,
+    );
   }
 
   UserModel copyWith({
