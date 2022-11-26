@@ -13,8 +13,4 @@
   flutter run
 ```
 
-## Contributing
-
-Contributions are invite only. If you want to contribute to this project, please dm me on twitter @rsvp_corasairs
-
 _This project was generated using the [flutter_create template](https://github.com/maheshmnj/flutter_create).
