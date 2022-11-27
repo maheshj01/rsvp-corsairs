@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/constants.dart';
@@ -94,6 +95,34 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     SizeUtils.size = MediaQuery.of(context).size;
+
+    Widget _csField(
+        Key wkey, hint, TextEditingController controller, int index) {
+      return Padding(
+        padding: 8.0.verticalPadding,
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            border: inputborder,
+            enabledBorder: inputborder,
+            focusedBorder: inputborder,
+            hintText: hint,
+            counterText: '',
+            hintStyle: const TextStyle(color: Colors.white),
+          ),
+          maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
+          keyboardType: index == STUDENT_ID_VALIDATOR
+              ? TextInputType.number
+              : TextInputType.text,
+          textInputAction: TextInputAction.next,
+          style: const TextStyle(color: Colors.white),
+          key: wkey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          // validator: _fieldValidator(index),
+        ),
+      );
+    }
+
     return ValueListenableBuilder<Response>(
         valueListenable: _responseNotifier,
         builder: (BuildContext context, Response _response, Widget? child) {
@@ -118,6 +147,9 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    height: SizeUtils.size.height * 0.16,
+                  ),
                   const Align(
                     alignment: Alignment.center,
                     child: Text(
@@ -150,20 +182,28 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  20.0.vSpacer(),
-                  _signInButton(),
-                  20.0.vSpacer(),
                   CSButton(
                       onTap: () {
                         Navigate.pushAndPopAll(context, const AdaptiveLayout());
                       },
                       label: 'Login'),
-                  // signup text
-                  TextButton(
-                      onPressed: () {
-                        Navigate().pushReplace(context, const SignUp());
-                      },
-                      child: const Text('Sign up'))
+                  // new user sign up
+                  48.0.vSpacer(),
+                  RichText(
+                      text: TextSpan(children: [
+                    const TextSpan(
+                        text: 'Don\'t have an account? ',
+                        style: TextStyle(color: Colors.white)),
+                    TextSpan(
+                        text: 'Sign Up',
+                        style: const TextStyle(color: Colors.blue),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigate().pushReplace(context, const SignUp());
+                          })
+                  ])),
+                  20.0.vSpacer(),
+                  Expanded(child: _signInButton()),
                 ],
               ),
             ),

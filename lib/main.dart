@@ -23,22 +23,9 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   analytics = FirebaseAnalytics.instance;
   usePathUrlStrategy();
-  // await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   Settings.init();
-  // pushNotificationService = PushNotificationService(_firebaseMessaging);
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(CorsairsApp());
 }
-
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-//   pushNotificationService = PushNotificationService(_firebaseMessaging);
-//   await pushNotificationService!.setupFlutterNotifications();
-//   pushNotificationService!.showFlutterNotification(message);
-//   // If you're going to use other Firebase services in the background, such as Firestore,
-//   // make sure you call `initializeApp` before using other Firebase services.
-//   print('Handling a background message ${message.messageId}');
-// }
 
 const _logger = Logger('CorsairsApp');
 final ValueNotifier<bool> darkNotifier = ValueNotifier<bool>(false);

@@ -4,7 +4,7 @@ import 'package:rsvp/utils/extensions.dart';
 class CSButton extends StatefulWidget {
   const CSButton(
       {Key? key,
-      this.backgroundColor = Colors.white,
+      this.backgroundColor,
       this.foregroundColor = Colors.black,
       this.onTap,
       required this.label,
@@ -22,7 +22,7 @@ class CSButton extends StatefulWidget {
 
   final Widget? leading;
 
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   final Color foregroundColor;
 
@@ -40,18 +40,15 @@ class CSButton extends StatefulWidget {
 class _CSButtonState extends State<CSButton> {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return OutlinedButton(
       style: (widget.onTap == null)
           ? null
-          : ButtonStyle(
-              minimumSize: MaterialStateProperty.resolveWith(
-                  (states) => Size(widget.width ?? 120, widget.height)),
-              maximumSize: MaterialStateProperty.resolveWith(
-                  (states) => Size(widget.width ?? 120, widget.height)),
-              foregroundColor: MaterialStateColor.resolveWith(
-                  (states) => widget.foregroundColor),
-              backgroundColor: MaterialStateColor.resolveWith(
-                  (states) => widget.backgroundColor)),
+          : OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.white),
+              minimumSize: Size(widget.width ?? 120, widget.height),
+              maximumSize: Size(widget.width ?? 120, widget.height),
+              foregroundColor: widget.foregroundColor,
+              backgroundColor: widget.backgroundColor),
       onPressed:
           widget.isLoading || (widget.onTap == null) ? null : widget.onTap,
       child: widget.isLoading

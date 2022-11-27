@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {
   static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
   static const String _bucketName = 'event-covers';
+  static const Logger _logger = Logger('DatabaseService');
+
   static Future<PostgrestResponse> findRowByColumnValue(String columnValue,
       {String columnName = ID_COLUMN,
       String tableName = EVENTS_TABLE_NAME}) async {
@@ -190,10 +193,15 @@ class DatabaseService {
       required String columnName,
       required dynamic columnValue,
       required String tableName}) async {
-    final response = await _supabase
-        .from(tableName)
-        .update({columnName: columnValue}).eq(searchColumn, searchValue);
-    return response;
+    try {
+      final response = await _supabase
+          .from(tableName)
+          .update({columnName: columnValue}).eq(searchColumn, searchValue);
+      return response;
+    } catch (_) {
+      _logger.e('error updating column: $_');
+      rethrow;
+    }
   }
 
   static Future<PostgrestResponse> upsertRow(Map<String, dynamic> data,

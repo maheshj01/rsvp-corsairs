@@ -146,27 +146,27 @@ class _SignUpState extends State<SignUp> {
     switch (field) {
       case NAME_VALIDATOR:
         return (String? value) {
-          if (value == null ||
-              value.isEmpty ||
-              !value.contains(' ') ||
-              value.length < 7) {
+          final regexp = RegExp(firstAndLastNamePattern);
+          if (value == null || value.isEmpty || !value.contains(regexp)) {
             return 'Please enter a valid first and last name';
           }
           return null;
         };
       case EMAIL_VALIDATOR:
         return (String? value) {
-          if (value != null && value.length > 5 && value.contains('@')) {
+          // email validate @umassd.edu
+          final regexp = RegExp(emailPattern);
+          if (value != null && value.length > 5 && value.contains(regexp)) {
             return null;
           }
-          return 'Email must be valid';
+          return 'Please enter a valid UMassd email';
         };
       case PASSWORD_VALIDATOR:
         return (String? value) {
-          if (value != null && value.length > 5) {
+          if (value != null && value.length > 7) {
             return null;
           }
-          return 'Password must be at least 6 characters';
+          return 'Password must be at least 8 characters long';
         };
 
       case STUDENT_ID_VALIDATOR:
@@ -224,8 +224,14 @@ class _SignUpState extends State<SignUp> {
           focusedBorder: inputborder,
           hintText: hint,
           counterText: '',
+          errorStyle: const TextStyle(
+            color: Colors.red,
+            fontSize: 14,
+          ),
           hintStyle: const TextStyle(color: Colors.white),
         ),
+        obscureText: index == PASSWORD_VALIDATOR,
+        obscuringCharacter: '◦',
         maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
         keyboardType: index == STUDENT_ID_VALIDATOR
             ? TextInputType.number
@@ -263,108 +269,113 @@ class _SignUpState extends State<SignUp> {
                 ));
           }
 
-          return Scaffold(
-            backgroundColor: const Color(0xff006d77),
-            body: ValueListenableBuilder<Response>(
-                valueListenable: _responseNotifier,
-                builder:
-                    (BuildContext context, Response _response, Widget? child) {
-                  return SingleChildScrollView(
-                    child: Padding(
-                      padding: 16.0.horizontalPadding,
-                      child: Form(
-                        key: _formKey,
-                        onChanged: () {
-                          setState(() {});
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            kBottomNavigationBarHeight.vSpacer(),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Scaffold(
+              backgroundColor: const Color(0xff006d77),
+              body: ValueListenableBuilder<Response>(
+                  valueListenable: _responseNotifier,
+                  builder: (BuildContext context, Response _response,
+                      Widget? child) {
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: 16.0.horizontalPadding,
+                        child: Form(
+                          key: _formKey,
+                          onChanged: () {
+                            setState(() {});
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              kBottomNavigationBarHeight.vSpacer(),
+                              const Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 50,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                            48.0.vSpacer(),
-                            _csField(_formFieldKeys[0], 'Name', _nameController,
-                                NAME_VALIDATOR),
-                            _csField(_formFieldKeys[1], 'email',
-                                _emailController, EMAIL_VALIDATOR),
-                            _csField(_formFieldKeys[2], 'Student Id',
-                                _studentIdController, STUDENT_ID_VALIDATOR),
-                            _csField(_formFieldKeys[3], 'Password',
-                                _passwordController, PASSWORD_VALIDATOR),
-                            48.0.vSpacer(),
-                            CSButton(
-                                height: 48,
-                                isLoading: !isGoogleSignUp &&
-                                    _response.state == RequestState.active,
-                                onTap: _isValid()
-                                    ? () {
-                                        isGoogleSignUp = false;
-                                        _handleSignUp(context);
-                                      }
-                                    : null,
-                                label: 'SignUp'),
-                            16.0.vSpacer(),
-                            // or divider
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'or',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                              48.0.vSpacer(),
+                              _csField(_formFieldKeys[0], 'Name',
+                                  _nameController, NAME_VALIDATOR),
+                              _csField(_formFieldKeys[1], 'email',
+                                  _emailController, EMAIL_VALIDATOR),
+                              _csField(_formFieldKeys[2], 'Student Id',
+                                  _studentIdController, STUDENT_ID_VALIDATOR),
+                              _csField(_formFieldKeys[3], 'Password',
+                                  _passwordController, PASSWORD_VALIDATOR),
+                              48.0.vSpacer(),
+                              CSButton(
+                                  height: 48,
+                                  isLoading: !isGoogleSignUp &&
+                                      _response.state == RequestState.active,
+                                  onTap: _isValid()
+                                      ? () {
+                                          isGoogleSignUp = false;
+                                          _handleSignUp(context);
+                                        }
+                                      : null,
+                                  label: 'SignUp'),
+                              16.0.vSpacer(),
+                              // or divider
+                              const Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'or',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 20), _signUpWithGoogle(),
-                            // already have an account text button
-                            16.0.vSpacer(),
-                            Align(
-                              alignment: Alignment.center,
-                              child: TextButton(
-                                  onPressed: () {
-                                    Navigate.pushAndPopAll(
-                                        context, const LoginPage());
-                                  },
-                                  child: RichText(
-                                      text: TextSpan(children: [
-                                    const TextSpan(
-                                        text: 'Already have an account? ',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold)),
-                                    TextSpan(
-                                        text: 'Sign In',
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            Navigate.pushAndPopAll(
-                                                context, const LoginPage());
-                                          },
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            decoration:
-                                                TextDecoration.underline))
-                                  ]))),
-                            ),
-                          ],
+                              const SizedBox(height: 20), _signUpWithGoogle(),
+                              // already have an account text button
+                              16.0.vSpacer(),
+                              Align(
+                                alignment: Alignment.center,
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigate.pushAndPopAll(
+                                          context, const LoginPage());
+                                    },
+                                    child: RichText(
+                                        text: TextSpan(children: [
+                                      const TextSpan(
+                                          text: 'Already have an account? ',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
+                                      TextSpan(
+                                          text: 'Sign In',
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigate.pushAndPopAll(
+                                                  context, const LoginPage());
+                                            },
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              decoration:
+                                                  TextDecoration.underline))
+                                    ]))),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+            ),
           );
         });
   }
