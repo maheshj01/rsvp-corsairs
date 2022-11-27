@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:rsvp/base_home.dart';
+import 'package:rsvp/constants/strings.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/pages/authentication/signup.dart';
@@ -91,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/arnie.png',
+                  ARNIE_ASSET_PATH,
                   width: 200,
                 ),
                 title,

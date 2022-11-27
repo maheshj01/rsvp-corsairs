@@ -63,8 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '729827175436',
     projectId: 'rsvp-22bdf',
     storageBucket: 'rsvp-22bdf.appspot.com',
-    androidClientId: '729827175436-j7ha49c27992635jvfp70i49fp1rc79k.apps.googleusercontent.com',
-    iosClientId: '729827175436-7g2nb0lut0t5fbjnlh8irn5m8bkqjh7i.apps.googleusercontent.com',
+    androidClientId:
+        '729827175436-j7ha49c27992635jvfp70i49fp1rc79k.apps.googleusercontent.com',
+    iosClientId:
+        '729827175436-7g2nb0lut0t5fbjnlh8irn5m8bkqjh7i.apps.googleusercontent.com',
     iosBundleId: 'com.wml.rsvpcorsairs',
   );
 }

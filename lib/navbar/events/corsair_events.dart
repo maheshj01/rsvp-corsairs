@@ -4,6 +4,7 @@ import 'package:navbar_router/navbar_router.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
+import 'package:rsvp/navbar/events/notifications.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
@@ -124,7 +125,10 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
             ),
             actions: [
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigate.push(context, const NotificationsPage(),
+                        slideTransitionType: TransitionType.rtl);
+                  },
                   icon: const Icon(
                     Icons.notifications_on,
                     color: CorsairsTheme.primaryYellow,

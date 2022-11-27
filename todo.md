@@ -16,6 +16,8 @@
 - [] View attendees
 - [] Search Events
 - [] Categorize the events (custom categories)
+- [] Prevent editing of events in last hour
+- [] Draft save events for publishing later 
 
 ### Profile
 - [] View host/users profile

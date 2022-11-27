@@ -98,6 +98,19 @@ class EventModel extends ChangeNotifier {
     );
   }
 
+  Map<String, dynamic> schematoJson() => <String, dynamic>{
+        'id': id,
+        'name': name,
+        'description': description,
+        'createdAt': createdAt?.toIso8601String(),
+        'startsAt': startsAt?.toIso8601String(),
+        'endsAt': endsAt?.toIso8601String(),
+        'coverImage': coverImage,
+        'address': address,
+        'private': private,
+        'deleted': deleted,
+      };
+
   factory EventModel.fromJson(Map<String, dynamic> json) =>
       _$EventModelFromJson(json);
 

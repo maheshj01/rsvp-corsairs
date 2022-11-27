@@ -169,7 +169,7 @@ Future<void> showCSPickerSheet(BuildContext context,
   final now = initialDate;
   showModalBottomSheet(
       context: context,
-      shape: 24.0.rounded,
+      shape: 24.0.roundedBottom,
       builder: (BuildContext builder) {
         return SizedBox(
           height: 300,

@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 const String GITHUB_ASSET_PATH = 'assets/images/github.png';
 const String GITHUB_WHITE_ASSET_PATH = 'assets/images/github_white.png';
 const String GOOGLE_ASSET_PATH = 'assets/images/google.png';
+const String ARNIE_ASSET_PATH = 'assets/images/arnie.png';
 
 final List<String> tips = [
   'Do you know you can search by synonyms?\n Try searching for "reduce"',

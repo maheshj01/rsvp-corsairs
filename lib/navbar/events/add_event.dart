@@ -408,7 +408,7 @@ class _InviteSheetState extends State<InviteSheet> {
           Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom + 200),
-            child: CSField(
+            child: const CSField(
               maxLines: 1,
               hint: 'Search for friends',
               hasLabel: false,
