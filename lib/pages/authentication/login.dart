@@ -196,9 +196,7 @@ class _LoginPageState extends State<LoginPage> {
 
           return Scaffold(
             body: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xff006d77),
-              ),
+              decoration: const BoxDecoration(color: CorsairsTheme.primaryBlue),
               padding: 16.0.horizontalPadding,
               child: AutofillGroup(
                 child: ListView(

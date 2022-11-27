@@ -33,6 +33,7 @@ class _SplashScreenState extends State<SplashScreen>
     user.email = _email;
     if (_email.isNotEmpty) {
       user.isLoggedIn = true;
+      Settings.setSkipCount = count;
       AppStateWidget.of(context).setUser(user);
       Navigate().pushReplace(context, const AdaptiveLayout());
     } else {
@@ -43,12 +44,12 @@ class _SplashScreenState extends State<SplashScreen>
         Navigate().pushReplace(context, const SignUp());
         return;
       }
-      if (count % 3 != 0) {
-        Settings.setSkipCount = count;
-        Navigate().pushReplace(context, const AdaptiveLayout());
-      } else {
-        Navigate().pushReplace(context, const LoginPage());
-      }
+      Navigate().pushReplace(context, const LoginPage());
+      // if (count % 3 != 0) {
+      //   Settings.setSkipCount = count;
+      //   Navigate().pushReplace(context, const AdaptiveLayout());
+      // } else {
+      // }
     }
   }
 
@@ -76,11 +77,26 @@ class _SplashScreenState extends State<SplashScreen>
           alignment: Alignment.center,
           child: Animate(
             onComplete: (x) async {
-              await Future.delayed(const Duration(milliseconds: 300));
+              await Future.delayed(const Duration(milliseconds: 1500));
               handleNavigation();
             },
-            effects: const [SlideEffect(), ScaleEffect(), FadeEffect()],
-            child: title,
+            effects: const [
+              ShakeEffect(),
+              FadeEffect(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeIn,
+              )
+            ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/arnie.png',
+                  width: 200,
+                ),
+                title,
+              ],
+            ),
           )),
     );
   }

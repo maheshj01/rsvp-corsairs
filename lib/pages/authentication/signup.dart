@@ -232,7 +232,7 @@ class _SignUpState extends State<SignUp> {
               FocusScope.of(context).unfocus();
             },
             child: Scaffold(
-              backgroundColor: const Color(0xff006d77),
+              backgroundColor: CorsairsTheme.primaryBlue,
               body: ValueListenableBuilder<Response>(
                   valueListenable: _responseNotifier,
                   builder: (BuildContext context, Response _response,
