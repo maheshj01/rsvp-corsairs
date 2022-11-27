@@ -4,6 +4,7 @@ import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/utility.dart';
+import 'package:supabase/supabase.dart';
 
 import '../constants/constants.dart';
 
@@ -30,14 +31,14 @@ class AuthService {
         _logger.e('error caught');
         throw "Failed to register new user";
       }
-    } catch (_) {
+    } on PostgrestException catch (_) {
       _logger.e('error caught $_');
-      throw "Failed to register new user";
+      throw "Failed to register new user: ${_.details}";
     }
     return resp;
   }
 
-  Future<UserModel?> googleSignIn(BuildContext context,
+  Future<UserModel?> googleSignIn(
       {bool isLogin = true, bool socialSignUp = false}) async {
     UserModel? user;
     try {
@@ -63,7 +64,6 @@ class AuthService {
           accessToken: accessToken);
     } catch (error) {
       _logger.e(error.toString());
-      showMessage(context, 'Failed to signIn');
       throw 'Failed to signIn';
     }
     return user;

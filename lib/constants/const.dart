@@ -113,6 +113,6 @@ const int PASSWORD_VALIDATOR = 3;
 
 enum RequestState { active, done, error, none }
 
-const String emailPattern = r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@umassd.edu$';
+const String emailPattern = r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z]{4,}.[a-z]{3}$';
 const String firstAndLastNamePattern = r'^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$';
 const String studentIdPattern = r'^[0-9]{8}$';

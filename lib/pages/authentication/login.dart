@@ -18,6 +18,7 @@ import 'package:rsvp/utils/settings.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
+import 'package:rsvp/widgets/widgets.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -30,42 +31,24 @@ class _LoginPageState extends State<LoginPage> {
   AuthService auth = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  Future<void> _handleSignIn(BuildContext context) async {
+
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
     final state = AppStateWidget.of(context);
     try {
-      if (isGoogleSignIn) {
-        user = (await auth.googleSignIn(context))!;
-      }
-      bool isEmail = user!.email.contains('@');
-      if (user != null) {
+      user = (await auth.googleSignIn())!;
+      if (user.email.isNotEmpty) {
         final existingUser = await UserService.findByUsername(
-            username: isEmail ? user!.email : user!.studentId,
-            isEmail: isEmail);
+            username: user.email, isEmail: true);
         if (existingUser.email.isEmpty) {
-          _logger.d('registering new user ${user!.email}');
-          final resp = await AuthService.registerUser(user!);
-          if (resp.didSucced) {
-            final user = UserModel.fromJson((resp.data as List<dynamic>)[0]);
-            state.setUser(user.copyWith(isLoggedIn: true));
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-            );
-            Navigate.pushAndPopAll(context, const AdaptiveLayout(),
-                slideTransitionType: TransitionType.ttb);
-            await Settings.setIsSignedIn(true, email: user.email);
-          } else {
-            _logger.d(signInFailure);
-            await Settings.setIsSignedIn(false, email: existingUser.email);
-            showMessage(context, signInFailure);
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-              didSucced: false,
-              message: signInFailure,
-            );
-            throw 'failed to register new user';
-          }
+          showMessage(context, 'User not found please register');
+          await Future.delayed(const Duration(seconds: 2));
+          Navigate.pushAndPopAll(
+              context,
+              SignUp(
+                newUser: user,
+              ));
         } else {
-          _logger.d('found existing user ${user!.email}');
+          _logger.d('found existing user ${user.email}');
           await Settings.setIsSignedIn(true, email: existingUser.email);
           await AuthService.updateLoginStatus(
               email: existingUser.email, isLoggedIn: true);
@@ -73,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           _responseNotifier.value = _responseNotifier.value.copyWith(
               state: RequestState.done, didSucced: true, data: existingUser);
           Navigate.pushAndPopAll(context, const AdaptiveLayout());
-          firebaseAnalytics.logSignIn(user!);
+          firebaseAnalytics.logSignIn(user);
         }
       } else {
         showMessage(context, signInFailure);
@@ -81,6 +64,42 @@ class _LoginPageState extends State<LoginPage> {
           state: RequestState.done,
         );
         throw 'failed to register new user';
+      }
+    } catch (error) {
+      showMessage(context, error.toString());
+      _responseNotifier.value = Response.init();
+      await Settings.setIsSignedIn(false);
+    }
+  }
+
+  Future<void> _handleSignIn(BuildContext context) async {
+    final state = AppStateWidget.of(context);
+    try {
+      String userId = user.email.isEmpty ? user.studentId : user.email;
+      final existingUser = await UserService.findByUsername(
+          username: userId, isEmail: user.email.isNotEmpty);
+      if (existingUser.email.isEmpty) {
+        showMessage(context, 'User not found please register');
+        await Future.delayed(const Duration(seconds: 2));
+        Navigate.pushAndPopAll(
+            context,
+            SignUp(
+              newUser: user,
+            ));
+      } else {
+        _logger.d('found existing user ${user.email}');
+        if (user.password == existingUser.password) {
+          await Settings.setIsSignedIn(true, email: existingUser.email);
+          await AuthService.updateLoginStatus(
+              email: existingUser.email, isLoggedIn: true);
+          state.setUser(existingUser.copyWith(isLoggedIn: true));
+          Navigate.pushAndPopAll(context, const AdaptiveLayout());
+          firebaseAnalytics.logSignIn(user);
+        } else {
+          showMessage(context, 'Incorrect password');
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+              state: RequestState.done, didSucced: true, data: existingUser);
+        }
       }
     } catch (error) {
       showMessage(context, error.toString());
@@ -105,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final ValueNotifier<Response> _responseNotifier =
       ValueNotifier<Response>(Response.init());
-  UserModel? user;
+  UserModel user = UserModel.init();
   late Analytics firebaseAnalytics;
   final Logger _logger = const Logger('LoginPage');
   bool isGoogleSignIn = false;
@@ -127,6 +146,8 @@ class _LoginPageState extends State<LoginPage> {
               counterText: '',
               hintStyle: const TextStyle(color: Colors.white),
             ),
+            obscureText: index == 1,
+            obscuringCharacter: obscureCharacter,
             maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
             keyboardType: index == STUDENT_ID_VALIDATOR
                 ? TextInputType.number
@@ -167,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                       isGoogleSignIn && _response.state == RequestState.active,
                   onTap: () {
                     isGoogleSignIn = true;
-                    _handleSignIn(context);
+                    _handleGoogleSignIn(context);
                   },
                   backgroundColor: Colors.white,
                 ));
@@ -206,14 +227,21 @@ class _LoginPageState extends State<LoginPage> {
                         height: 48,
                         backgroundColor: CorsairsTheme.primaryYellow,
                         onTap: () {
+                          removeFocus(context);
                           TextInput.finishAutofillContext(shouldSave: true);
                           isGoogleSignIn = false;
                           final _email = _emailController.text.trim();
                           final _password = _passwordController.text.trim();
                           if (_email.isEmpty || _password.isEmpty) {
-                            showMessage(context, 'Please fill all fields');
+                            showMessage(
+                                context, 'Please enter valid crednetials');
                             return;
                           }
+                          user = user.copyWith(
+                              email: _email.contains('@') ? _email : '',
+                              password: _password,
+                              studentId: _email.contains('@') ? '' : _email,
+                              isLoggedIn: true);
                           _handleSignIn(context);
                         },
                         isLoading: !isGoogleSignIn &&

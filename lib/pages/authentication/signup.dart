@@ -17,9 +17,11 @@ import 'package:rsvp/utils/settings.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
+import 'package:rsvp/widgets/widgets.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+  final UserModel? newUser;
+  const SignUp({Key? key, this.newUser}) : super(key: key);
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -35,7 +37,7 @@ class _SignUpState extends State<SignUp> {
     );
     try {
       if (isGoogleSignUp) {
-        user = (await auth.googleSignIn(context))!;
+        user = (await auth.googleSignIn())!;
       } else {
         user = _buildUserModel();
       }
@@ -54,7 +56,6 @@ class _SignUpState extends State<SignUp> {
                 slideTransitionType: TransitionType.ttb);
             await Settings.setIsSignedIn(true, email: user!.email);
           } else {
-            _logger.d(signInFailure);
             await Settings.setIsSignedIn(false, email: existingUser.email);
             showMessage(context, signInFailure);
             _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -67,13 +68,12 @@ class _SignUpState extends State<SignUp> {
         } else {
           _logger.d('found existing user ${user!.email}');
           await Settings.setIsSignedIn(true, email: existingUser.email);
-          await AuthService.updateLoginStatus(
-              email: existingUser.email, isLoggedIn: true);
-          state.setUser(existingUser.copyWith(isLoggedIn: true));
           _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done, didSucced: true, data: existingUser);
-          Navigate.pushAndPopAll(context, const AdaptiveLayout());
-          firebaseAnalytics.logSignIn(user!);
+              state: RequestState.done,
+              didSucced: true,
+              message: 'User already exists',
+              data: existingUser);
+          throw 'User with email ${user!.email} already exists';
         }
       } else {
         _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -96,37 +96,34 @@ class _SignUpState extends State<SignUp> {
   }
 
   UserModel? _buildUserModel() {
-    final _email = _emailController.text.trim();
-    final _password = _passwordController.text.trim();
-    final _name = _nameController.text.trim();
-    final _studentId = _studentIdController.text.trim();
-    final _username = _email.split('@')[0];
-
-    if (_email.isEmpty ||
-        _password.isEmpty ||
-        _name.isEmpty ||
-        _studentId.isEmpty) {
-      return null;
+    final registerUser = UserModel.init();
+    registerUser.email = _emailController.text.trim();
+    registerUser.password = _passwordController.text.trim();
+    registerUser.name = _nameController.text.trim();
+    registerUser.studentId = _studentIdController.text.trim();
+    registerUser.username = registerUser.email.split('@')[0];
+    if (widget.newUser != null) {
+      registerUser.accessToken = widget.newUser!.accessToken;
+      registerUser.idToken = widget.newUser!.idToken;
+      registerUser.avatarUrl = widget.newUser!.avatarUrl;
     }
-
-    return UserModel(
-      email: _email,
-      password: _password,
-      name: _name,
-      studentId: _studentId,
-      accessToken: '',
-      isLoggedIn: false,
-      avatarUrl: '',
-      created_at: DateTime.now(),
-      isAdmin: false,
-      username: _username,
-    );
+    return registerUser;
   }
 
   @override
   void initState() {
     firebaseAnalytics = Analytics();
+    if (widget.newUser != null) {
+      populateFields();
+    }
     super.initState();
+  }
+
+  void populateFields() {
+    _emailController.text = widget.newUser!.email;
+    _nameController.text = widget.newUser!.name;
+    _studentIdController.text = widget.newUser!.studentId;
+    user = widget.newUser;
   }
 
   final ValueNotifier<Response> _responseNotifier =
@@ -186,13 +183,13 @@ class _SignUpState extends State<SignUp> {
           hintText: hint,
           counterText: '',
           errorStyle: const TextStyle(
-            color: Colors.red,
+            color: CorsairsTheme.primaryYellow,
             fontSize: 14,
           ),
           hintStyle: const TextStyle(color: Colors.white),
         ),
         obscureText: index == PASSWORD_VALIDATOR,
-        obscuringCharacter: '◦',
+        obscuringCharacter: obscureCharacter,
         maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
         keyboardType: index == STUDENT_ID_VALIDATOR
             ? TextInputType.number
@@ -279,6 +276,7 @@ class _SignUpState extends State<SignUp> {
                                     _response.state == RequestState.active,
                                 onTap: _isValid()
                                     ? () {
+                                        removeFocus(context);
                                         isGoogleSignUp = false;
                                         _handleSignUp(context);
                                       }

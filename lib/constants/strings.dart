@@ -129,3 +129,5 @@ List<EventModel> sample_events = [
     coverImage: '$urlPrefix/07-cairo.jpg',
   ),
 ];
+
+const String obscureCharacter = '◦';

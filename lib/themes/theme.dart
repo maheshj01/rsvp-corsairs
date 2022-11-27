@@ -7,6 +7,7 @@ class CorsairsTheme {
   CorsairsTheme._internal();
   static const Color primaryBlue = Color(0xff013764);
   static const Color primaryYellow = Color(0xffFEC14E);
+  static const Color yellowDisabled = Color.fromARGB(255, 138, 116, 77);
 
   static Color primaryGrey = Colors.grey;
   static Color primaryColor = primaryBlue;

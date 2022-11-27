@@ -41,14 +41,13 @@ class _CSButtonState extends State<CSButton> {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      style: (widget.onTap == null)
-          ? null
-          : OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.white),
-              minimumSize: Size(widget.width ?? 120, widget.height),
-              maximumSize: Size(widget.width ?? 120, widget.height),
-              foregroundColor: widget.foregroundColor,
-              backgroundColor: widget.backgroundColor),
+      style: OutlinedButton.styleFrom(
+          disabledBackgroundColor: const Color.fromARGB(255, 138, 116, 77),
+          side: const BorderSide(color: Colors.white),
+          minimumSize: Size(widget.width ?? 120, widget.height),
+          maximumSize: Size(widget.width ?? 120, widget.height),
+          foregroundColor: widget.foregroundColor,
+          backgroundColor: widget.backgroundColor),
       onPressed:
           widget.isLoading || (widget.onTap == null) ? null : widget.onTap,
       child: widget.isLoading

@@ -26,8 +26,8 @@ class UserService {
         final user = UserModel.fromJson(response.data);
         return user;
       } else {
-        _logger.d('user not found');
-        return UserModel.init();
+        _logger.e('Invalid user credentials');
+        throw 'Invalid user credentials';
       }
     } catch (_) {
       _logger.e(_.toString());
