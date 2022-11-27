@@ -16,12 +16,10 @@ class AuthService {
   );
 
   static const String _tableName = USER_TABLE_NAME;
-  static final _logger = const Logger('AuthService');
+  static const _logger = Logger('AuthService');
   static Future<Response> registerUser(UserModel user) async {
     final resp = Response(didSucced: false, message: "Failed");
-    final json = user.toJson();
-    json['created_at'] = DateTime.now().toIso8601String();
-    json['isLoggedIn'] = true;
+    final json = user.schematoJson();
     try {
       final response =
           await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
@@ -59,6 +57,10 @@ class AuthService {
           avatarUrl: _googleSignIn.currentUser!.photoUrl,
           idToken: idToken,
           username: username,
+          isAdmin: false,
+          created_at: DateTime.now(),
+          password: '',
+          studentId: '',
           accessToken: accessToken);
     } catch (error) {
       _logger.e(error.toString());

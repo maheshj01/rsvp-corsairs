@@ -105,4 +105,9 @@ int maxExampleCount = 3;
 int maxSynonymCount = 5;
 int maxMnemonicCount = 5;
 
+const int NAME_VALIDATOR = 0;
+const int EMAIL_VALIDATOR = 1;
+const int STUDENT_ID_VALIDATOR = 2;
+const int PASSWORD_VALIDATOR = 3;
+
 enum RequestState { active, done, error, none }

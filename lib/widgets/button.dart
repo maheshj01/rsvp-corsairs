@@ -6,7 +6,7 @@ class CSButton extends StatefulWidget {
       {Key? key,
       this.backgroundColor = Colors.white,
       this.foregroundColor = Colors.black,
-      required this.onTap,
+      this.onTap,
       required this.label,
       this.height = 55.0,
       this.width,

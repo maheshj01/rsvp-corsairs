@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/user.dart';
+import 'package:rsvp/pages/authentication/signup.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
@@ -152,11 +153,18 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
                   20.0.vSpacer(),
                   _signInButton(),
+                  20.0.vSpacer(),
                   CSButton(
                       onTap: () {
                         Navigate.pushAndPopAll(context, const AdaptiveLayout());
                       },
-                      label: 'Login')
+                      label: 'Login'),
+                  // signup text
+                  TextButton(
+                      onPressed: () {
+                        Navigate().pushReplace(context, const SignUp());
+                      },
+                      child: const Text('Sign up'))
                 ],
               ),
             ),

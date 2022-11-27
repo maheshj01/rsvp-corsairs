@@ -8,20 +8,28 @@ class CSField extends StatefulWidget {
   final bool isReadOnly;
   final bool hasLabel;
   final int maxLines;
-  double fontSize;
+  final double fontSize;
+  final int? maxLength;
   final Function(String)? onChanged;
   final bool isTransparent;
   final bool autoFocus;
-  CSField(
+  final AutovalidateMode? autovalidateMode;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+  const CSField(
       {super.key,
       required this.hint,
       this.controller,
       this.isReadOnly = false,
       this.hasLabel = true,
       this.onChanged,
+      this.maxLength,
       this.fontSize = 16,
       this.isTransparent = false,
       this.maxLines = 1,
+      this.validator,
+      this.autovalidateMode,
+      this.obscureText = false,
       this.autoFocus = false,
       this.keyboardType = TextInputType.text});
 
@@ -79,13 +87,17 @@ class _CSFieldState extends State<CSField> {
                     ),
                   ],
           ),
-          child: TextField(
+          child: TextFormField(
             controller: _controller,
             keyboardType: widget.keyboardType,
             readOnly: widget.isReadOnly,
             autofocus: widget.autoFocus,
+            obscureText: widget.obscureText,
             minLines: 1,
+            maxLength: widget.maxLength,
             maxLines: widget.maxLines,
+            validator: widget.validator,
+            autovalidateMode: widget.autovalidateMode,
             onChanged: (x) {
               if (widget.onChanged != null) {
                 widget.onChanged!(x);
@@ -97,6 +109,7 @@ class _CSFieldState extends State<CSField> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: widget.hint,
+              counterText: '',
               hintStyle: TextStyle(
                 color: Colors.grey.shade400,
                 fontSize: widget.fontSize,

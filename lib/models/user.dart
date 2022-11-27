@@ -18,6 +18,8 @@ class UserModel extends ChangeNotifier {
   bool isLoggedIn;
   bool isAdmin;
   String username;
+  String password;
+  String studentId;
   DateTime? created_at;
 
   UserModel(
@@ -30,6 +32,8 @@ class UserModel extends ChangeNotifier {
       this.accessToken,
       this.username = '',
       this.created_at,
+      this.studentId = '',
+      this.password = '',
       this.isLoggedIn = false,
       this.interested = const [],
       this.events = const []});
@@ -47,6 +51,8 @@ class UserModel extends ChangeNotifier {
         accessToken: w.accessToken,
         isAdmin: w.isAdmin,
         username: w.username,
+        password: w.password,
+        studentId: w.studentId,
         created_at: w.created_at,
         isLoggedIn: w.isLoggedIn,
         interested: w.interested,
@@ -61,6 +67,8 @@ class UserModel extends ChangeNotifier {
       accessToken: w.accessToken,
       isAdmin: w.isAdmin,
       username: w.username,
+      password: w.password,
+      studentId: w.studentId,
       created_at: w.created_at,
       isLoggedIn: w.isLoggedIn,
       interested: w.interested,
@@ -76,6 +84,8 @@ class UserModel extends ChangeNotifier {
     bool? isAdmin,
     bool? isLoggedIn,
     String? username,
+    String? password,
+    String? studentId,
     DateTime? created_at,
     List<Event>? interested,
     List<Event>? events,
@@ -88,6 +98,8 @@ class UserModel extends ChangeNotifier {
         accessToken: accessToken ?? this.accessToken,
         isAdmin: isAdmin ?? this.isAdmin,
         username: username ?? this.username,
+        password: password ?? this.password,
+        studentId: studentId ?? this.studentId,
         created_at: created_at ?? this.created_at,
         isLoggedIn: isLoggedIn ?? this.isLoggedIn,
         interested: interested ?? this.interested,
@@ -106,6 +118,8 @@ class UserModel extends ChangeNotifier {
         interested: [],
         created_at: now,
         username: '',
+        password: '',
+        studentId: '',
         isAdmin: false,
         isLoggedIn: false);
   }
@@ -120,6 +134,21 @@ class UserModel extends ChangeNotifier {
 //       };
 
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
+  Map<String, dynamic> schematoJson() => <String, dynamic>{
+        'id': id,
+        'idToken': idToken,
+        'accessToken': accessToken,
+        'email': email,
+        'name': name,
+        'avatarUrl': avatarUrl,
+        'isLoggedIn': isLoggedIn,
+        'isAdmin': isAdmin,
+        'username': username,
+        'password': password,
+        'studentId': studentId,
+        'created_at': created_at?.toIso8601String(),
+      };
 
   set setEmail(String m) {
     email = m;
@@ -146,6 +175,16 @@ class UserModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  set setPassword(String m) {
+    password = m;
+    notifyListeners();
+  }
+
+  set setStudentId(String m) {
+    studentId = m;
+    notifyListeners();
+  }
+
   set user(UserModel? user) {
     if (user == null) {
       avatarUrl = null;
@@ -153,6 +192,8 @@ class UserModel extends ChangeNotifier {
       idToken = null;
       name = '';
       email = '';
+      username = '';
+      password = '';
       isLoggedIn = false;
     } else {
       avatarUrl = user.avatarUrl;
@@ -160,6 +201,8 @@ class UserModel extends ChangeNotifier {
       idToken = user.idToken;
       name = user.name;
       email = user.email;
+      username = user.username;
+      password = user.password;
       isLoggedIn = true;
     }
     notifyListeners();
