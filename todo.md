@@ -40,3 +40,10 @@
 ### UMD Points
 - [] Get points for attending events
 - [] Get points for creating events
+
+
+Known UX Issues
+
+- [] On incorrect password (existing User) we are currently prompting user to signup.
+- [] No option for forggot password
+- [] We are storing passwords in a plain text format atleasr we should be using bcrypt or something similar.

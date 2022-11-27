@@ -223,7 +223,8 @@ class _SignUpState extends State<SignUp> {
                     isGoogleSignUp = true;
                     _handleSignUp(context);
                   },
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
                 ));
           }
 

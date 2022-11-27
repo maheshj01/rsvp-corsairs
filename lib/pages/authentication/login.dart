@@ -34,6 +34,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     final state = AppStateWidget.of(context);
+    _responseNotifier.value = _responseNotifier.value.copyWith(
+      state: RequestState.active,
+      message: 'Signing in with Google...',
+    );
     try {
       user = (await auth.googleSignIn())!;
       if (user.email.isNotEmpty) {
@@ -42,6 +46,10 @@ class _LoginPageState extends State<LoginPage> {
         if (existingUser.email.isEmpty) {
           showMessage(context, 'User not found please register');
           await Future.delayed(const Duration(seconds: 2));
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            message: 'Registering new User',
+          );
           Navigate.pushAndPopAll(
               context,
               SignUp(
@@ -59,15 +67,19 @@ class _LoginPageState extends State<LoginPage> {
           firebaseAnalytics.logSignIn(user);
         }
       } else {
-        showMessage(context, signInFailure);
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
+          message: signInFailure,
         );
+        showMessage(context, signInFailure);
         throw 'failed to register new user';
       }
     } catch (error) {
       showMessage(context, error.toString());
-      _responseNotifier.value = Response.init();
+      _responseNotifier.value = _responseNotifier.value.copyWith(
+        state: RequestState.done,
+        message: error.toString(),
+      );
       await Settings.setIsSignedIn(false);
     }
   }
@@ -75,12 +87,20 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleSignIn(BuildContext context) async {
     final state = AppStateWidget.of(context);
     try {
+      _responseNotifier.value = _responseNotifier.value.copyWith(
+        state: RequestState.active,
+        message: 'Signing in User',
+      );
       String userId = user.email.isEmpty ? user.studentId : user.email;
       final existingUser = await UserService.findByUsername(
           username: userId, isEmail: user.email.isNotEmpty);
       if (existingUser.email.isEmpty) {
         showMessage(context, 'User not found please register');
         await Future.delayed(const Duration(seconds: 2));
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+          message: 'Registering new User',
+        );
         Navigate.pushAndPopAll(
             context,
             SignUp(
@@ -182,6 +202,8 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.center,
                 child: CSButton(
                   width: 300,
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
                   leading: Image.asset(GOOGLE_ASSET_PATH, height: 32),
                   label: 'Sign In with Google',
                   isLoading:
@@ -190,7 +212,6 @@ class _LoginPageState extends State<LoginPage> {
                     isGoogleSignIn = true;
                     _handleGoogleSignIn(context);
                   },
-                  backgroundColor: Colors.white,
                 ));
           }
 
