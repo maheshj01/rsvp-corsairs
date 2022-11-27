@@ -28,7 +28,7 @@ class _UserProfileState extends State<UserProfile> {
     await Future.delayed(Duration.zero);
     final userState = AppStateScope.of(context).user;
     if (userState!.isLoggedIn) {
-      final user = await UserService.findByEmail(email: userState.email);
+      final user = await UserService.findByUsername(username: userState.email);
       if (user.email.isNotEmpty) {
         AppStateWidget.of(context).setUser(user);
       }
