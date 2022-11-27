@@ -100,7 +100,7 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
           hLine(),
           settingTile('Logout', onTap: () async {
             await Settings.clear();
-            await AuthService.updateLogin(
+            await AuthService.updateLoginStatus(
                 email: user!.email, isLoggedIn: false);
             Navigate.pushAndPopAll(context, const LoginPage());
           }),

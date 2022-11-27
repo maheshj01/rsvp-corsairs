@@ -61,7 +61,7 @@ class _CorsairsAppState extends State<CorsairsApp> {
     final email = await Settings.email;
     if (email.isNotEmpty) {
       final response =
-          await AuthService.updateLogin(email: email, isLoggedIn: true);
+          await AuthService.updateLoginStatus(email: email, isLoggedIn: true);
     }
   }
 

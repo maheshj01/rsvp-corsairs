@@ -26,7 +26,6 @@ class AuthService {
       if (response.status == 201) {
         resp.didSucced = true;
         resp.message = 'Success';
-        resp.data = response.data;
       } else {
         _logger.e('error caught');
         throw "Failed to register new user";
@@ -81,7 +80,7 @@ class AuthService {
     }
   }
 
-  static Future<ResponseObject> updateLogin(
+  static Future<ResponseObject> updateLoginStatus(
       {required String email, bool isLoggedIn = false}) async {
     try {
       final response = await DatabaseService.updateColumn(
@@ -90,7 +89,6 @@ class AuthService {
           columnValue: isLoggedIn,
           columnName: USER_LOGGEDIN_COLUMN,
           tableName: _tableName);
-
       if (response.status == 200) {
         return ResponseObject(Status.success.name,
             UserModel.fromJson((response.data as List).first), Status.success);

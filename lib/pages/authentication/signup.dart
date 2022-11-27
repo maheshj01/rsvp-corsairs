@@ -44,14 +44,13 @@ class _SignUpState extends State<SignUp> {
           _logger.d('registering new user ${user!.email}');
           final resp = await AuthService.registerUser(user!);
           if (resp.didSucced) {
-            final user = UserModel.fromJson((resp.data as List<dynamic>)[0]);
-            state.setUser(user.copyWith(isLoggedIn: true));
+            state.setUser(user!.copyWith(isLoggedIn: true));
             _responseNotifier.value = _responseNotifier.value.copyWith(
               state: RequestState.done,
             );
             Navigate.pushAndPopAll(context, const AdaptiveLayout(),
                 slideTransitionType: TransitionType.ttb);
-            await Settings.setIsSignedIn(true, email: user.email);
+            await Settings.setIsSignedIn(true, email: user!.email);
           } else {
             _logger.d(signInFailure);
             await Settings.setIsSignedIn(false, email: existingUser.email);
@@ -66,7 +65,7 @@ class _SignUpState extends State<SignUp> {
         } else {
           _logger.d('found existing user ${user!.email}');
           await Settings.setIsSignedIn(true, email: existingUser.email);
-          await AuthService.updateLogin(
+          await AuthService.updateLoginStatus(
               email: existingUser.email, isLoggedIn: true);
           state.setUser(existingUser.copyWith(isLoggedIn: true));
           _responseNotifier.value = _responseNotifier.value.copyWith(

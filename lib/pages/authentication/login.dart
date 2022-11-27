@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           _logger.d('found existing user ${user!.email}');
           await Settings.setIsSignedIn(true, email: existingUser.email);
-          await AuthService.updateLogin(
+          await AuthService.updateLoginStatus(
               email: existingUser.email, isLoggedIn: true);
           state.setUser(existingUser.copyWith(isLoggedIn: true));
           _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -118,7 +118,6 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //title
                   const Align(
                     alignment: Alignment.center,
                     child: Text(

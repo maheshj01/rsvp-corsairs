@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rsvp/models/event.dart';
+import 'package:uuid/uuid.dart';
 
 part 'user.g.dart';
 
@@ -136,13 +137,13 @@ class UserModel extends ChangeNotifier {
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   Map<String, dynamic> schematoJson() => <String, dynamic>{
-        'id': id,
+        'id': const Uuid().v4(),
         'idToken': idToken,
         'accessToken': accessToken,
         'email': email,
         'name': name,
         'avatarUrl': avatarUrl,
-        'isLoggedIn': isLoggedIn,
+        'isLoggedIn': true,
         'isAdmin': isAdmin,
         'username': username,
         'password': password,
