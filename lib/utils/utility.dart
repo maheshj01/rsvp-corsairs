@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/event.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -162,5 +163,47 @@ Future<XFile?> pickImageAndCrop(context) async {
     return XFile(croppedFile!.path);
   } else {
     return null;
+  }
+}
+
+FormFieldValidator<String> fieldValidator(int field) {
+  switch (field) {
+    case NAME_VALIDATOR:
+      return (String? value) {
+        final regexp = RegExp(firstAndLastNamePattern);
+        if (value == null || value.isEmpty || !value.contains(regexp)) {
+          return 'Please enter a valid first and last name';
+        }
+        return null;
+      };
+    case EMAIL_VALIDATOR:
+      return (String? value) {
+        // email validate @umassd.edu
+        final regexp = RegExp(emailPattern);
+        if (value != null && value.length > 5 && value.contains(regexp)) {
+          return null;
+        }
+        return 'Please enter a valid UMassd email';
+      };
+    case PASSWORD_VALIDATOR:
+      return (String? value) {
+        if (value != null && value.length > 7) {
+          return null;
+        }
+        return 'Password must be at least 8 characters long';
+      };
+
+    case STUDENT_ID_VALIDATOR:
+      return (String? value) {
+        final regexp = RegExp(studentIdPattern);
+        if (value != null && value.contains(regexp)) {
+          return null;
+        }
+        return 'Please enter a valid Student ID';
+      };
+    default:
+      return (String? value) {
+        return null;
+      };
   }
 }

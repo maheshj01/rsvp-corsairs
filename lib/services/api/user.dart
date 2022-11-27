@@ -15,15 +15,18 @@ class UserService {
     return response;
   }
 
-  static Future<UserModel> findByEmail({required String email}) async {
+  static Future<UserModel> findByUsername(
+      {required String username, bool isEmail = true}) async {
     try {
-      final response = await DatabaseService.findSingleRowByColumnValue(email,
-          columnName: USER_EMAIL_COLUMN, tableName: _tableName);
+      final response = await DatabaseService.findSingleRowByColumnValue(
+          username,
+          columnName: isEmail ? USER_EMAIL_COLUMN : STUDENT_ID_COLUMN,
+          tableName: _tableName);
       if (response.status == 200) {
         final user = UserModel.fromJson(response.data);
         return user;
       } else {
-        _logger.d('existing user not found');
+        _logger.d('user not found');
         return UserModel.init();
       }
     } catch (_) {

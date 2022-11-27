@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/user.dart';
@@ -9,6 +10,7 @@ import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
 import 'package:rsvp/services/authentication.dart';
 import 'package:rsvp/services/database.dart';
+import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/navigator.dart';
@@ -26,13 +28,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   AuthService auth = AuthService();
-
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   Future<void> _handleSignIn(BuildContext context) async {
     final state = AppStateWidget.of(context);
     try {
-      user = (await auth.googleSignIn(context))!;
+      if (isGoogleSignIn) {
+        user = (await auth.googleSignIn(context))!;
+      }
+      bool isEmail = user!.email.contains('@');
       if (user != null) {
-        final existingUser = await UserService.findByEmail(email: user!.email);
+        final existingUser = await UserService.findByUsername(
+            username: isEmail ? user!.email : user!.studentId,
+            isEmail: isEmail);
         if (existingUser.email.isEmpty) {
           _logger.d('registering new user ${user!.email}');
           final resp = await AuthService.registerUser(user!);
@@ -87,39 +95,61 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  final ValueNotifier<Response> _responseNotifier = ValueNotifier<Response>(
-      Response(state: RequestState.none, didSucced: false, message: 'Failed'));
+  @override
+  void dispose() {
+    _responseNotifier.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  final ValueNotifier<Response> _responseNotifier =
+      ValueNotifier<Response>(Response.init());
   UserModel? user;
   late Analytics firebaseAnalytics;
   final Logger _logger = const Logger('LoginPage');
+  bool isGoogleSignIn = false;
   @override
   Widget build(BuildContext context) {
     SizeUtils.size = MediaQuery.of(context).size;
-
-    Widget _csField(
-        Key wkey, hint, TextEditingController controller, int index) {
+    Widget _csField(String hint, TextEditingController controller, int index) {
       return Padding(
         padding: 8.0.verticalPadding,
         child: TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            border: inputborder,
-            enabledBorder: inputborder,
-            focusedBorder: inputborder,
-            hintText: hint,
-            counterText: '',
-            hintStyle: const TextStyle(color: Colors.white),
-          ),
-          maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
-          keyboardType: index == STUDENT_ID_VALIDATOR
-              ? TextInputType.number
-              : TextInputType.text,
-          textInputAction: TextInputAction.next,
-          style: const TextStyle(color: Colors.white),
-          key: wkey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          // validator: _fieldValidator(index),
-        ),
+            controller: controller,
+            autofillHints:
+                index == 0 ? [AutofillHints.email] : [AutofillHints.password],
+            decoration: InputDecoration(
+              border: inputborder,
+              enabledBorder: inputborder,
+              focusedBorder: inputborder,
+              hintText: hint,
+              counterText: '',
+              hintStyle: const TextStyle(color: Colors.white),
+            ),
+            maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
+            keyboardType: index == STUDENT_ID_VALIDATOR
+                ? TextInputType.number
+                : TextInputType.text,
+            textInputAction: TextInputAction.next,
+            style: const TextStyle(color: Colors.white),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (value) {
+              if (index == 0) {
+                final regexp1 = RegExp(emailPattern);
+                final regexp2 = RegExp(studentIdPattern);
+                if (value != null &&
+                    (value.contains(regexp1) || value.contains(regexp2))) {
+                  return null;
+                }
+                return 'Please enter a valid UMassd email';
+              } else {
+                if (value != null && value.length > 3) {
+                  return null;
+                }
+                return 'Please enter a valid password';
+              }
+            }),
       );
     }
 
@@ -133,8 +163,12 @@ class _LoginPageState extends State<LoginPage> {
                   width: 300,
                   leading: Image.asset(GOOGLE_ASSET_PATH, height: 32),
                   label: 'Sign In with Google',
-                  isLoading: _response.state == RequestState.active,
-                  onTap: () => _handleSignIn(context),
+                  isLoading:
+                      isGoogleSignIn && _response.state == RequestState.active,
+                  onTap: () {
+                    isGoogleSignIn = true;
+                    _handleSignIn(context);
+                  },
                   backgroundColor: Colors.white,
                 ));
           }
@@ -144,67 +178,71 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const BoxDecoration(
                 color: Color(0xff006d77),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: SizeUtils.size.height * 0.16,
-                  ),
-                  const Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'RSVP',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
+              padding: 16.0.horizontalPadding,
+              child: AutofillGroup(
+                child: ListView(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: SizeUtils.size.height * 0.12,
+                    ),
+                    const Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'RSVP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  48.0.vSpacer(),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'email/student Id',
-                        border: OutlineInputBorder(),
-                      ),
+                    48.0.vSpacer(),
+                    _csField('email/student id', _emailController, 0),
+                    8.0.vSpacer(),
+                    _csField('password', _passwordController, 1),
+                    const SizedBox(height: 20),
+                    CSButton(
+                        height: 48,
+                        backgroundColor: CorsairsTheme.primaryYellow,
+                        onTap: () {
+                          TextInput.finishAutofillContext(shouldSave: true);
+                          isGoogleSignIn = false;
+                          final _email = _emailController.text.trim();
+                          final _password = _passwordController.text.trim();
+                          if (_email.isEmpty || _password.isEmpty) {
+                            showMessage(context, 'Please fill all fields');
+                            return;
+                          }
+                          _handleSignIn(context);
+                        },
+                        isLoading: !isGoogleSignIn &&
+                            _response.state == RequestState.active,
+                        label: 'Login'),
+                    // new user sign up
+                    48.0.vSpacer(),
+                    RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(children: [
+                          const TextSpan(
+                              text: 'Don\'t have an account? ',
+                              style: TextStyle(color: Colors.white)),
+                          TextSpan(
+                              text: 'Sign Up',
+                              style: const TextStyle(
+                                  color: CorsairsTheme.primaryYellow),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigate()
+                                      .pushReplace(context, const SignUp());
+                                })
+                        ])),
+                    SizedBox(
+                      height: SizeUtils.size.height * 0.12,
                     ),
-                  ),
-                  // Google Sign In Button
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  CSButton(
-                      onTap: () {
-                        Navigate.pushAndPopAll(context, const AdaptiveLayout());
-                      },
-                      label: 'Login'),
-                  // new user sign up
-                  48.0.vSpacer(),
-                  RichText(
-                      text: TextSpan(children: [
-                    const TextSpan(
-                        text: 'Don\'t have an account? ',
-                        style: TextStyle(color: Colors.white)),
-                    TextSpan(
-                        text: 'Sign Up',
-                        style: const TextStyle(color: Colors.blue),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigate().pushReplace(context, const SignUp());
-                          })
-                  ])),
-                  20.0.vSpacer(),
-                  Expanded(child: _signInButton()),
-                ],
+                    _signInButton()
+                  ],
+                ),
               ),
             ),
           );

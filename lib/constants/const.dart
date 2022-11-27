@@ -56,6 +56,7 @@ const USERNAME_COLUMN = 'username';
 const USER_BOOKMARKS_COLUMN = 'bookmarks';
 const USER_CREATED_AT_COLUMN = 'created_at';
 const USER_LOGGEDIN_COLUMN = 'isLoggedIn';
+const STUDENT_ID_COLUMN = 'studentId';
 
 /// EDIT HISTORY TABLE COLUMNS
 const EDIT_ID_COLUMN = 'edit_id';
@@ -114,3 +115,4 @@ enum RequestState { active, done, error, none }
 
 const String emailPattern = r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@umassd.edu$';
 const String firstAndLastNamePattern = r'^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$';
+const String studentIdPattern = r'^[0-9]{8}$';
