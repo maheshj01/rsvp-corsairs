@@ -140,36 +140,35 @@ class CorsairsTheme {
     onSurface: _darkFillColor,
   );
 
-  static TextTheme googleFontsTextTheme =
-      GoogleFonts.quicksandTextTheme(TextTheme(
-    displayLarge: GoogleFonts.quicksand(
+  static TextTheme googleFontsTextTheme = GoogleFonts.ubuntuTextTheme(TextTheme(
+    displayLarge: GoogleFonts.ubuntu(
         fontSize: 72.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    displayMedium: GoogleFonts.quicksand(
+    displayMedium: GoogleFonts.ubuntu(
         fontSize: 48.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    displaySmall: GoogleFonts.quicksand(
+    displaySmall: GoogleFonts.ubuntu(
         fontSize: 36.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w500),
-    headlineMedium: GoogleFonts.quicksand(
+    headlineMedium: GoogleFonts.ubuntu(
         fontSize: 22,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w400),
-    headlineSmall: GoogleFonts.quicksand(
+    headlineSmall: GoogleFonts.ubuntu(
         fontSize: 16.0, color: isDark ? Colors.white : Colors.black),
-    titleLarge: GoogleFonts.quicksand(
+    titleLarge: GoogleFonts.ubuntu(
         fontSize: 12.0,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
-    bodySmall: GoogleFonts.quicksand(color: Colors.grey, fontSize: 12),
-    titleMedium: GoogleFonts.quicksand(
+    bodySmall: GoogleFonts.ubuntu(color: Colors.grey, fontSize: 12),
+    titleMedium: GoogleFonts.ubuntu(
         fontSize: 20,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
-    titleSmall: GoogleFonts.quicksand(
+    titleSmall: GoogleFonts.ubuntu(
         fontSize: 16,
         color: isDark ? Colors.white : Colors.black,
         fontWeight: FontWeight.w300),
