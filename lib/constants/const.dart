@@ -4,6 +4,7 @@ const String APP_TITLE = 'RSVP';
 const String BASE_URL = '';
 const VERSION = 'v0.0.1';
 const VERSION_KEY = 'version';
+const UPDATE_URL_KEY = 'update_url';
 const FORCE_UPDATE_KEY = 'forceUpdate';
 const CONFIG_COLLECTION_KEY = 'config';
 const UPDATE_DOC_KEY = 'update';
@@ -11,7 +12,8 @@ const BUILD_NUMBER_KEY = 'buildNumber';
 const REPO_NAME = 'rsvp_corsairs';
 const SOURCE_CODE_URL = 'https://github.com/maheshmnj/$REPO_NAME';
 
-const PLAY_STORE_URL = '';
+const PLAY_STORE_URL =
+    'https://play.google.com/store/apps/details?id=com.wml.rsvp';
 const AMAZON_APP_STORE_URL = '';
 
 const REPORT_URL = 'https://github.com/maheshmnj/$REPO_NAME/issues/new/choose';

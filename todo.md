@@ -10,14 +10,16 @@
 - [X] View event detail
 - [X] Edit an event
 - [X] RSVP to an event
+- [] Improve card UI and Date
 - [] Bookmark an event
-- [] Share an event
-- [] Delete an event
 - [] View attendees
+- [] Add filter out expired events
 - [] Search Events
+- [] Delete an event
 - [] Categorize the events (custom categories)
 - [] Prevent editing of events in last hour
-- [] Draft save events for publishing later 
+- [] Share an event
+- [] Draft save events for publishing later
 
 ### Profile
 - [] View host/users profile
@@ -29,9 +31,9 @@
 - []
 
 ### Authentication
-- [] Login and signup seamless
-- [] Login with Google or Username
-- [] Signup with Google or Username
+- [X] Login and signup seamless
+- [X] Login with Google or Username
+- [X] Signup with Google or Username
 - [] Edit user profile
 
 ### Game elements

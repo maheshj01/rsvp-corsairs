@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/constants.dart';
@@ -51,6 +52,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     final packageInfo = await PackageInfo.fromPlatform();
     appVersion = packageInfo.version;
     appBuildNumber = int.parse(packageInfo.buildNumber);
+    showBanner = true;
 
     /// final remoteConfig = FirebaseRemoteConfig.instance;
     // await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -71,6 +73,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   late String appVersion;
   late int appBuildNumber;
+
   @override
   void dispose() {
     _selectedIndex.dispose();
@@ -80,7 +83,8 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   double bannerHeight = 0;
   bool hasUpdate = false;
   bool isForceUpdate = false;
-
+  bool showBanner = false;
+  String updateDestination = '';
   @override
   Widget build(BuildContext context) {
     SizeUtils.size = MediaQuery.of(context).size;
@@ -103,7 +107,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
 
     final user = AppStateScope.of(context).user;
 
-    if (!user!.isLoggedIn || hasUpdate) {
+    if (hasUpdate) {
       bannerHeight =
           kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
     } else {
@@ -126,6 +130,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                   final Map<String, dynamic> data =
                       snapshot.data!.docs.first.data() as Map<String, dynamic>;
                   final version = data[VERSION_KEY];
+                  updateDestination = data[UPDATE_URL_KEY];
                   final buildNumber = int.parse(data[BUILD_NUMBER_KEY]);
                   if (appVersion == version && appBuildNumber == buildNumber) {
                     hasUpdate = false;
@@ -225,56 +230,75 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                                         j < _routes[i]!.keys.length;
                                         j++)
                                       Destination(
-                                        route: _routes[i]!.keys.elementAt(j),
-                                        widget: _routes[i]!.values.elementAt(j),
-                                      ),
+                                          route: _routes[i]!.keys.elementAt(j),
+                                          widget: Stack(
+                                            children: [
+                                              _routes[i]!.values.elementAt(j),
+                                              if (hasUpdate && showBanner)
+                                                Animate(
+                                                  effects: const [
+                                                    SlideEffect(
+                                                      begin: Offset(0, 1),
+                                                      end: Offset(0, 0),
+                                                    )
+                                                  ],
+                                                  child: Positioned(
+                                                      bottom: bannerHeight,
+                                                      left: 0,
+                                                      right: 0,
+                                                      child: VocabBanner(
+                                                        description: !isForceUpdate
+                                                            ? UPDATE_APP_MESSAGE
+                                                            : FORCE_UPDATE_MESSAGE,
+                                                        onClose: () {
+                                                          if (!isForceUpdate) {
+                                                            setState(() {
+                                                              showBanner =
+                                                                  !showBanner;
+                                                            });
+                                                          }
+                                                        },
+                                                        actions: [
+                                                          !hasUpdate
+                                                              ? const SizedBox
+                                                                  .shrink()
+                                                              : TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    if (updateDestination
+                                                                        .isEmpty) {
+                                                                      updateDestination =
+                                                                          PLAY_STORE_URL;
+                                                                    }
+                                                                    launchUrl(
+                                                                        Uri.parse(
+                                                                            updateDestination),
+                                                                        mode: LaunchMode
+                                                                            .externalApplication);
+                                                                  },
+                                                                  child: const Text(
+                                                                      'Update',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: CorsairsTheme
+                                                                            .primaryYellow,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            18,
+                                                                      )),
+                                                                ),
+                                                        ],
+                                                      )),
+                                                ),
+                                            ],
+                                          )),
                                   ],
                                   initialRoute: _routes[i]!.keys.elementAt(0),
                                 ),
                             ],
                           ),
                         ),
-                        if (hasUpdate)
-                          AnimatedPositioned(
-                              duration: const Duration(milliseconds: 300),
-                              bottom: bannerHeight,
-                              left: 0,
-                              right: 0,
-                              child: VocabBanner(
-                                description: hasUpdate
-                                    ? 'New update available'
-                                    : 'Sign in for better experience',
-                                actions: [
-                                  !hasUpdate
-                                      ? const SizedBox.shrink()
-                                      : TextButton(
-                                          onPressed: () {
-                                            launchUrl(Uri.parse(PLAY_STORE_URL),
-                                                mode: LaunchMode
-                                                    .externalApplication);
-                                          },
-                                          child: Text('Update',
-                                              style: TextStyle(
-                                                color:
-                                                    CorsairsTheme.primaryColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                              )),
-                                        ),
-                                  user.isLoggedIn
-                                      ? const SizedBox.shrink()
-                                      : TextButton(
-                                          onPressed: () async {},
-                                          child: Text('Sign In',
-                                              style: TextStyle(
-                                                color:
-                                                    CorsairsTheme.primaryColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                              )),
-                                        ),
-                                ],
-                              ))
                       ],
                     ));
               });
@@ -285,9 +309,13 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
 class VocabBanner extends StatelessWidget {
   final String description;
   final List<Widget> actions;
+  final Function? onClose;
 
   const VocabBanner(
-      {Key? key, required this.description, required this.actions})
+      {Key? key,
+      required this.description,
+      required this.actions,
+      this.onClose})
       : super(key: key);
 
   @override
@@ -296,17 +324,30 @@ class VocabBanner extends StatelessWidget {
       height: 60,
       color: Colors.grey.shade800,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(
-            description,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
+          16.0.hSpacer(),
+          Flexible(
+            child: Text(
+              description,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
           ),
           16.0.hSpacer(),
-          for (int i = 0; i < actions.length; i++) actions[i]
+          for (int i = 0; i < actions.length; i++) actions[i],
+          // const Expanded(child: SizedBox.shrink()),
+          16.0.hSpacer(),
+          IconButton(
+            onPressed: () {
+              if (onClose != null) {
+                onClose!();
+              }
+            },
+            icon: const Icon(Icons.close, color: Colors.white),
+          ),
         ],
       ),
     );

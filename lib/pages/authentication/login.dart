@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                     (value.contains(regexp1) || value.contains(regexp2))) {
                   return null;
                 }
-                return 'Please enter a valid UMassd email';
+                return 'Please enter a valid email';
               } else {
                 if (value != null && value.length > 3) {
                   return null;

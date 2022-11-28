@@ -331,7 +331,7 @@ class _AddEventState extends State<AddEvent> {
                                         isScrollControlled: false,
                                         elevation: 2.0,
                                         useRootNavigator: false,
-                                        shape: 16.0.rounded,
+                                        shape: 16.0.roundedTop,
                                         builder: (context) =>
                                             const InviteSheet());
                                   },

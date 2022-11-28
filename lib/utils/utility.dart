@@ -178,12 +178,11 @@ FormFieldValidator<String> fieldValidator(int field) {
       };
     case EMAIL_VALIDATOR:
       return (String? value) {
-        // email validate @umassd.edu
         final regexp = RegExp(emailPattern);
         if (value != null && value.length > 5 && value.contains(regexp)) {
           return null;
         }
-        return 'Please enter a valid UMassd email';
+        return 'Please enter a valid email address';
       };
     case PASSWORD_VALIDATOR:
       return (String? value) {
