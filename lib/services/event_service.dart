@@ -21,15 +21,18 @@ class EventService {
     return response;
   }
 
-  static Future<EventModel?> findByWord(String word) async {
-    if (word.isEmpty) {
+  static Future<EventModel?> findEventById(String eventId) async {
+    if (eventId.isEmpty) {
       return null;
     }
-    final response = await DatabaseService.findSingleRowByColumnValue(word,
-        columnName: WORD_COLUMN, tableName: tableName);
+    final response = await DatabaseService.findRowWithInnerjoinColumnValue(
+        eventId,
+        columnName: ID_COLUMN,
+        table1: tableName,
+        table2: USER_TABLE_NAME);
     EventModel? result;
     if (response.status == 200) {
-      result = EventModel.fromJson(response.data);
+      result = EventModel.fromAllSchema(response.data);
       return result;
     }
     return null;
@@ -50,6 +53,36 @@ class EventService {
       eventResponse.message = 'Error';
     } on PostgrestException catch (_) {
       _logger.e('Error adding event ${_.details}');
+      eventResponse.didSucced = false;
+      eventResponse.message = 'Error: $_';
+    }
+    return eventResponse;
+  }
+
+  static Future<Response> updateEvent({
+    required EventModel event,
+  }) async {
+    final eventResponse = Response(didSucced: false, message: "Failed");
+    try {
+      final Map<String, dynamic> json = event.schematoJson();
+      // remove id key
+      // json.remove(ID_COLUMN);
+      final response = await DatabaseService.updateRow(
+          colValue: event.id!,
+          data: json,
+          columnName: ID_COLUMN,
+          tableName: tableName);
+      if (response.status == 204) {
+        return eventResponse.copyWith(
+            didSucced: true,
+            message: 'Updated Successfully',
+            data: response.data);
+      } else {
+        return eventResponse.copyWith(
+            didSucced: false, message: 'Failed to update', data: response.data);
+      }
+    } catch (_) {
+      _logger.e('Error updating event $_');
       eventResponse.didSucced = false;
       eventResponse.message = 'Error: $_';
     }
@@ -127,7 +160,7 @@ class EventService {
   static Future<List<EventModel>> searchEvents(String query,
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsContaining(query,
-        columnName: WORD_COLUMN, tableName: tableName);
+        columnName: EVENT_NAME_COLUMN, tableName: tableName);
     List<EventModel> words = [];
     if (response.status == 200) {
       words =
@@ -151,16 +184,6 @@ class EventService {
       _logger.e(x.toString());
       throw 'x';
     }
-  }
-
-  static Future<PostgrestResponse> updateEvent({
-    required String id,
-    required EventModel event,
-  }) async {
-    final Map<String, dynamic> json = event.toJson();
-    final response = await DatabaseService.updateRow(
-        colValue: id, data: json, columnName: ID_COLUMN, tableName: tableName);
-    return response;
   }
 
   Future<PostgrestResponse> updateDescription({

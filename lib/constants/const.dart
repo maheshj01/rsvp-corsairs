@@ -42,7 +42,7 @@ const WORD_STATE_TABLE_NAME = 'word_state';
 const WORD_OF_THE_DAY_TABLE_NAME = 'word_of_the_day';
 
 /// VOCAB TABLE COLUMNS
-const WORD_COLUMN = 'word';
+const EVENT_NAME_COLUMN = 'name';
 const ID_COLUMN = 'id';
 const EVENT_ID_COLUMN = 'event_id';
 const EVENT_USER_ID_COLUMN = 'user_id';

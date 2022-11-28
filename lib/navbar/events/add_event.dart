@@ -108,9 +108,14 @@ class _AddEventState extends State<AddEvent> {
       stopCircularIndicator(context);
       return;
     }
-    final resp = await EventService.addEvent(_event);
+    Response resp = Response.init();
+    if (!widget.isEdit) {
+      resp = await EventService.addEvent(_event);
+    } else {
+      resp = await EventService.updateEvent(event: _event);
+    }
     if (resp.didSucced) {
-      showMessage(context, 'Event added successfully');
+      showMessage(context, 'Event posted successfully');
       stopCircularIndicator(context);
       await Future.delayed(const Duration(seconds: 3), () {
         widget.onDone!();

@@ -15,8 +15,8 @@ import 'package:rsvp/widgets/widgets.dart';
 
 class EventDetail extends StatefulWidget {
   static String route = '/event_detail';
-  final EventModel event;
-  const EventDetail({Key? key, required this.event}) : super(key: key);
+  EventModel event;
+  EventDetail({Key? key, required this.event}) : super(key: key);
 
   @override
   State<EventDetail> createState() => _EventDetailState();
@@ -58,7 +58,6 @@ class _EventDetailState extends State<EventDetail> {
       columnName: 'event_id',
       tableName: ATTENDEES_TABLE_NAME,
     );
-
     try {
       if (response.status == 200) {
         attendees = response.data
@@ -113,6 +112,14 @@ class _EventDetailState extends State<EventDetail> {
                               AddEvent(
                                 event: widget.event,
                                 isEdit: isHost,
+                                onDone: () async {
+                                  final updatedEvent =
+                                      await EventService.findEventById(
+                                          widget.event.id!);
+                                  setState(() {
+                                    widget.event = updatedEvent!;
+                                  });
+                                },
                               ));
                         },
                         icon: const Icon(

@@ -169,6 +169,21 @@ class DatabaseService {
     return response;
   }
 
+  static Future<PostgrestResponse> findRowWithInnerjoinColumnValue(
+    String columnValue, {
+    String columnName = ID_COLUMN,
+    String table1 = EVENTS_TABLE_NAME,
+    String table2 = USER_TABLE_NAME,
+  }) async {
+    final response = await _supabase
+        .from(table1)
+        .select('*, $table2!inner(*)')
+        .eq(columnName, columnValue)
+        .single()
+        .execute();
+    return response;
+  }
+
   static Future<PostgrestResponse> insertIntoTable(Map<String, dynamic> data,
       {String table = EVENTS_TABLE_NAME}) async {
     try {
@@ -202,9 +217,17 @@ class DatabaseService {
       required Map<String, dynamic> data,
       String columnName = ID_COLUMN,
       String tableName = EVENTS_TABLE_NAME}) async {
-    final response =
-        await _supabase.from(tableName).update(data).eq(columnName, colValue);
-    return response;
+    try {
+      final response = await _supabase
+          .from(tableName)
+          .update(data)
+          .eq(columnName, colValue)
+          .execute();
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: ${_.details}');
+      rethrow;
+    }
   }
 
   /// updates a value in a column
