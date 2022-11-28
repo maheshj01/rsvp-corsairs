@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
-import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/widgets/widgets.dart';
@@ -46,9 +45,9 @@ class _BookmarksMobile extends StatefulWidget {
 
 class _BookmarksMobileState extends State<_BookmarksMobile> {
   Future<void> getBookmarks() async {
-    final events = await EventService.getBookmarks(widget.user.email,
-        isBookmark: widget.isBookMark);
-    _bookmarksNotifier.value = events;
+    // final events = await EventService.getBookmarks(widget.user.email,
+    //     isBookmark: widget.isBookMark);
+    // _bookmarksNotifier.value = events;
   }
 
   @override
@@ -72,7 +71,8 @@ class _BookmarksMobileState extends State<_BookmarksMobile> {
 
     return ValueListenableBuilder(
         valueListenable: _bookmarksNotifier,
-        builder: (BuildContext context, List<EventModel>? value, Widget? child) {
+        builder:
+            (BuildContext context, List<EventModel>? value, Widget? child) {
           if (value == null) {
             return Scaffold(
                 appBar: AppBar(title: Text(title)),

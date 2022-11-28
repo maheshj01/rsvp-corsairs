@@ -13,8 +13,11 @@ class DatabaseService {
   static Future<PostgrestResponse> findRowByColumnValue(String columnValue,
       {String columnName = ID_COLUMN,
       String tableName = EVENTS_TABLE_NAME}) async {
-    final response =
-        await _supabase.from(tableName).select().eq(columnName, columnValue);
+    final response = await _supabase
+        .from(tableName)
+        .select()
+        .eq(columnName, columnValue)
+        .execute();
     return response;
   }
 
@@ -50,10 +53,12 @@ class DatabaseService {
 
   /// returns data from two table joined on the basis of a column
   /// associated via foreign key
-  static Future<PostgrestResponse> findRowsByInnerJoinOnColumn(
-      {String table1 = EVENTS_TABLE_NAME,
-      bool ascending = false,
-      String table2 = USER_TABLE_NAME}) async {
+  static Future<PostgrestResponse> findRowsByInnerJoinOnColumn({
+    String table1 = EVENTS_TABLE_NAME,
+    bool ascending = false,
+    String table2 = USER_TABLE_NAME,
+    String table3 = ATTENDEES_TABLE_NAME,
+  }) async {
     try {
       final response = await _supabase
           .from(table1)
@@ -166,8 +171,13 @@ class DatabaseService {
 
   static Future<PostgrestResponse> insertIntoTable(Map<String, dynamic> data,
       {String table = EVENTS_TABLE_NAME}) async {
-    final response = await _supabase.from(table).insert(data).execute();
-    return response;
+    try {
+      final response = await _supabase.from(table).insert(data).execute();
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: ${_.details}');
+      rethrow;
+    }
   }
 
   /// Upsert will update the data if it exists, otherwise it will insert it.
@@ -230,6 +240,19 @@ class DatabaseService {
       String tableName = EVENTS_TABLE_NAME}) async {
     final response =
         await _supabase.from(tableName).delete().eq(columnName, columnValue);
+    return response;
+  }
+
+  static Future<PostgrestResponse> deleteRowBy2ColumnValue(
+      String column1Value, String column2Value,
+      {String column1Name = ID_COLUMN,
+      String column2Name = ID_COLUMN,
+      String tableName = EVENTS_TABLE_NAME}) async {
+    final response = await _supabase
+        .from(tableName)
+        .delete()
+        .eq(column1Name, column1Value)
+        .eq(column2Name, column2Value);
     return response;
   }
 

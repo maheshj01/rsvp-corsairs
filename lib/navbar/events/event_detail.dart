@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/models/attendee.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/database.dart';
+import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/navigator.dart';
@@ -22,6 +26,7 @@ class _EventDetailState extends State<EventDetail> {
 
   @override
   void dispose() {
+    _responseNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -42,6 +47,38 @@ class _EventDetailState extends State<EventDetail> {
     });
   }
 
+  Future<List<Attendee>> fetchAttendees(String userId) async {
+    _responseNotifier.value.copyWith(state: RequestState.active);
+    final response = await DatabaseService.findRowByColumnValue(
+      widget.event.id!,
+      columnName: 'event_id',
+      tableName: ATTENDEES_TABLE_NAME,
+    );
+
+    List<Attendee> attendees = [];
+    try {
+      if (response.status == 200) {
+        attendees = response.data
+            .map((e) => Attendee.fromJson(e))
+            .toList()
+            .cast<Attendee>();
+        _responseNotifier.value.copyWith(state: RequestState.done);
+      }
+      Attendee? attendee =
+          attendees.firstWhere((element) => element.user_id == userId);
+      if (attendee != null) {
+        _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
+      } else {
+        _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
+      }
+    } catch (e) {
+      _responseNotifier.value.copyWith(state: RequestState.error);
+    }
+    return attendees;
+  }
+
+  final ValueNotifier<Response> _responseNotifier =
+      ValueNotifier<Response>(Response.init(data: false));
   bool _isCollapsed = false;
   Size? size;
   @override
@@ -141,14 +178,19 @@ class _EventDetailState extends State<EventDetail> {
                       .copyWith(color: Colors.white)),
             ),
             16.0.vSpacer(),
-            ListTile(
-              leading:
-                  const Icon(Icons.people, color: CorsairsTheme.primaryYellow),
-              onTap: () {},
-              title: Text('10 Attendees',
-                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                      .copyWith(color: Colors.white)),
-            ),
+            FutureBuilder<List<Attendee>>(
+                future: fetchAttendees(user.id!),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Attendee>> snapshot) {
+                  return ListTile(
+                    leading: const Icon(Icons.people,
+                        color: CorsairsTheme.primaryYellow),
+                    onTap: () {},
+                    title: Text('${snapshot.data?.length ?? 0} Attendees',
+                        style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                            .copyWith(color: Colors.white)),
+                  );
+                }),
             16.0.vSpacer(),
             // host details
             ListTile(
@@ -207,12 +249,26 @@ class _EventDetailState extends State<EventDetail> {
           isHost
               ? const SizedBox.shrink()
               : Center(
-                  child: CSButton(
-                    width: size!.width * 0.8,
-                    onTap: () {},
-                    backgroundColor: CorsairsTheme.primaryYellow,
-                    label: 'Going',
-                  ),
+                  child: ValueListenableBuilder<Response>(
+                      valueListenable: _responseNotifier,
+                      builder: (context, response, child) {
+                        return CSButton(
+                          width: size!.width * 0.8,
+                          isLoading: response.state == RequestState.active,
+                          onTap: () async {
+                            _responseNotifier.value =
+                                response.copyWith(state: RequestState.active);
+                            await EventService.rsvpEvent(
+                                widget.event.id!, user.id!,
+                                going: !(response.data as bool));
+                            _responseNotifier.value = response.copyWith(
+                                data: !(response.data as bool),
+                                state: RequestState.done);
+                          },
+                          backgroundColor: CorsairsTheme.primaryYellow,
+                          label: !(response.data as bool) ? 'Going' : 'Cancel',
+                        );
+                      }),
                 ),
           24.0.vSpacer()
         ],

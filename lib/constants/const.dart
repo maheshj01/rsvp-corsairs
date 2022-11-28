@@ -29,6 +29,8 @@ const FEEDBACK_EMAIL_TO = 'maheshmn121@gmail.com';
 
 /// TABLES
 const EVENTS_TABLE_NAME = 'events';
+const ATTENDEES_TABLE_NAME = 'attendees';
+
 const USER_TABLE_NAME = 'user';
 // const VOCAB_TABLE_NAME = 'vocabsheet_copy';
 // const USER_TABLE_NAME = 'users_test';
@@ -40,6 +42,8 @@ const WORD_OF_THE_DAY_TABLE_NAME = 'word_of_the_day';
 /// VOCAB TABLE COLUMNS
 const WORD_COLUMN = 'word';
 const ID_COLUMN = 'id';
+const EVENT_ID_COLUMN = 'event_id';
+const EVENT_USER_ID_COLUMN = 'user_id';
 const SYNONYM_COLUMN = 'synonyms';
 const MEANING_COLUMN = 'meaning';
 const EXAMPLE_COLUMN = 'example';

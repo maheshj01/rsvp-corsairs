@@ -56,26 +56,6 @@ class EventService {
     return eventResponse;
   }
 
-  /// ```Select * from words Where state = 'approved';```
-  ///
-  // Future<List<Word>> getAllApprovedWords({bool sort = true}) async {
-  //   final response = await _supabase
-  //       .from(tableName)
-  //       .select("*")
-  //       .eq('state', 'approved')
-  //       .execute();
-  //   List<Word> words = [];
-  //   if (response.status == 200) {
-  //     words = (response.data as List).map((e) => Word.fromJson(e)).toList();
-  //     if (sort) {
-  //       words.sort((a, b) => a.word.compareTo(b.word));
-  //     }
-  //   }
-  //   return words;
-  // }
-
-  /// ```Select * from words```
-
   static Future<List<EventModel>> getAllEvents({bool sort = false}) async {
     final response = await DatabaseService.findRowsByInnerJoinOnColumn();
     List<EventModel> events = [];
@@ -90,35 +70,10 @@ class EventService {
     return events;
   }
 
-  static Future<List<EventModel>> exploreWords(String email,
-      {int page = 0}) async {
-    final response = await DatabaseService.findLimitedWords(page: page);
-    final masteredWords = await getBookmarks(email, isBookmark: false);
-    List<EventModel> words = [];
-    List<EventModel> exploreWords = [];
-    if (response.status == 200) {
-      words =
-          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
-
-      /// exclude words that are already bookmarked.
-      for (var element in words) {
-        if (!masteredWords.contains(element)) {
-          exploreWords.add(element);
-        }
-      }
-    }
-    return exploreWords;
-  }
-
-  static Future<List<EventModel>> getBookmarks(String email,
-      {bool isBookmark = true}) async {
-    final response = await DatabaseService.findRowsByInnerJoinOn2ColumnValue(
-      'email',
-      email,
-      'state',
-      isBookmark ? 'unknown' : 'known',
+  static Future<List<EventModel>> getAttendees(String eventId) async {
+    final response = await DatabaseService.findRowsByInnerJoinOnColumn(
       table1: EVENTS_TABLE_NAME,
-      table2: WORD_STATE_TABLE_NAME,
+      table2: ATTENDEES_TABLE_NAME,
     );
     List<EventModel> events = [];
     if (response.status == 200) {
@@ -128,14 +83,28 @@ class EventService {
     return events;
   }
 
-  static removeBookmark(String id, {bool isBookmark = true}) async {
-    final response = await DatabaseService.updateColumn(
-        searchColumn: 'word_id',
-        searchValue: id,
-        columnName: 'state',
-        columnValue: isBookmark ? 'known' : 'unknown',
-        tableName: WORD_STATE_TABLE_NAME);
-    return response;
+  static rsvpEvent(String eventId, String userId, {bool going = true}) async {
+    try {
+      if (going) {
+        final response = await DatabaseService.insertIntoTable({
+          'event_id': eventId,
+          'user_id': userId,
+        }, table: ATTENDEES_TABLE_NAME);
+        return response;
+      } else {
+        final response = await DatabaseService.deleteRowBy2ColumnValue(
+          eventId,
+          userId,
+          column1Name: EVENT_ID_COLUMN,
+          column2Name: EVENT_USER_ID_COLUMN,
+          tableName: ATTENDEES_TABLE_NAME,
+        );
+        return response;
+      }
+    } catch (_) {
+      _logger.e('Error rsvp event $_');
+      rethrow;
+    }
   }
 
   static Future<EventModel> getLastUpdatedRecord() async {
