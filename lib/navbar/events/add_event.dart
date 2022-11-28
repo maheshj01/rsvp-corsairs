@@ -154,6 +154,11 @@ class _AddEventState extends State<AddEvent> {
       );
     }
 
+    final user = AppStateScope.of(context).user;
+    bool isHost = false;
+    if (widget.isEdit) {
+      isHost = (user!.id == widget.event!.host!.id);
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -334,10 +339,23 @@ class _AddEventState extends State<AddEvent> {
                                   trailing: const Icon(Icons.arrow_forward_ios),
                                 ),
                               ],
-                            )
+                            ),
                     ],
                   );
                 }),
+            32.0.vSpacer(),
+            widget.isEdit && isHost
+                ? OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(250, 50),
+                      side: const BorderSide(color: Colors.red, width: 2),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      'Delete Event',
+                      style: TextStyle(color: Colors.red),
+                    ))
+                : const SizedBox.shrink(),
             const SizedBox(
               height: 100,
             ),

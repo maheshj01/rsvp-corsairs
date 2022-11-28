@@ -107,7 +107,7 @@ class _EventDetailState extends State<EventDetail> {
                               context,
                               AddEvent(
                                 event: widget.event,
-                                isEdit: !isHost,
+                                isEdit: isHost,
                               ));
                         },
                         icon: const Icon(

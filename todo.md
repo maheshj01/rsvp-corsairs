@@ -9,7 +9,7 @@
 - [X] Add a new Event (Cover image crop)
 - [X] View event detail
 - [X] Edit an event
-- [] RSVP to an event
+- [X] RSVP to an event
 - [] Bookmark an event
 - [] Share an event
 - [] Delete an event
