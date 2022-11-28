@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
-import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
-import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
@@ -97,16 +96,26 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
     });
   }
 
-  final double _offsetThreshold = 50.0;
+  Future<void> getEvents() async {
+    final events = await EventService.getAllEvents();
+    if (events.isNotEmpty) {
+      AppStateWidget.of(context).setEvents(events);
+    } else {
+      AppStateWidget.of(context).setEvents([]);
+    }
+  }
 
+  final double _offsetThreshold = 50.0;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   Widget build(BuildContext context) {
     final user = AppStateScope.of(context).user;
     final events = AppStateScope.of(context).events ?? [];
 
-    return CustomScrollView(
+    return NestedScrollView(
       controller: _scrollController,
-      slivers: <Widget>[
+      headerSliverBuilder: (context, innerBoxScrolled) => [
         SliverAppBar(
             pinned: false,
             expandedHeight: 80.0,
@@ -146,67 +155,86 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                     color: CorsairsTheme.primaryYellow,
                   ))
             ]),
-        SliverList(
-            delegate: SliverChildListDelegate([
-          for (EventModel event in events)
-            InkWell(
-              onTap: () {
-                Navigate.push(context, EventDetail(event: event));
-              },
-              child: EventParallaxTile(
-                event: event,
-              ),
-            ),
-        ])),
-        SliverToBoxAdapter(
-          child: 100.0.vSpacer(),
-        )
       ],
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: () async {
+          await getEvents();
+        },
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          itemBuilder: (_, index) {
+            return InkWell(
+                onTap: () {
+                  Navigate.push(context, EventDetail(event: events[index]));
+                },
+                child: EventParallaxTile(
+                  event: events[index],
+                ));
+          },
+          itemCount: events.length,
+        ),
+      ),
     );
-  }
-}
-
-class EventCard extends StatelessWidget {
-  final EventModel? event;
-  final String title;
-  final Color? color;
-  final double? height;
-  final String? image;
-  final double fontSize;
-
-  const EventCard(
-      {super.key,
-      this.event,
-      this.height,
-      required this.title,
-      this.color,
-      this.fontSize = 48,
-      this.image});
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-      height: height ?? size.height / 3,
-      width: size.width,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          color: color,
-          image: image != null
-              ? const DecorationImage(
-                  fit: BoxFit.fill,
-                  opacity: 0.7,
-                  image: AssetImage('assets/dart.jpg'))
-              : null),
-      child: Align(
-          alignment: Alignment.center,
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: CorsairsTheme.googleFontsTextTheme.displayMedium!
-                .copyWith(fontSize: fontSize),
-          )),
-    );
+    // return CustomScrollView(
+    //   controller: _scrollController,
+    //   slivers: <Widget>[
+    //     SliverAppBar(
+    //         pinned: false,
+    //         expandedHeight: 80.0,
+    //         flexibleSpace: FlexibleSpaceBar(
+    //           centerTitle: true,
+    //           background: Container(
+    //             alignment: Alignment.centerLeft,
+    //             padding: const EdgeInsets.only(left: 16, top: 16),
+    //             child: Text(
+    //               'CorsairEvents',
+    //               style: CorsairsTheme.googleFontsTextTheme.titleSmall!
+    //                   .copyWith(fontSize: 28, fontWeight: FontWeight.w700),
+    //             ),
+    //           ),
+    //         ),
+    //         actions: [
+    //           IconButton(
+    //               onPressed: () {
+    //                 Navigate.push(context, const NotificationsPage(),
+    //                     slideTransitionType: TransitionType.rtl);
+    //               },
+    //               icon: const Icon(
+    //                 Icons.notifications_on,
+    //                 color: CorsairsTheme.primaryYellow,
+    //               )),
+    //           IconButton(
+    //               onPressed: () {
+    //                 showModalBottomSheet(
+    //                     context: context,
+    //                     isScrollControlled: true,
+    //                     barrierColor: Colors.transparent,
+    //                     useRootNavigator: false,
+    //                     builder: (context) => const NewPage());
+    //               },
+    //               icon: const Icon(
+    //                 Icons.search,
+    //                 color: CorsairsTheme.primaryYellow,
+    //               ))
+    //         ]),
+    //     SliverList(
+    //         delegate: SliverChildListDelegate([
+    //       for (EventModel event in events)
+    //         InkWell(
+    //           onTap: () {
+    //             Navigate.push(context, EventDetail(event: event));
+    //           },
+    //           child: EventParallaxTile(
+    //             event: event,
+    //           ),
+    //         ),
+    //     ])),
+    //     SliverToBoxAdapter(
+    //       child: 100.0.vSpacer(),
+    //     )
+    //   ],
+    // );
   }
 }
 
