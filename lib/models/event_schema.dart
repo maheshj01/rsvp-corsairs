@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:uuid/uuid.dart';
 
@@ -53,7 +52,7 @@ class EventModel extends ChangeNotifier {
     host = UserModel.init();
   }
 
-  EventModel.fromEvent(Event event) {
+  EventModel.fromEvent(EventModel event) {
     id = event.id;
     name = event.name;
     description = event.description;
@@ -98,6 +97,7 @@ class EventModel extends ChangeNotifier {
     );
   }
 
+  /// database schema for event table
   Map<String, dynamic> schematoJson() => <String, dynamic>{
         'id': id,
         'name': name,
@@ -108,8 +108,53 @@ class EventModel extends ChangeNotifier {
         'coverImage': coverImage,
         'address': address,
         'private': private,
+        'host': host!.id,
         'deleted': deleted,
       };
+
+  factory EventModel.fromAllSchema(Map<String, dynamic> json) => EventModel(
+        id: json['id'] as String?,
+        name: json['name'] as String?,
+        description: json['description'] as String?,
+        createdAt: json['createdAt'] == null
+            ? null
+            : DateTime.parse(json['createdAt'] as String),
+        startsAt: json['startsAt'] == null
+            ? null
+            : DateTime.parse(json['startsAt'] as String),
+        endsAt: json['endsAt'] == null
+            ? null
+            : DateTime.parse(json['endsAt'] as String),
+        address: json['address'] as String?,
+        coverImage: json['coverImage'] as String?,
+        private: json['private'] as bool?,
+        deleted: json['deleted'] as bool?,
+        attendees: (json['attendees'] as List<dynamic>?)
+            ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        host: json['user'] == null
+            ? null
+            : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      );
+
+  // overrdie == operator
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is EventModel &&
+        other.id == id &&
+        other.name == name &&
+        other.description == description &&
+        other.createdAt == createdAt &&
+        other.startsAt == startsAt &&
+        other.endsAt == endsAt &&
+        other.coverImage == coverImage &&
+        other.address == address &&
+        other.private == private &&
+        other.deleted == deleted &&
+        other.attendees == attendees &&
+        other.host == host;
+  }
 
   factory EventModel.fromJson(Map<String, dynamic> json) =>
       _$EventModelFromJson(json);

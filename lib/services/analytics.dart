@@ -2,14 +2,14 @@
 // import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rsvp/main.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 
 class Analytics {
 //   FirebaseAnalyticsObserver observer;
 //   FirebaseAnalytics analytics;
 
-  Future<void> logEventSelection(Event event) async {
+  Future<void> logEventSelection(EventModel event) async {
     await analytics
         .logEvent(name: 'Event_selected', parameters: {'event': event.name});
   }
@@ -17,21 +17,21 @@ class Analytics {
   /// Platform is either Desktop or Web(PWA)
   Future<void> logRedirectToStore(String platform) async {
     await analytics
-        .logEvent(name: 'play_store', parameters: {'Platform': '$platform'});
+        .logEvent(name: 'play_store', parameters: {'Platform': platform});
   }
 
-  Future<void> logEventEdit(Event event, String email) async {
+  Future<void> logEventEdit(EventModel event, String email) async {
     await analytics.logEvent(
         name: 'Event_edit', parameters: {'Event': event.name, 'email': email});
   }
 
-  Future<void> logEventDelete(Event event, String email) async {
+  Future<void> logEventDelete(EventModel event, String email) async {
     await analytics.logEvent(
         name: 'Event_delete',
         parameters: {'Event': event.name, 'email': email});
   }
 
-  Future<void> logEventAdd(Event event, [String email = '']) async {
+  Future<void> logEventAdd(EventModel event, [String email = '']) async {
     await analytics.logEvent(
         name: 'Event_add', parameters: {'Event': event.name, 'email': email});
   }

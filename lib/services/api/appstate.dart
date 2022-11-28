@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/api/user.dart';
@@ -51,7 +50,7 @@ class AppStateWidget extends StatefulWidget {
 }
 
 class AppStateWidgetState extends State<AppStateWidget> {
-  AppState _data = AppState();
+  AppState _data = const AppState();
   final _userStore = UserService();
 
   void setEvents(List<EventModel> events) {

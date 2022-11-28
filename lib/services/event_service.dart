@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:rsvp/constants/const.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
     // ignore: library_prefixes
@@ -22,22 +21,22 @@ class EventService {
     return response;
   }
 
-  static Future<Event?> findByWord(String word) async {
+  static Future<EventModel?> findByWord(String word) async {
     if (word.isEmpty) {
       return null;
     }
     final response = await DatabaseService.findSingleRowByColumnValue(word,
         columnName: WORD_COLUMN, tableName: tableName);
-    Event? result;
+    EventModel? result;
     if (response.status == 200) {
-      result = Event.fromJson(response.data);
+      result = EventModel.fromJson(response.data);
       return result;
     }
     return null;
   }
 
-  static Future<Response> addEvent(Event event) async {
-    final json = event.toJson();
+  static Future<Response> addEvent(EventModel event) async {
+    final json = event.schematoJson();
     final eventResponse = Response(didSucced: false, message: "Failed");
     try {
       final response =
@@ -49,8 +48,8 @@ class EventService {
       }
       eventResponse.status = response.status;
       eventResponse.message = 'Error';
-    } catch (_) {
-      _logger.e('Error adding event $_');
+    } on PostgrestException catch (_) {
+      _logger.e('Error adding event ${_.details}');
       eventResponse.didSucced = false;
       eventResponse.message = 'Error: $_';
     }
@@ -77,12 +76,15 @@ class EventService {
 
   /// ```Select * from words```
 
-  static Future<List<EventModel>> getAllEvents({bool sort = false}) async {
-    final response = await DatabaseService.findAll(tableName: tableName);
+  static Future<List<EventModel>> getAllEvents(
+      {bool sort = false, required String userId}) async {
+    final response = await DatabaseService.findAllFromTwoTables(
+        tableName: tableName, userId: userId);
     List<EventModel> events = [];
     if (response.status == 200) {
-      events =
-          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
+      events = (response.data as List)
+          .map((e) => EventModel.fromAllSchema(e))
+          .toList();
       // if (sort) {
       //   words.sort((a, b) => a.created_at.isBefore(b.created_at) ? 1 : -1);
       // }
@@ -90,13 +92,15 @@ class EventService {
     return events;
   }
 
-  static Future<List<Event>> exploreWords(String email, {int page = 0}) async {
+  static Future<List<EventModel>> exploreWords(String email,
+      {int page = 0}) async {
     final response = await DatabaseService.findLimitedWords(page: page);
     final masteredWords = await getBookmarks(email, isBookmark: false);
-    List<Event> words = [];
-    List<Event> exploreWords = [];
+    List<EventModel> words = [];
+    List<EventModel> exploreWords = [];
     if (response.status == 200) {
-      words = (response.data as List).map((e) => Event.fromJson(e)).toList();
+      words =
+          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
 
       /// exclude words that are already bookmarked.
       for (var element in words) {
@@ -136,15 +140,15 @@ class EventService {
     return response;
   }
 
-  static Future<Event> getLastUpdatedRecord() async {
+  static Future<EventModel> getLastUpdatedRecord() async {
     final response = await DatabaseService.findRecentlyUpdatedRow(
         'created_at', '',
         table1: WORD_OF_THE_DAY_TABLE_NAME,
         table2: EVENTS_TABLE_NAME,
         ascending: false);
     if (response.status == 200) {
-      Event lastWordOfTheDay =
-          Event.fromJson(response.data[0][EVENTS_TABLE_NAME]);
+      EventModel lastWordOfTheDay =
+          EventModel.fromJson(response.data[0][EVENTS_TABLE_NAME]);
       lastWordOfTheDay.createdAt =
           DateTime.parse(response.data[0]['created_at']);
       return lastWordOfTheDay;
@@ -153,13 +157,14 @@ class EventService {
     }
   }
 
-  static Future<List<Event>> searchEvents(String query,
+  static Future<List<EventModel>> searchEvents(String query,
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsContaining(query,
         columnName: WORD_COLUMN, tableName: tableName);
-    List<Event> words = [];
+    List<EventModel> words = [];
     if (response.status == 200) {
-      words = (response.data as List).map((e) => Event.fromJson(e)).toList();
+      words =
+          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
       // if (sort) {
       //   words.sort((a, b) => a.word.compareTo(b.word));
       // }
@@ -183,7 +188,7 @@ class EventService {
 
   static Future<PostgrestResponse> updateEvent({
     required String id,
-    required Event event,
+    required EventModel event,
   }) async {
     final Map<String, dynamic> json = event.toJson();
     final response = await DatabaseService.updateRow(
@@ -193,7 +198,7 @@ class EventService {
 
   Future<PostgrestResponse> updateDescription({
     required String id,
-    required Event event,
+    required EventModel event,
   }) async {
     final response = await DatabaseService.updateColumn(
         searchColumn: ID_COLUMN,

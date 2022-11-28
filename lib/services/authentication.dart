@@ -80,8 +80,9 @@ class AuthService {
     }
   }
 
-  static Future<ResponseObject> updateLoginStatus(
+  static Future<Response> updateLoginStatus(
       {required String email, bool isLoggedIn = false}) async {
+    final resp = Response.init();
     try {
       final response = await DatabaseService.updateColumn(
           searchColumn: USER_EMAIL_COLUMN,
@@ -90,16 +91,20 @@ class AuthService {
           columnName: USER_LOGGEDIN_COLUMN,
           tableName: _tableName);
       if (response.status == 200) {
-        return ResponseObject(Status.success.name,
-            UserModel.fromJson((response.data as List).first), Status.success);
+        return resp.copyWith(
+            didSucced: true,
+            message: 'Success',
+            data: UserModel.fromJson(
+              (response.data as List).first,
+            ));
       } else {
         _logger.d('existing user not found');
-        return ResponseObject(Status.notfound.name,
-            UserModel.fromJson(response.data), Status.notfound);
+        return resp.copyWith(
+            didSucced: false, message: 'existing user not found');
       }
-    } catch (_) {
+    } on PostgrestException catch (_) {
       _logger.e(_.toString());
-      return ResponseObject(_.toString(), UserModel.init(), Status.error);
+      return resp.copyWith(didSucced: false, message: _.details);
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rsvp/exports.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
@@ -112,7 +112,7 @@ class _ViewBugReportsState extends State<ViewBugReports> {
                   ),
                 );
               }
-              List<Event> reports = request.data as List<Event>;
+              List<EventModel> reports = request.data as List<EventModel>;
               if (reports.isEmpty) {
                 return const Center(
                   child: Text('No reports yet'),

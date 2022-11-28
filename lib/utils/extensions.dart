@@ -41,8 +41,8 @@ extension CompareUsers on UserModel {
       runtimeType == other.runtimeType &&
       idToken == other.idToken &&
       accessToken == other.accessToken &&
-      listEquals(events, other.events) &&
-      listEquals(interested, other.interested) &&
+      listEquals(hosted, other.hosted) &&
+      listEquals(bookmarks, other.bookmarks) &&
       email == other.email &&
       name == other.name &&
       avatarUrl == other.avatarUrl &&

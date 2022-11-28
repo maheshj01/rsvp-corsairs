@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
@@ -168,7 +167,7 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
 }
 
 class EventCard extends StatelessWidget {
-  final Event? event;
+  final EventModel? event;
   final String title;
   final Color? color;
   final double? height;

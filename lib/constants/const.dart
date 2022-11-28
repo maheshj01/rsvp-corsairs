@@ -34,7 +34,6 @@ const USER_TABLE_NAME = 'user';
 // const USER_TABLE_NAME = 'users_test';
 const FEEDBACK_TABLE_NAME = 'feedback';
 
-const EDIT_HISTORY_TABLE = 'edit_history';
 const WORD_STATE_TABLE_NAME = 'word_state';
 const WORD_OF_THE_DAY_TABLE_NAME = 'word_of_the_day';
 
@@ -46,7 +45,7 @@ const MEANING_COLUMN = 'meaning';
 const EXAMPLE_COLUMN = 'example';
 const NOTE_COLUMN = 'notes';
 const STATE_COLUMN = 'state';
-const CREATED_AT_COLUMN = 'created_at';
+const CREATED_AT_COLUMN = 'createdAt';
 
 /// USER TABLE COLUMNS
 const USERID_COLUMN = 'id';

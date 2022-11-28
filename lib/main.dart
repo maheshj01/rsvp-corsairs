@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:rsvp/base_home.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/splashscreen.dart';
@@ -30,7 +30,8 @@ Future<void> main() async {
 const _logger = Logger('CorsairsApp');
 final ValueNotifier<bool> darkNotifier = ValueNotifier<bool>(false);
 final ValueNotifier<int> totalNotifier = ValueNotifier<int>(0);
-final ValueNotifier<List<Event>?> listNotifier = ValueNotifier<List<Event>>([]);
+final ValueNotifier<List<EventModel>?> listNotifier =
+    ValueNotifier<List<EventModel>>([]);
 // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 late FirebaseAnalytics analytics;
 FirebaseAnalyticsObserver observer =
@@ -47,8 +48,7 @@ class _CorsairsAppState extends State<CorsairsApp> {
     firebaseAnalytics.appOpen();
     final email = await Settings.email;
     if (email.isNotEmpty) {
-      final response =
-          await AuthService.updateLoginStatus(email: email, isLoggedIn: true);
+      await AuthService.updateLoginStatus(email: email, isLoggedIn: true);
     }
   }
 
@@ -81,9 +81,6 @@ class _CorsairsAppState extends State<CorsairsApp> {
               debugShowCheckedModeBanner: !kDebugMode,
               darkTheme: CorsairsTheme.darkThemeData,
               theme: CorsairsTheme.lightThemeData,
-              // routes: {
-              //   Notifications.route: (context) => Notifications(),
-              // },
               themeMode:
                   CorsairsTheme.isDark ? ThemeMode.dark : ThemeMode.light,
               home: const SplashScreen(),

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rsvp/models/event.dart';
 import 'package:rsvp/models/event_schema.dart';
+import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
@@ -75,8 +75,9 @@ class _AddEventState extends State<AddEvent> {
   }
 
   Future<void> _publishPost() async {
+    final user = AppStateScope.of(context).user;
     showCircularIndicator(context);
-    final EventModel _event = _eventNotifier.value;
+    final EventModel _event = _eventNotifier.value.copyWith(host: user);
     if (_event.name!.isEmpty) {
       showMessage(context, 'Title cannot be empty');
       stopCircularIndicator(context);
@@ -107,8 +108,7 @@ class _AddEventState extends State<AddEvent> {
       stopCircularIndicator(context);
       return;
     }
-    final eventModel = Event.fromEventModel(_event);
-    final resp = await EventService.addEvent(eventModel);
+    final resp = await EventService.addEvent(_event);
     if (resp.didSucced) {
       showMessage(context, 'Event added successfully');
       stopCircularIndicator(context);

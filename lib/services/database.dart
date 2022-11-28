@@ -51,17 +51,22 @@ class DatabaseService {
   /// fetches all
   static Future<PostgrestResponse> findRowsByInnerJoinOnColumnValue(
       String innerJoinColumn, String value,
-      {String table1 = EDIT_HISTORY_TABLE,
+      {String table1 = EVENTS_TABLE_NAME,
       bool ascending = false,
       String table2 = USER_TABLE_NAME}) async {
-    final response = await _supabase
-        .from(table1)
-        .select('*, $table2!inner(*)')
-        .order('created_at', ascending: ascending)
-        // .eq('$table2.$innerJoinColumn', '$value')
-        .execute();
+    try {
+      final response = await _supabase
+          .from(table1)
+          .select('*, $table2!inner(*)')
+          .order(CREATED_AT_COLUMN, ascending: ascending)
+          // .eq('$table2.$innerJoinColumn', '$value')
+          .execute();
 
-    return response;
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: $_');
+      rethrow;
+    }
   }
 
   /// ```
@@ -79,7 +84,7 @@ class DatabaseService {
       String value1,
       String innerJoinColumn2,
       String value2,
-      {String table1 = EDIT_HISTORY_TABLE,
+      {String table1 = EVENTS_TABLE_NAME,
       bool ascending = false,
       String table2 = USER_TABLE_NAME}) async {
     final response = await _supabase
@@ -116,6 +121,18 @@ class DatabaseService {
     return response;
   }
 
+  static Future<PostgrestResponse> findAllFromTwoTables(
+      {String tableName = EVENTS_TABLE_NAME, required String userId}) async {
+    final response = await findRowsByInnerJoinOnColumnValue(
+      'host',
+      userId,
+      table1: EVENTS_TABLE_NAME,
+      table2: USER_TABLE_NAME,
+    );
+
+    return response;
+  }
+
   static Future<PostgrestResponse> findLimitedWords(
       {String tableName = EVENTS_TABLE_NAME, int page = 0}) async {
     final response = await _supabase
@@ -127,7 +144,7 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findRecentlyUpdatedRow(
       String innerJoinColumn, String value,
-      {String table1 = EDIT_HISTORY_TABLE,
+      {String table1 = EVENTS_TABLE_NAME,
       bool ascending = false,
       String table2 = USER_TABLE_NAME}) async {
     final response = await _supabase
@@ -196,10 +213,12 @@ class DatabaseService {
     try {
       final response = await _supabase
           .from(tableName)
-          .update({columnName: columnValue}).eq(searchColumn, searchValue);
+          .update({columnName: columnValue})
+          .eq(searchColumn, searchValue)
+          .execute();
       return response;
-    } catch (_) {
-      _logger.e('error updating column: $_');
+    } on PostgrestException catch (_) {
+      _logger.e('error updating column: ${_.details}');
       rethrow;
     }
   }
@@ -245,14 +264,6 @@ class DatabaseService {
     }
     return response;
   }
-}
-
-class ResponseObject {
-  final String message;
-  final Object data;
-  final Status status;
-
-  ResponseObject(this.message, this.data, this.status);
 }
 
 class Response {

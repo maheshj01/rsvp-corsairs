@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rsvp/constants/constants.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -86,7 +86,7 @@ double diagonal(Size size) {
   return pow(pow(size.width, 2) + pow(size.width, 2), 0.5) as double;
 }
 
-String buildShareMessage(Event event) {
+String buildShareMessage(EventModel event) {
   return '''
     Hey Corsairs, I will be attending ${event.name} on ${event.startsAt!.formatDate()}, You can join to by using this link ${event.id};
     ''';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rsvp/models/event.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:uuid/uuid.dart';
 
 part 'user.g.dart';
@@ -11,8 +11,8 @@ class UserModel extends ChangeNotifier {
   String? idToken;
   String? accessToken;
   // events hosted or attended by user
-  List<Event> events;
-  List<Event> interested;
+  List<EventModel> hosted;
+  List<EventModel> bookmarks;
   String email;
   String name;
   String? avatarUrl;
@@ -36,8 +36,8 @@ class UserModel extends ChangeNotifier {
       this.studentId = '',
       this.password = '',
       this.isLoggedIn = false,
-      this.interested = const [],
-      this.events = const []});
+      this.bookmarks = const [],
+      this.hosted = const []});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
@@ -45,6 +45,7 @@ class UserModel extends ChangeNotifier {
   /// todo: add created at parameter
   factory UserModel.copyWith(UserModel w) {
     return UserModel(
+        id: w.id,
         name: w.name,
         email: w.email,
         avatarUrl: w.avatarUrl,
@@ -56,8 +57,8 @@ class UserModel extends ChangeNotifier {
         studentId: w.studentId,
         created_at: w.created_at,
         isLoggedIn: w.isLoggedIn,
-        interested: w.interested,
-        events: w.events);
+        bookmarks: w.bookmarks,
+        hosted: w.hosted);
   }
   factory UserModel.schema(UserModel w) {
     return UserModel(
@@ -72,7 +73,7 @@ class UserModel extends ChangeNotifier {
       studentId: w.studentId,
       created_at: w.created_at,
       isLoggedIn: w.isLoggedIn,
-      interested: w.interested,
+      bookmarks: w.bookmarks,
     );
   }
 
@@ -88,8 +89,8 @@ class UserModel extends ChangeNotifier {
     String? password,
     String? studentId,
     DateTime? created_at,
-    List<Event>? interested,
-    List<Event>? events,
+    List<EventModel>? bookmarks,
+    List<EventModel>? hosted,
   }) {
     return UserModel(
         name: name ?? this.name,
@@ -103,20 +104,21 @@ class UserModel extends ChangeNotifier {
         studentId: studentId ?? this.studentId,
         created_at: created_at ?? this.created_at,
         isLoggedIn: isLoggedIn ?? this.isLoggedIn,
-        interested: interested ?? this.interested,
-        events: events ?? this.events);
+        bookmarks: bookmarks ?? this.bookmarks,
+        hosted: hosted ?? this.hosted);
   }
 
-  factory UserModel.init({String email = '', String name = ''}) {
+  factory UserModel.init({String email = '', String name = '', String? id}) {
     final now = DateTime.now();
     return UserModel(
+        id: id ?? '',
         name: name,
         email: email,
         avatarUrl: '',
         idToken: '',
         accessToken: '',
-        events: [],
-        interested: [],
+        hosted: [],
+        bookmarks: [],
         created_at: now,
         username: '',
         password: '',
