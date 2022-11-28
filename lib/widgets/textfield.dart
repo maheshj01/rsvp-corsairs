@@ -8,6 +8,7 @@ class CSField extends StatefulWidget {
   final bool isReadOnly;
   final bool hasLabel;
   final int maxLines;
+  final int minLines;
   final double fontSize;
   final int? maxLength;
   final Function(String)? onChanged;
@@ -26,6 +27,7 @@ class CSField extends StatefulWidget {
       this.maxLength,
       this.fontSize = 16,
       this.isTransparent = false,
+      this.minLines = 1,
       this.maxLines = 1,
       this.validator,
       this.autovalidateMode,
@@ -93,7 +95,7 @@ class _CSFieldState extends State<CSField> {
             readOnly: widget.isReadOnly,
             autofocus: widget.autoFocus,
             obscureText: widget.obscureText,
-            minLines: 1,
+            minLines: widget.minLines,
             maxLength: widget.maxLength,
             maxLines: widget.maxLines,
             validator: widget.validator,

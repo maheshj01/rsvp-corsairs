@@ -86,6 +86,15 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
             },
           ),
           hLine(),
+          !user!.isAdmin
+              ? const SizedBox.shrink()
+              : settingTile(
+                  'Reports and Feedbacks',
+                  onTap: () {
+                    Navigate.push(context, const ViewBugReports());
+                  },
+                ),
+          hLine(),
           // heading('terms of service'),
           // const SizedBox(height: 16),
           settingTile('Privacy Policy', onTap: () {
@@ -101,7 +110,7 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
           settingTile('Logout', onTap: () async {
             await Settings.clear();
             await AuthService.updateLoginStatus(
-                email: user!.email, isLoggedIn: false);
+                email: user.email, isLoggedIn: false);
             Navigate.pushAndPopAll(context, const LoginPage());
           }),
           hLine(),
