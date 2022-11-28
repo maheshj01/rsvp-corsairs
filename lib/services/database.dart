@@ -48,9 +48,9 @@ class DatabaseService {
     return response;
   }
 
-  /// fetches all
-  static Future<PostgrestResponse> findRowsByInnerJoinOnColumnValue(
-      String innerJoinColumn, String value,
+  /// returns data from two table joined on the basis of a column
+  /// associated via foreign key
+  static Future<PostgrestResponse> findRowsByInnerJoinOnColumn(
       {String table1 = EVENTS_TABLE_NAME,
       bool ascending = false,
       String table2 = USER_TABLE_NAME}) async {
@@ -59,7 +59,6 @@ class DatabaseService {
           .from(table1)
           .select('*, $table2!inner(*)')
           .order(CREATED_AT_COLUMN, ascending: ascending)
-          // .eq('$table2.$innerJoinColumn', '$value')
           .execute();
 
       return response;
@@ -121,17 +120,14 @@ class DatabaseService {
     return response;
   }
 
-  static Future<PostgrestResponse> findAllFromTwoTables(
-      {String tableName = EVENTS_TABLE_NAME, required String userId}) async {
-    final response = await findRowsByInnerJoinOnColumnValue(
-      'host',
-      userId,
-      table1: EVENTS_TABLE_NAME,
-      table2: USER_TABLE_NAME,
-    );
-
-    return response;
-  }
+  // static Future<PostgrestResponse> findAllFromTwoTables(
+  //     {String tableName = EVENTS_TABLE_NAME, required String userId}) async {
+  //   final response = await findRowsByInnerJoinOnColumn(
+  //     table1: EVENTS_TABLE_NAME,
+  //     table2: USER_TABLE_NAME,
+  //   );
+  //   return response;
+  // }
 
   static Future<PostgrestResponse> findLimitedWords(
       {String tableName = EVENTS_TABLE_NAME, int page = 0}) async {

@@ -63,8 +63,7 @@ class _EventDetailState extends State<EventDetail> {
                       style: CorsairsTheme.googleFontsTextTheme.headline3!
                           .copyWith(color: Colors.white)),
                 ),
-                // TODO: toggle isHost
-                !isHost
+                isHost
                     ? IconButton(
                         onPressed: () {
                           Navigate.push(
@@ -133,12 +132,33 @@ class _EventDetailState extends State<EventDetail> {
                   style: const TextStyle(color: Colors.white)),
             ),
             16.0.vSpacer(),
-            // ADDRESS
             ListTile(
               leading: const Icon(Icons.location_on,
                   color: CorsairsTheme.primaryYellow),
               onTap: () {},
               title: Text(widget.event.address!,
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+            ),
+            16.0.vSpacer(),
+            ListTile(
+              leading:
+                  const Icon(Icons.people, color: CorsairsTheme.primaryYellow),
+              onTap: () {},
+              title: Text('10 Attendees',
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+            ),
+            16.0.vSpacer(),
+            // host details
+            ListTile(
+              leading:
+                  const Icon(Icons.person, color: CorsairsTheme.primaryYellow),
+              onTap: () {},
+              title: Text(widget.event.host!.name,
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+              subtitle: Text(widget.event.host!.email,
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
             ),
@@ -184,14 +204,16 @@ class _EventDetailState extends State<EventDetail> {
               ),
             ]),
           ),
-          Center(
-            child: CSButton(
-              width: size!.width * 0.8,
-              onTap: () {},
-              backgroundColor: CorsairsTheme.primaryYellow,
-              label: 'Going',
-            ),
-          ),
+          isHost
+              ? const SizedBox.shrink()
+              : Center(
+                  child: CSButton(
+                    width: size!.width * 0.8,
+                    onTap: () {},
+                    backgroundColor: CorsairsTheme.primaryYellow,
+                    label: 'Going',
+                  ),
+                ),
           24.0.vSpacer()
         ],
       ),
