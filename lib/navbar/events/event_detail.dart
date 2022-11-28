@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/models/attendee.dart';
 import 'package:rsvp/models/event_schema.dart';
+import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
@@ -45,9 +46,12 @@ class _EventDetailState extends State<EventDetail> {
         });
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchAttendees();
+    });
   }
 
-  Future<List<Attendee>> fetchAttendees(String userId) async {
+  Future<void> fetchAttendees() async {
     _responseNotifier.value.copyWith(state: RequestState.active);
     final response = await DatabaseService.findRowByColumnValue(
       widget.event.id!,
@@ -55,7 +59,6 @@ class _EventDetailState extends State<EventDetail> {
       tableName: ATTENDEES_TABLE_NAME,
     );
 
-    List<Attendee> attendees = [];
     try {
       if (response.status == 200) {
         attendees = response.data
@@ -65,7 +68,7 @@ class _EventDetailState extends State<EventDetail> {
         _responseNotifier.value.copyWith(state: RequestState.done);
       }
       Attendee? attendee =
-          attendees.firstWhere((element) => element.user_id == userId);
+          attendees.firstWhere((element) => element.user_id == user!.id!);
       if (attendee != null) {
         _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
       } else {
@@ -74,17 +77,19 @@ class _EventDetailState extends State<EventDetail> {
     } catch (e) {
       _responseNotifier.value.copyWith(state: RequestState.error);
     }
-    return attendees;
+    setState(() {});
   }
 
   final ValueNotifier<Response> _responseNotifier =
       ValueNotifier<Response>(Response.init(data: false));
+  List<Attendee> attendees = [];
   bool _isCollapsed = false;
   Size? size;
+  UserModel? user;
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-    final user = AppStateScope.of(context).user;
+    user = AppStateScope.of(context).user;
     bool isHost = user!.email == widget.event.host?.email;
     Widget _buildDetails() {
       return Padding(
@@ -178,19 +183,14 @@ class _EventDetailState extends State<EventDetail> {
                       .copyWith(color: Colors.white)),
             ),
             16.0.vSpacer(),
-            FutureBuilder<List<Attendee>>(
-                future: fetchAttendees(user.id!),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Attendee>> snapshot) {
-                  return ListTile(
-                    leading: const Icon(Icons.people,
-                        color: CorsairsTheme.primaryYellow),
-                    onTap: () {},
-                    title: Text('${snapshot.data?.length ?? 0} Attendees',
-                        style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                            .copyWith(color: Colors.white)),
-                  );
-                }),
+            ListTile(
+              leading:
+                  const Icon(Icons.people, color: CorsairsTheme.primaryYellow),
+              onTap: () {},
+              title: Text('${attendees.length} Attendees',
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+            ),
             16.0.vSpacer(),
             // host details
             ListTile(
@@ -259,11 +259,12 @@ class _EventDetailState extends State<EventDetail> {
                             _responseNotifier.value =
                                 response.copyWith(state: RequestState.active);
                             await EventService.rsvpEvent(
-                                widget.event.id!, user.id!,
+                                widget.event.id!, user!.id!,
                                 going: !(response.data as bool));
                             _responseNotifier.value = response.copyWith(
                                 data: !(response.data as bool),
                                 state: RequestState.done);
+                            fetchAttendees();
                           },
                           backgroundColor: CorsairsTheme.primaryYellow,
                           label: !(response.data as bool) ? 'Going' : 'Cancel',

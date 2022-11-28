@@ -9,7 +9,7 @@ const FORCE_UPDATE_KEY = 'forceUpdate';
 const CONFIG_COLLECTION_KEY = 'config';
 const UPDATE_DOC_KEY = 'update';
 const BUILD_NUMBER_KEY = 'buildNumber';
-const REPO_NAME = 'rsvp_corsairs';
+const REPO_NAME = 'rsvp-corsairs';
 const SOURCE_CODE_URL = 'https://github.com/maheshmnj/$REPO_NAME';
 
 const PLAY_STORE_URL =

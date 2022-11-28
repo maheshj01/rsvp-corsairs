@@ -14,7 +14,8 @@ const String UPDATE_APP_MESSAGE = 'New version available. Update now?';
 
 const String signInFailure = 'failed to sign in User, please try again later';
 
-const String ABOUT_TEXT = "RSVP Corsairs is a event management app";
+const String ABOUT_TEXT =
+    "RSVP Corsairs is a event tracking app, specially built for Umass Corsairs to track their events and RSVP for them. It is built using Flutter and Supabase. It is open source and you can contribute to it on Github. You Can also help us improve the app by reporting bugs and suggesting features under the app settings.";
 
 const String urlPrefix =
     'https://docs.flutter.dev/cookbook/img-files/effects/parallax';

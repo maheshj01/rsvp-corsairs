@@ -59,6 +59,7 @@ class _AboutAppWidgetMobileState extends State<AboutAppWidgetMobile> {
       body: Padding(
         padding: 16.0.allPadding,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// about the app
             const Text(
@@ -68,22 +69,24 @@ class _AboutAppWidgetMobileState extends State<AboutAppWidgetMobile> {
             // open source repo link
             16.0.vSpacer(),
             const Expanded(child: SizedBox.shrink()),
-            Link(
-                uri: Uri.parse(SOURCE_CODE_URL),
-                target: LinkTarget.blank,
-                builder: (context, followLink) {
-                  return TextButton(
-                    onPressed: followLink,
-                    child: const Text(
-                      'Visit Repository',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w500,
+            Center(
+              child: Link(
+                  uri: Uri.parse(SOURCE_CODE_URL),
+                  target: LinkTarget.blank,
+                  builder: (context, followLink) {
+                    return TextButton(
+                      onPressed: followLink,
+                      child: const Text(
+                        'View source code',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+            ),
             24.0.vSpacer(),
           ],
         ),
