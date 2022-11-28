@@ -7,7 +7,8 @@ import 'package:uuid/uuid.dart';
 const String GITHUB_ASSET_PATH = 'assets/images/github.png';
 const String GITHUB_WHITE_ASSET_PATH = 'assets/images/github_white.png';
 const String GOOGLE_ASSET_PATH = 'assets/images/google.png';
-const String ARNIE_ASSET_PATH = 'assets/images/arnie.png';
+const String ARNIE_ASSET_PATH = 'assets/images/arnie.jpg';
+const String SPLASH_PATH = 'assets/images/arnie_splash.png';
 
 const String FORCE_UPDATE_MESSAGE = 'Please update your app to continue';
 const String UPDATE_APP_MESSAGE = 'New version available. Update now?';

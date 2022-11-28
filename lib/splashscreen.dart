@@ -92,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  ARNIE_ASSET_PATH,
+                  SPLASH_PATH,
                   width: 200,
                 ),
                 title,
