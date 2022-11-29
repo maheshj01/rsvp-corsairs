@@ -5,11 +5,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
+import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
-import 'package:rsvp/utils/extensions.dart';
-import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/widgets/event_parallax.dart';
@@ -137,8 +136,9 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
             actions: [
               IconButton(
                   onPressed: () {
-                    Navigate.push(context, const NotificationsPage(),
-                        slideTransitionType: TransitionType.rtl);
+                    Navigator.of(context, rootNavigator: true).push(
+                        PageRoutes.sharedAxis(const NotificationsPage(),
+                            SharedAxisTransitionType.horizontal));
                   },
                   icon: const Icon(
                     Icons.notifications_on,
@@ -165,7 +165,7 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
           await getEvents();
         },
         child: ListView.builder(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.only(bottom: 24),
           itemBuilder: (_, index) {
             // Navigate.push(context, EventDetail(event: events[index]));
             return OpenContainer<bool>(
@@ -174,9 +174,9 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   return EventDetail(event: events[index]);
                 },
                 tappable: true,
-                closedShape: 22.0.rounded,
-                openShape: 22.0.rounded,
+                openElevation: 0.0,
                 transitionType: ContainerTransitionType.fadeThrough,
+                useRootNavigator: true,
                 closedBuilder:
                     (BuildContext context, VoidCallback openContainer) {
                   return Animate(

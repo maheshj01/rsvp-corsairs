@@ -1,10 +1,11 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/settings.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
-import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/widgets/circle_avatar.dart';
 import 'package:rsvp/widgets/icon.dart';
 import 'package:rsvp/widgets/widgets.dart';
@@ -113,10 +114,12 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                         Icons.settings,
                                         size: 38,
                                         onTap: () {
-                                          Navigate.push(
-                                            context,
-                                            const SettingsPageMobile(),
-                                          );
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .push(PageRoutes.sharedAxis(
+                                                  const SettingsPageMobile(),
+                                                  SharedAxisTransitionType
+                                                      .horizontal));
                                         },
                                       ),
                                     ),
