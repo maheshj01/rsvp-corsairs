@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
@@ -168,8 +169,18 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                 onTap: () {
                   Navigate.push(context, EventDetail(event: events[index]));
                 },
-                child: EventParallaxTile(
-                  event: events[index],
+                child: Animate(
+                  effects: [
+                    SlideEffect(
+                      // begin based on index of item
+                      begin: Offset(0, 0.8 * index),
+                      end: const Offset(0, 0),
+                      duration: const Duration(milliseconds: 500),
+                    ),
+                  ],
+                  child: EventParallaxTile(
+                    event: events[index],
+                  ),
                 ));
           },
           itemCount: events.length,

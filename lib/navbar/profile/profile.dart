@@ -105,22 +105,6 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                               padding: 18.0.verticalPadding,
                               child: Column(
                                 children: [
-                                  // TODO: implement dark theme
-                                  // Container(
-                                  //     alignment: Alignment.topRight,
-                                  //     padding: EdgeInsets.only(right: 16),
-                                  //     child: IconButton(
-                                  //       onPressed: () {
-                                  //         if (CorsairsTheme.isDark) {
-                                  //           Settings.setTheme(ThemeMode.light);
-                                  //         } else {
-                                  //           Settings.setTheme(ThemeMode.dark);
-                                  //         }
-                                  //       },
-                                  //       icon: CorsairsTheme.isDark
-                                  //           ? const Icon(Icons.light_mode)
-                                  //           : const Icon(Icons.dark_mode),
-                                  //     )),
                                   Container(
                                     alignment: Alignment.topRight,
                                     child: Padding(
@@ -137,17 +121,16 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       ),
                                     ),
                                   ),
-
                                   Stack(
                                     children: [
                                       Padding(
                                         padding: 16.0.allPadding,
                                         child: CircleAvatar(
                                             radius: 46,
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .primary
-                                                .withOpacity(0.2),
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                        255, 25, 79, 172)
+                                                    .withOpacity(0.8),
                                             child: CircularAvatar(
                                               url: '${user.avatarUrl}',
                                               name: user.name.initals(),
@@ -202,10 +185,10 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                             ),
                           ),
                         ),
-                        16.0.vSpacer(),
-                        Container(
-                            alignment: Alignment.centerLeft,
-                            child: heading('Contributions')),
+                        // 16.0.vSpacer(),
+                        // Container(
+                        //     alignment: Alignment.centerLeft,
+                        //     child: heading('Stats')),
                         16.0.vSpacer(),
 
                         /// rounded Container with border
@@ -237,10 +220,10 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       4.0.vSpacer(),
                                       Text(
                                         i == 0
-                                            ? 'Words Added'
+                                            ? 'Events Attended'
                                             : i == 1
-                                                ? 'Words Edited'
-                                                : 'Under Review',
+                                                ? 'Events Hosted'
+                                                : 'Bookmarks',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall!

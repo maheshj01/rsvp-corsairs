@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 
 class VHIcon extends StatelessWidget {
@@ -26,12 +27,11 @@ class VHIcon extends StatelessWidget {
       width: size,
       decoration: BoxDecoration(border: border, shape: BoxShape.circle),
       child: Material(
-        color: backgroundColor ?? Theme.of(context).colorScheme.primary,
+        color: backgroundColor ?? CorsairsTheme.primaryYellow,
         borderRadius: (size * 2.0).allRadius,
         child: InkWell(
           borderRadius: BorderRadius.circular(32),
-          splashColor:
-              splashColor == null ? Theme.of(context).splashColor : splashColor,
+          splashColor: splashColor ?? Theme.of(context).splashColor,
           onTap: () {
             if (onTap != null) {
               onTap!.call();

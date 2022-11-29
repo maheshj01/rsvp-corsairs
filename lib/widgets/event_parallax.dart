@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:rsvp/models/event_schema.dart';
+import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
 class EventParallaxTile extends StatelessWidget {
@@ -15,7 +16,7 @@ class EventParallaxTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: ClipRRect(
@@ -33,19 +34,10 @@ class EventParallaxTile extends StatelessWidget {
   }
 
   Widget _buildParallaxBackground(BuildContext context) {
-    return Flow(
-      delegate: ParallaxFlowDelegate(
-        scrollable: Scrollable.of(context)!,
-        listItemContext: context,
-        backgroundImageKey: _backgroundImageKey,
-      ),
-      children: [
-        Image.network(
-          event.coverImage!,
-          key: _backgroundImageKey,
-          fit: BoxFit.cover,
-        ),
-      ],
+    return Image.network(
+      event.coverImage!,
+      key: _backgroundImageKey,
+      fit: BoxFit.fill,
     );
   }
 
@@ -66,7 +58,7 @@ class EventParallaxTile extends StatelessWidget {
             ),
           ),
           Text(
-            event.description!,
+            event.startsAt!.standardDate(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 14,

@@ -165,7 +165,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                                   return FloatingActionButton.extended(
                                       shape: 22.0.rounded,
                                       isExtended: true,
-                                      icon: const Icon(Icons.music_note,
+                                      icon: const Icon(Icons.event_note,
                                           color: CorsairsTheme.primaryYellow,
                                           size: 28),
                                       backgroundColor:
