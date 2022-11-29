@@ -159,19 +159,14 @@ class _LoginPageState extends State<LoginPage> {
             autofillHints:
                 index == 0 ? [AutofillHints.email] : [AutofillHints.password],
             decoration: InputDecoration(
-              border: inputborder,
-              enabledBorder: inputborder,
-              focusedBorder: inputborder,
               hintText: hint,
               counterText: '',
-              hintStyle: const TextStyle(color: Colors.white),
             ),
+            cursorHeight: 32,
             obscureText: index == 1,
             obscuringCharacter: obscureCharacter,
             maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
-            keyboardType: index == STUDENT_ID_VALIDATOR
-                ? TextInputType.number
-                : TextInputType.text,
+            keyboardType: keyboardType(index),
             textInputAction: TextInputAction.next,
             style: const TextStyle(color: Colors.white),
             autovalidateMode: AutovalidateMode.onUserInteraction,

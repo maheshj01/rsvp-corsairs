@@ -1,15 +1,16 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/models/attendee.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
+import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
-import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/widgets/button.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
@@ -107,8 +108,7 @@ class _EventDetailState extends State<EventDetail> {
                 isHost
                     ? IconButton(
                         onPressed: () {
-                          Navigate.push(
-                              context,
+                          Navigator.of(context).push(PageRoutes.sharedAxis(
                               AddEvent(
                                 event: widget.event,
                                 isEdit: isHost,
@@ -120,7 +120,8 @@ class _EventDetailState extends State<EventDetail> {
                                     widget.event = updatedEvent!;
                                   });
                                 },
-                              ));
+                              ),
+                              SharedAxisTransitionType.vertical));
                         },
                         icon: const Icon(
                           Icons.edit,

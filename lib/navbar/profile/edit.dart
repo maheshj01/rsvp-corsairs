@@ -120,6 +120,7 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                               .withOpacity(0.2),
                           child: CircularAvatar(
                             url: '${user!.avatarUrl}',
+                            name: user!.name.initals(),
                             radius: 40,
                           )),
                     ),

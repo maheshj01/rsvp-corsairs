@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 
 class CSField extends StatefulWidget {
@@ -13,6 +14,7 @@ class CSField extends StatefulWidget {
   final int? maxLength;
   final Function(String)? onChanged;
   final bool isTransparent;
+  final bool hasBorder;
   final bool autoFocus;
   final AutovalidateMode? autovalidateMode;
   final bool obscureText;
@@ -27,6 +29,7 @@ class CSField extends StatefulWidget {
       this.maxLength,
       this.fontSize = 16,
       this.isTransparent = false,
+      this.hasBorder = false,
       this.minLines = 1,
       this.maxLines = 1,
       this.validator,
@@ -105,11 +108,14 @@ class _CSFieldState extends State<CSField> {
                 widget.onChanged!(x);
               }
             },
+            cursorColor: CorsairsTheme.primaryYellow,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.onBackground,
                 fontSize: widget.fontSize),
             decoration: InputDecoration(
-              border: InputBorder.none,
+              border: !widget.hasBorder ? InputBorder.none : null,
+              focusedBorder: !widget.hasBorder ? InputBorder.none : null,
+              enabledBorder: !widget.hasBorder ? InputBorder.none : null,
               hintText: widget.hint,
               counterText: '',
               hintStyle: TextStyle(

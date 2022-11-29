@@ -177,23 +177,13 @@ class _SignUpState extends State<SignUp> {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
-          border: inputborder,
-          enabledBorder: inputborder,
-          focusedBorder: inputborder,
           hintText: hint,
           counterText: '',
-          errorStyle: const TextStyle(
-            color: CorsairsTheme.primaryYellow,
-            fontSize: 14,
-          ),
-          hintStyle: const TextStyle(color: Colors.white),
         ),
         obscureText: index == PASSWORD_VALIDATOR,
         obscuringCharacter: obscureCharacter,
         maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
-        keyboardType: index == STUDENT_ID_VALIDATOR
-            ? TextInputType.number
-            : TextInputType.text,
+        keyboardType: keyboardType(index),
         textInputAction: TextInputAction.next,
         style: const TextStyle(color: Colors.white),
         key: wkey,

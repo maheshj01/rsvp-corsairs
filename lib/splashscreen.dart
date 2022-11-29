@@ -1,14 +1,15 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/animate.dart';
 import 'package:flutter_animate/effects/effects.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/strings.dart';
 import 'package:rsvp/models/user.dart';
+import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/pages/authentication/signup.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/themes/theme.dart';
-import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/settings.dart';
 import 'package:rsvp/utils/size_utils.dart';
 
@@ -36,16 +37,20 @@ class _SplashScreenState extends State<SplashScreen>
       user.isLoggedIn = true;
       Settings.setSkipCount = count;
       AppStateWidget.of(context).setUser(user);
-      Navigate().pushReplace(context, const AdaptiveLayout());
+      Navigator.of(context, rootNavigator: true).pushReplacement(
+          PageRoutes.sharedAxis(
+              const AdaptiveLayout(), SharedAxisTransitionType.scaled));
     } else {
       user.isLoggedIn = false;
       AppStateWidget.of(context).setUser(user);
       if (count == 1) {
         Settings.setSkipCount = count;
-        Navigate().pushReplace(context, const SignUp());
+        Navigator.of(context).pushReplacement(PageRoutes.sharedAxis(
+            const SignUp(), SharedAxisTransitionType.scaled));
         return;
       }
-      Navigate().pushReplace(context, const LoginPage());
+      Navigator.of(context).pushReplacement(PageRoutes.sharedAxis(
+          const LoginPage(), SharedAxisTransitionType.scaled));
       // if (count % 3 != 0) {
       //   Settings.setSkipCount = count;
       //   Navigate().pushReplace(context, const AdaptiveLayout());

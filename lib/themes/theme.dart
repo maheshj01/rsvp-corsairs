@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rsvp/exports.dart';
 import 'package:rsvp/utils/settings.dart';
 
 class CorsairsTheme {
@@ -90,6 +91,21 @@ class CorsairsTheme {
         titleTextStyle: googleFontsTextTheme.headlineMedium,
         elevation: 2.2,
         iconTheme: const IconThemeData(color: primaryYellow),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: inputborder,
+        focusedBorder: focusedInputborder,
+        enabledBorder: inputborder,
+        errorBorder: errorInputborder,
+        focusedErrorBorder: errorInputborder,
+        labelStyle: const TextStyle(color: primaryYellow),
+        hintStyle: inputHintStyle,
+        errorStyle: TextStyle(color: CorsairsTheme.primaryRed),
+      ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: Colors.white,
+        selectionColor: primaryYellow.withOpacity(0.5),
+        selectionHandleColor: CorsairsTheme.primaryYellow,
       ),
       iconTheme: const IconThemeData(color: primaryYellow),
       canvasColor: colorScheme.background,

@@ -206,3 +206,19 @@ FormFieldValidator<String> fieldValidator(int field) {
       };
   }
 }
+
+
+TextInputType keyboardType(int index){
+  switch (index) {
+    case NAME_VALIDATOR:
+      return TextInputType.name;
+    case EMAIL_VALIDATOR:
+      return TextInputType.emailAddress;
+    case PASSWORD_VALIDATOR:
+      return TextInputType.visiblePassword;
+    case STUDENT_ID_VALIDATOR:
+      return TextInputType.number;
+    default:
+      return TextInputType.text;
+  }
+}
