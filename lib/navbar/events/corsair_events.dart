@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,6 +8,7 @@ import 'package:rsvp/navbar/events/notifications.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
+import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/navigator.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
@@ -165,23 +167,32 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
         child: ListView.builder(
           padding: EdgeInsets.zero,
           itemBuilder: (_, index) {
-            return InkWell(
-                onTap: () {
-                  Navigate.push(context, EventDetail(event: events[index]));
+            // Navigate.push(context, EventDetail(event: events[index]));
+            return OpenContainer<bool>(
+                openBuilder:
+                    (BuildContext context, VoidCallback openContainer) {
+                  return EventDetail(event: events[index]);
                 },
-                child: Animate(
-                  effects: [
-                    SlideEffect(
-                      // begin based on index of item
-                      begin: Offset(0, 0.8 * index),
-                      end: const Offset(0, 0),
-                      duration: const Duration(milliseconds: 500),
+                tappable: true,
+                closedShape: 22.0.rounded,
+                openShape: 22.0.rounded,
+                transitionType: ContainerTransitionType.fadeThrough,
+                closedBuilder:
+                    (BuildContext context, VoidCallback openContainer) {
+                  return Animate(
+                    effects: [
+                      SlideEffect(
+                        // begin based on index of item
+                        begin: Offset(0, 0.8 * index),
+                        end: const Offset(0, 0),
+                        duration: const Duration(milliseconds: 500),
+                      ),
+                    ],
+                    child: EventParallaxTile(
+                      event: events[index],
                     ),
-                  ],
-                  child: EventParallaxTile(
-                    event: events[index],
-                  ),
-                ));
+                  );
+                });
           },
           itemCount: events.length,
         ),
