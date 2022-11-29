@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/navbar/pageroute.dart';
+import 'package:rsvp/navbar/profile/edit.dart';
 import 'package:rsvp/navbar/profile/settings.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
@@ -143,8 +144,19 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                       Positioned(
                                           right: 8,
                                           bottom: 16,
-                                          child: VHIcon(Icons.edit,
-                                              size: 30, onTap: () {}))
+                                          child: VHIcon(Icons.edit, size: 30,
+                                              onTap: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .push(
+                                              PageRoutes.sharedAxis(
+                                                EditProfile(
+                                                  user: user,
+                                                ),
+                                                SharedAxisTransitionType.scaled,
+                                              ),
+                                            );
+                                          }))
                                     ],
                                   ),
                                   Padding(

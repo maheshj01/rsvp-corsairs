@@ -212,6 +212,12 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
                             height: 48,
                             onTap: () async {
                               removeFocus(context);
+                              String description = _controller.text;
+                              if (description.isEmpty) {
+                                showMessage(
+                                    context, 'Please enter valid input');
+                                return;
+                              }
                               _responseNotifier.value = _responseNotifier.value
                                   .copyWith(
                                       state: RequestState.active,
@@ -219,7 +225,7 @@ class _ReportABugMobileState extends State<ReportABugMobile> {
                               try {
                                 final report = ReportModel(
                                     id: const Uuid().v4(),
-                                    description: _controller.text.trim(),
+                                    description: description,
                                     createdAt: DateTime.now().toUtc(),
                                     user: user!);
                                 final resp =
