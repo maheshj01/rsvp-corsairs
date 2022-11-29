@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,6 +43,16 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAc_EyjI8SY7W8C1gpO4YkJRUwvjUtYIrA',
+    appId: '1:729827175436:web:201270b8f0d034145a1229',
+    messagingSenderId: '729827175436',
+    projectId: 'rsvp-22bdf',
+    authDomain: 'rsvp-22bdf.firebaseapp.com',
+    storageBucket: 'rsvp-22bdf.appspot.com',
+    measurementId: 'G-28KHQJE762',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCanGtJ3y2wqMjbrSCV5o5mCf761jSCG70',
     appId: '1:729827175436:android:f540b086aadc42575a1229',
@@ -59,14 +63,27 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCf799uQC6NvfI8c2PxKFM4G7IA6u1cDQs',
-    appId: '1:729827175436:ios:5a97bbefba52ac745a1229',
+    appId: '1:729827175436:ios:f288de5f21a1b2e05a1229',
     messagingSenderId: '729827175436',
     projectId: 'rsvp-22bdf',
     storageBucket: 'rsvp-22bdf.appspot.com',
     androidClientId:
         '729827175436-j7ha49c27992635jvfp70i49fp1rc79k.apps.googleusercontent.com',
     iosClientId:
-        '729827175436-7g2nb0lut0t5fbjnlh8irn5m8bkqjh7i.apps.googleusercontent.com',
-    iosBundleId: 'com.wml.rsvpcorsairs',
+        '729827175436-it85npchu5m9k2slq0uqb42tvodju7rs.apps.googleusercontent.com',
+    iosBundleId: 'com.wml.rsvp',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCf799uQC6NvfI8c2PxKFM4G7IA6u1cDQs',
+    appId: '1:729827175436:ios:a9fb3d71aef8ffbf5a1229',
+    messagingSenderId: '729827175436',
+    projectId: 'rsvp-22bdf',
+    storageBucket: 'rsvp-22bdf.appspot.com',
+    androidClientId:
+        '729827175436-j7ha49c27992635jvfp70i49fp1rc79k.apps.googleusercontent.com',
+    iosClientId:
+        '729827175436-8460vuqj1ei12vkbpa9kt6a31sji2pkf.apps.googleusercontent.com',
+    iosBundleId: 'com.example.flutterCreate',
   );
 }

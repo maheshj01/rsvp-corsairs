@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wml.rsvp">
    <application
-        android:label="rsvp_corsairs"
+        android:label="RSVP Corsairs"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
