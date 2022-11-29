@@ -10,6 +10,7 @@ import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/utility.dart';
+import 'package:rsvp/widgets/circle_avatar.dart';
 import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
@@ -441,6 +442,19 @@ class _InviteSheetState extends State<InviteSheet> {
           const SizedBox(
             height: 100,
           ),
+          ListView(
+            shrinkWrap: true,
+            children: [
+              ListTile(
+                leading: CircularAvatar(
+                  name: 'John Doe'.initals(),
+                  radius: 40,
+                ),
+                title: const Text('John Doe'),
+                subtitle: const Text('@johndoe'),
+              )
+            ],
+          )
         ],
       ),
     );
