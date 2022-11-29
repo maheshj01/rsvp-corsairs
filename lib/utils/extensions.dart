@@ -85,19 +85,13 @@ extension DateHelper on DateTime {
     return formatter.format(this);
   }
 
+// return time difference in hrs and minutes
+// format: 1hr 30min
   String standardTimeDifference(DateTime date) {
-    if (difference(date).inMinutes < 60) {
-      return "${difference(date).inMinutes} mins";
-    } else if (difference(date).inMinutes < 1440) {
-      final hours = difference(date).inHours;
-      final mins = difference(date).inMinutes - (hours * 60);
-      return "$hours hrs $mins mins";
-    } else {
-      final days = difference(date).inDays;
-      final hours = difference(date).inHours - (days * 24);
-      final mins = difference(date).inMinutes - (hours * 60) - (days * 1440);
-      return "$days days $hours hrs $mins mins";
-    }
+    final difference = this.difference(date).inMinutes;
+    final hours = difference ~/ 60;
+    final minutes = difference % 60;
+    return '$hours hr' + (minutes > 0 ? ' $minutes mins' : '');
   }
 }
 

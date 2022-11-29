@@ -163,11 +163,15 @@ class _EventDetailState extends State<EventDetail> {
                     children: [
                       16.0.vSpacer(),
                       // time difference
-                      Text(
-                          widget.event.startsAt!
-                              .standardTimeDifference(widget.event.endsAt!),
-                          style: CorsairsTheme.googleFontsTextTheme.bodyText1!
-                              .copyWith(color: Colors.white)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Text(
+                            widget.event.endsAt!
+                                .standardTimeDifference(widget.event.startsAt!),
+                            style: CorsairsTheme.googleFontsTextTheme.bodyText1!
+                                .copyWith(color: Colors.white, fontSize: 18)),
+                      ),
+                      16.0.vSpacer(),
                     ],
                   ),
                 ],
