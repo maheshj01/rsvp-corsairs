@@ -22,6 +22,7 @@ class EventParallaxTile extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
+            fit: StackFit.expand,
             children: [
               _buildParallaxBackground(context),
               buildGradient(),
@@ -36,8 +37,8 @@ class EventParallaxTile extends StatelessWidget {
   Widget _buildParallaxBackground(BuildContext context) {
     return Image.network(
       event.coverImage!,
-      key: _backgroundImageKey,
-      fit: BoxFit.fill,
+      // key: _backgroundImageKey,
+      fit: BoxFit.fitWidth,
     );
   }
 
