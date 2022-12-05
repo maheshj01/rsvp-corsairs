@@ -90,13 +90,11 @@ class AuthService {
           columnValue: isLoggedIn,
           columnName: USER_LOGGEDIN_COLUMN,
           tableName: _tableName);
-      if (response.status == 200) {
+      if (response.status == 200 || response.status == 204) {
         return resp.copyWith(
-            didSucced: true,
-            message: 'Success',
-            data: UserModel.fromJson(
-              (response.data as List).first,
-            ));
+          didSucced: true,
+          message: 'Success',
+        );
       } else {
         _logger.d('existing user not found');
         return resp.copyWith(

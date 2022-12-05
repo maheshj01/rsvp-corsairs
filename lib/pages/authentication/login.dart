@@ -96,17 +96,9 @@ class _LoginPageState extends State<LoginPage> {
       final existingUser = await UserService.findByUsername(
           username: userId, isEmail: user.email.isNotEmpty);
       if (existingUser.email.isEmpty) {
-        showMessage(context, 'User not found please register');
-        await Future.delayed(const Duration(seconds: 2));
+        showMessage(context, 'Enter a valid username/password');
         _responseNotifier.value = _responseNotifier.value.copyWith(
-          state: RequestState.done,
-          message: 'Registering new User',
-        );
-        Navigate.pushAndPopAll(
-            context,
-            SignUp(
-              newUser: user,
-            ));
+            state: RequestState.done, didSucced: true, data: existingUser);
       } else {
         _logger.d('found existing user ${user.email}');
         if (user.password == existingUser.password) {
@@ -117,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigate.pushAndPopAll(context, const AdaptiveLayout());
           firebaseAnalytics.logSignIn(user);
         } else {
+          _logger.e('Incorrect password entered');
           showMessage(context, 'Incorrect password');
           _responseNotifier.value = _responseNotifier.value.copyWith(
               state: RequestState.done, didSucced: true, data: existingUser);
@@ -125,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = Response.init();
+      showMessage(context, '$error');
       await Settings.setIsSignedIn(false);
     }
   }

@@ -23,7 +23,10 @@ class UserService {
           columnName: isEmail ? USER_EMAIL_COLUMN : STUDENT_ID_COLUMN,
           tableName: _tableName);
       if (response.status == 200) {
-        final user = UserModel.fromJson(response.data);
+        if ((response.data as List).isEmpty) {
+          throw Exception('User not found');
+        }
+        final user = UserModel.fromJson((response.data as List).first);
         return user;
       } else {
         _logger.e('Invalid user credentials');
