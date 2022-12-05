@@ -45,6 +45,7 @@ const WORD_OF_THE_DAY_TABLE_NAME = 'word_of_the_day';
 /// VOCAB TABLE COLUMNS
 const EVENT_NAME_COLUMN = 'name';
 const ID_COLUMN = 'id';
+const HOST_COLUMN = 'host';
 const EVENT_ID_COLUMN = 'event_id';
 const EVENT_USER_ID_COLUMN = 'user_id';
 const SYNONYM_COLUMN = 'synonyms';

@@ -57,12 +57,35 @@ class DatabaseService {
     String table1 = EVENTS_TABLE_NAME,
     bool ascending = false,
     String table2 = USER_TABLE_NAME,
-    String table3 = ATTENDEES_TABLE_NAME,
   }) async {
     try {
       final response = await _supabase
           .from(table1)
           .select('*, $table2!inner(*)')
+          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .execute();
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: $_');
+      rethrow;
+    }
+  }
+
+  /// returns data from two table joined on the basis of a column
+  /// associated via foreign key
+  static Future<PostgrestResponse> findRowsByInnerJoinOn1ColumnValue({
+    String table1 = EVENTS_TABLE_NAME,
+    bool ascending = false,
+    String column = USER_ID_COLUMN,
+    String value = '',
+    String table2 = ATTENDEES_TABLE_NAME,
+    String table3 = USER_TABLE_NAME,
+  }) async {
+    try {
+      final response = await _supabase
+          .from(table1)
+          .select('*, $table2!inner(*),$table3!inner(*)')
+          .eq(column, value)
           .order(CREATED_AT_COLUMN, ascending: ascending)
           .execute();
       return response;
@@ -290,7 +313,7 @@ class DatabaseService {
     try {
       // final bytes = await imageFile.readAsBytes();
       final fileExt = imageFile.path.split('.').last;
-      final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
+      final fileName = '${DateTime.now().toUtc().toIso8601String()}.$fileExt';
       await _supabase.storage.from(_bucketName).upload(
             fileName,
             imageFile,

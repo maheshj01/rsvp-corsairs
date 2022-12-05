@@ -244,7 +244,7 @@ class _AddEventState extends State<AddEvent> {
                     leading: const Icon(Icons.calendar_today,
                         color: CorsairsTheme.primaryYellow),
                     onTap: () {
-                      final now = DateTime.now();
+                      final now = DateTime.now().toUtc();
                       showCSPickerSheet(
                           context,
                           (newDate) {

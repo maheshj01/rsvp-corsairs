@@ -39,14 +39,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   Future<void> getEvents() async {
     await Future.delayed(const Duration(milliseconds: 100));
     showCircularIndicator(context);
-    final events = await EventService.getAllEvents();
-    final user = AppStateScope.of(context).user;
-    final bookmarks = await EventService.getBookmarks(user!.id!);
-    for (EventModel element in events) {
-      if (element.containsInBookmarks(bookmarks)) {
-        element.bookmark = true;
-      }
-    }
+    final events = await EventService.getAllEvents(context);
     if (events.isNotEmpty) {
       AppStateWidget.of(context).setEvents(events);
     } else {

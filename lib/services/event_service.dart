@@ -1,13 +1,16 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
     // ignore: library_prefixes
     if (dart.library.html) 'package:rsvp/platform/web.dart' as platformOnly;
+import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/secrets.dart';
+import 'package:rsvp/utils/utils.dart';
 import 'package:supabase/supabase.dart';
 
 /// Global Vocabulary table's api.
@@ -89,7 +92,8 @@ class EventService {
     return eventResponse;
   }
 
-  static Future<List<EventModel>> getAllEvents({bool sort = false}) async {
+  static Future<List<EventModel>> getAllEvents(context,
+      {bool sort = false}) async {
     final response = await DatabaseService.findRowsByInnerJoinOnColumn();
     List<EventModel> events = [];
     if (response.status == 200) {
@@ -99,8 +103,73 @@ class EventService {
       if (sort) {
         events.sort((a, b) => a.createdAt!.isBefore(b.createdAt!) ? 1 : -1);
       }
+      final user = AppStateScope.of(context).user;
+      final bookmarks = await EventService.getBookmarks(user!.id!);
+      for (EventModel element in events) {
+        if (element.containsInBookmarks(bookmarks)) {
+          element.bookmark = true;
+        }
+      }
     }
     return events;
+  }
+
+  static Future<List<EventModel>> getGoingEvents(BuildContext context) async {
+    final user = AppStateScope.of(context).user;
+    final response = await DatabaseService.findRowsByInnerJoinOn1ColumnValue(
+        table1: ATTENDEES_TABLE_NAME,
+        table2: EVENTS_TABLE_NAME,
+        value: user!.id!);
+    List<EventModel> events = [];
+    if (response.status == 200) {
+      events = (response.data as List)
+          .map((e) => EventModel.fromBookmarks(e))
+          .toList();
+      final user = AppStateScope.of(context).user;
+      final bookmarks = await EventService.getBookmarks(user!.id!);
+      for (EventModel element in events) {
+        if (element.containsInBookmarks(bookmarks)) {
+          element.bookmark = true;
+        }
+      }
+    }
+    return events;
+  }
+
+  static Future<List<EventModel>> getMyEvents(BuildContext context) async {
+    final user = AppStateScope.of(context).user;
+    final response = await DatabaseService.findRowsByInnerJoinOn1ColumnValue(
+        table1: EVENTS_TABLE_NAME,
+        table2: USER_TABLE_NAME,
+        table3: ATTENDEES_TABLE_NAME,
+        column: HOST_COLUMN,
+        value: user!.id!);
+    List<EventModel> events = [];
+    if (response.status == 200) {
+      events = (response.data as List)
+          .map((e) => EventModel.fromBookmarks(e))
+          .toList();
+      final user = AppStateScope.of(context).user;
+      final bookmarks = await EventService.getBookmarks(user!.id!);
+      for (EventModel element in events) {
+        if (element.containsInBookmarks(bookmarks)) {
+          element.bookmark = true;
+        }
+      }
+    }
+    return events;
+  }
+
+  static Future<List<EventModel>> getMyBookmarks(BuildContext context) async {
+    final user = AppStateScope.of(context).user;
+    List<EventModel> events = await getAllEvents(context);
+    List<EventModel> bookmarks = [];
+    for (EventModel element in events) {
+      if (element.bookmark == true) {
+        bookmarks.add(element);
+      }
+    }
+    return bookmarks;
   }
 
   static Future<List<EventModel>> getAttendees(String eventId) async {

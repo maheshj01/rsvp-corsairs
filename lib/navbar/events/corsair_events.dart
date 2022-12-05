@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
+import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
 import 'package:rsvp/navbar/events/search.dart';
@@ -13,6 +14,7 @@ import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/widgets/event_tile.dart';
+import 'package:rsvp/widgets/widgets.dart';
 
 class CorsairEvents extends StatefulWidget {
   static String route = '/';
@@ -23,36 +25,6 @@ class CorsairEvents extends StatefulWidget {
 }
 
 class _CorsairEventsState extends State<CorsairEvents> {
-  /// todo word of the day
-  // Future<void> publishWordOfTheDay() async {
-  //   final Event word = await VocabStoreService.getLastUpdatedRecord();
-  //   final state = AppStateWidget.of(context);
-  //   final now = DateTime.now().toUtc();
-  //   if (now.difference(word.created_at!.toUtc()).inHours > 24) {
-  //     final allWords = await VocabStoreService.getAllWords();
-  //     final random = Random();
-  //     final randomWord = allWords[random.nextInt(allWords.length)];
-  //     final wordOfTheDay = {
-  //       'word': randomWord.word,
-  //       'id': randomWord.id,
-  //       'created_at': now.toIso8601String()
-  //     };
-  //     final resp = await DatabaseService.insertIntoTable(
-  //       wordOfTheDay,
-  //       table: WORD_OF_THE_DAY_TABLE_NAME,
-  //     );
-  //     if (resp.status == 201) {
-  //       print('word of the day published');
-  //       state.setWordOfTheDay(randomWord);
-  //     } else {
-  //       throw Exception('word of the day not published');
-  //     }
-  //   } else {
-  //     state.setWordOfTheDay(word);
-  //     print('word of the day already published');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -100,7 +72,25 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
   }
 
   Future<void> getEvents() async {
-    final events = await EventService.getAllEvents();
+    showCircularIndicator(context);
+    List<EventModel> events = [];
+    switch (selected) {
+      case 'All':
+        events = await EventService.getAllEvents(context);
+        break;
+      case 'Going':
+        events = await EventService.getGoingEvents(context);
+        break;
+      case 'Bookmarked':
+        events = await EventService.getMyBookmarks(context);
+        break;
+      case 'My Events':
+        events = await EventService.getMyEvents(context);
+        break;
+      default:
+        events = await EventService.getAllEvents(context);
+    }
+    Navigator.of(context, rootNavigator: true).pop();
     if (events.isNotEmpty) {
       AppStateWidget.of(context).setEvents(events);
     } else {
@@ -173,6 +163,7 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                     setState(() {
                       selected = 'All';
                     });
+                    getEvents();
                   },
                 ),
                 const SizedBox(
@@ -185,6 +176,7 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                     setState(() {
                       selected = 'Going';
                     });
+                    getEvents();
                   },
                 ),
                 const SizedBox(
@@ -197,18 +189,20 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                     setState(() {
                       selected = 'My Events';
                     });
+                    getEvents();
                   },
                 ),
                 const SizedBox(
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'Past Events',
-                  selected: selected == 'Past Events',
+                  label: 'Bookmarked',
+                  selected: selected == 'Bookmarked',
                   onSelected: (x) {
                     setState(() {
-                      selected = 'Past Events';
+                      selected = 'Bookmarked';
                     });
+                    getEvents();
                   },
                 ),
               ],

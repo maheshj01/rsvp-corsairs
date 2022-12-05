@@ -58,7 +58,7 @@ class AuthService {
           idToken: idToken,
           username: username,
           isAdmin: false,
-          created_at: DateTime.now(),
+          created_at: DateTime.now().toUtc(),
           password: '',
           studentId: '',
           accessToken: accessToken);

@@ -42,9 +42,9 @@ class EventModel extends ChangeNotifier {
     id = const Uuid().v4();
     name = '';
     description = '';
-    createdAt = DateTime.now();
-    startsAt = DateTime.now();
-    endsAt = DateTime.now();
+    createdAt = DateTime.now().toUtc();
+    startsAt = DateTime.now().toUtc();
+    endsAt = DateTime.now().toUtc();
     address = '';
     coverImage = '';
     private = false;
@@ -165,7 +165,9 @@ class EventModel extends ChangeNotifier {
             ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
             .toList(),
         host: json['events']['user'] == null
-            ? null
+            ? json['user'] == null
+                ? null
+                : UserModel.fromJson(json['user'] as Map<String, dynamic>)
             : UserModel.fromJson(json['user'] as Map<String, dynamic>),
       );
 

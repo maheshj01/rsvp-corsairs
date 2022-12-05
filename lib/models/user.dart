@@ -115,7 +115,7 @@ class UserModel extends ChangeNotifier {
   }
 
   factory UserModel.init({String email = '', String name = '', String? id}) {
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
     return UserModel(
         id: id ?? '',
         name: name,
