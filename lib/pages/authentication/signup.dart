@@ -46,6 +46,9 @@ class _SignUpState extends State<SignUp> {
             await UserService.findByUsername(username: user!.email);
         if (existingUser.email.isEmpty) {
           _logger.d('registering new user ${user!.email}');
+          if (user!.studentId.isEmpty) {
+            user = user!.copyWith(studentId: user!.id);
+          }
           final resp = await AuthService.registerUser(user!);
           if (resp.didSucced) {
             state.setUser(user!.copyWith(isLoggedIn: true));

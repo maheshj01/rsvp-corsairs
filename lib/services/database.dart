@@ -65,7 +65,6 @@ class DatabaseService {
           .select('*, $table2!inner(*)')
           .order(CREATED_AT_COLUMN, ascending: ascending)
           .execute();
-
       return response;
     } on PostgrestException catch (_) {
       _logger.e('Error: $_');
@@ -174,14 +173,19 @@ class DatabaseService {
     String columnName = ID_COLUMN,
     String table1 = EVENTS_TABLE_NAME,
     String table2 = USER_TABLE_NAME,
+    String table3 = USER_TABLE_NAME,
   }) async {
-    final response = await _supabase
-        .from(table1)
-        .select('*, $table2!inner(*)')
-        .eq(columnName, columnValue)
-        .single()
-        .execute();
-    return response;
+    try {
+      final response = await _supabase
+          .from(table1)
+          .select('*, $table2!inner(*), $table3!inner(*)')
+          .eq(columnName, columnValue)
+          .execute();
+      return response;
+    } catch (_) {
+      _logger.e('Error: $_');
+      rethrow;
+    }
   }
 
   static Future<PostgrestResponse> insertIntoTable(Map<String, dynamic> data,

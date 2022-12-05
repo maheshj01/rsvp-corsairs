@@ -17,7 +17,6 @@ class _LeaderBoardState extends State<LeaderBoard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     confettiController.play();
   }

@@ -1,5 +1,7 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/exports.dart';
+import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/about.dart';
 import 'package:rsvp/navbar/profile/report.dart';
 import 'package:rsvp/pages/authentication/login.dart';
@@ -73,7 +75,9 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
           settingTile(
             'About',
             onTap: () {
-              Navigate.push(context, const AboutAppWidget());
+              Navigator.of(context, rootNavigator: true).push(
+                  PageRoutes.sharedAxis(
+                      const AboutAppWidget(), SharedAxisTransitionType.scaled));
             },
           ),
           hLine(),

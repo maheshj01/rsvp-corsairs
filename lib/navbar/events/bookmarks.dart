@@ -45,11 +45,10 @@ class _BookmarksMobile extends StatefulWidget {
 
 class _BookmarksMobileState extends State<_BookmarksMobile> {
   Future<void> getBookmarks() async {
-    // final events = await EventService.getBookmarks(widget.user.email,
+    // final events = await EventService.getBookmarks(widget.user.email,widget.eve
     //     isBookmark: widget.isBookMark);
     // _bookmarksNotifier.value = events;
   }
-
   @override
   void initState() {
     super.initState();

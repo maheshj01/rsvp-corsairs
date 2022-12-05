@@ -21,6 +21,7 @@ class UserModel extends ChangeNotifier {
   String username;
   String password;
   String studentId;
+  int reputation;
   DateTime? created_at;
 
   UserModel(
@@ -35,6 +36,7 @@ class UserModel extends ChangeNotifier {
       this.created_at,
       this.studentId = '',
       this.password = '',
+      this.reputation = 0,
       this.isLoggedIn = false,
       this.bookmarks = const [],
       this.hosted = const []});
@@ -58,6 +60,7 @@ class UserModel extends ChangeNotifier {
         created_at: w.created_at,
         isLoggedIn: w.isLoggedIn,
         bookmarks: w.bookmarks,
+        reputation: w.reputation,
         hosted: w.hosted);
   }
   factory UserModel.schema(UserModel w) {
@@ -73,6 +76,7 @@ class UserModel extends ChangeNotifier {
       studentId: w.studentId,
       created_at: w.created_at,
       isLoggedIn: w.isLoggedIn,
+      reputation: w.reputation,
       bookmarks: w.bookmarks,
     );
   }
@@ -89,6 +93,7 @@ class UserModel extends ChangeNotifier {
     String? password,
     String? studentId,
     DateTime? created_at,
+    int? reputation,
     List<EventModel>? bookmarks,
     List<EventModel>? hosted,
   }) {
@@ -105,6 +110,7 @@ class UserModel extends ChangeNotifier {
         created_at: created_at ?? this.created_at,
         isLoggedIn: isLoggedIn ?? this.isLoggedIn,
         bookmarks: bookmarks ?? this.bookmarks,
+        reputation: reputation ?? this.reputation,
         hosted: hosted ?? this.hosted);
   }
 
@@ -123,6 +129,7 @@ class UserModel extends ChangeNotifier {
         username: '',
         password: '',
         studentId: '',
+        reputation: 0,
         isAdmin: false,
         isLoggedIn: false);
   }
@@ -150,6 +157,7 @@ class UserModel extends ChangeNotifier {
         'username': username,
         'password': password,
         'studentId': studentId,
+        'reputation': reputation,
         'created_at': created_at?.toIso8601String(),
       };
 
@@ -204,6 +212,7 @@ class UserModel extends ChangeNotifier {
       idToken = user.idToken;
       name = user.name;
       email = user.email;
+      reputation = user.reputation;
       username = user.username;
       password = user.password;
       isLoggedIn = true;

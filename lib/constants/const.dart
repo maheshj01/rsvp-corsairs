@@ -34,6 +34,7 @@ const EVENTS_TABLE_NAME = 'events';
 const ATTENDEES_TABLE_NAME = 'attendees';
 
 const USER_TABLE_NAME = 'user';
+const BOOKMARKS_TABLE_NAME = 'bookmarks';
 // const VOCAB_TABLE_NAME = 'vocabsheet_copy';
 // const USER_TABLE_NAME = 'users_test';
 const FEEDBACK_TABLE_NAME = 'feedback';
@@ -54,7 +55,7 @@ const STATE_COLUMN = 'state';
 const CREATED_AT_COLUMN = 'createdAt';
 
 /// USER TABLE COLUMNS
-const USERID_COLUMN = 'id';
+const USER_ID_COLUMN = 'user_id';
 const USER_NAME_COLUMN = 'name';
 const USER_EMAIL_COLUMN = 'email';
 const USERNAME_COLUMN = 'username';

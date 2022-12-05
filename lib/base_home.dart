@@ -40,6 +40,13 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     await Future.delayed(const Duration(milliseconds: 100));
     showCircularIndicator(context);
     final events = await EventService.getAllEvents();
+    final user = AppStateScope.of(context).user;
+    final bookmarks = await EventService.getBookmarks(user!.id!);
+    for (EventModel element in events) {
+      if (element.containsInBookmarks(bookmarks)) {
+        element.bookmark = true;
+      }
+    }
     if (events.isNotEmpty) {
       AppStateWidget.of(context).setEvents(events);
     } else {
@@ -104,8 +111,6 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
       },
       2: {UserProfile.route: const UserProfile()},
     };
-
-    final user = AppStateScope.of(context).user;
 
     if (hasUpdate) {
       bannerHeight =

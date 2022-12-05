@@ -207,8 +207,7 @@ FormFieldValidator<String> fieldValidator(int field) {
   }
 }
 
-
-TextInputType keyboardType(int index){
+TextInputType keyboardType(int index) {
   switch (index) {
     case NAME_VALIDATOR:
       return TextInputType.name;

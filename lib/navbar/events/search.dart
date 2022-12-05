@@ -11,10 +11,15 @@ class _EventsSearchState extends State<EventsSearch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Container(),
-        ],
+      appBar: AppBar(
+        title: const Text('Search'),
+      ),
+      body: Material(
+        child: Column(
+          children: [
+            Container(),
+          ],
+        ),
       ),
     );
   }

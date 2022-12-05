@@ -116,13 +116,101 @@ class EventService {
     return events;
   }
 
-  static rsvpEvent(String eventId, String userId, {bool going = true}) async {
+  static Future<List<EventModel>> getBookmarks(String userId) async {
+    try {
+      final response = await DatabaseService.findRowWithInnerjoinColumnValue(
+        userId,
+        table1: BOOKMARKS_TABLE_NAME,
+        table2: EVENTS_TABLE_NAME,
+        columnName: EDIT_USER_ID_COLUMN,
+      );
+      List<EventModel> events = [];
+      if (response.status == 200) {
+        events = (response.data as List).map((e) {
+          return EventModel.fromBookmarks(e);
+        }).toList();
+      }
+      return events;
+    } catch (_) {
+      _logger.e('Error getting bookmarks $_');
+      return [];
+    }
+  }
+
+  // //  ADD BOOKMARK
+  // static Future<Response> addBookmark(String eventId, String userId) async {
+  //   final response = Response(didSucced: false, message: "Failed");
+  //   try {
+  //     final json = {
+  //       "event_id": eventId,
+  //       "user_id": userId,
+  //     };
+  //     final resp = await DatabaseService.insertIntoTable(
+  //       json,
+  //       table: BOOKMARKS_TABLE_NAME,
+  //     );
+  //     if (resp.status == 201) {
+  //       response.didSucced = true;
+  //       response.message = 'Success';
+  //       response.data = resp.data;
+  //     }
+  //     response.status = resp.status;
+  //     response.message = 'Error';
+  //   } on PostgrestException catch (_) {
+  //     _logger.e('Error adding bookmark ${_.details}');
+  //     response.didSucced = false;
+  //     response.message = 'Error: $_';
+  //   }
+  //   return response;
+  // }
+
+  static Future<Response> updateBookMark(String eventId, String userId,
+      {bool add = true, String tableName = BOOKMARKS_TABLE_NAME}) async {
+    final response = Response(didSucced: false, message: "Failed");
+    try {
+      if (add) {
+        final resp = await DatabaseService.insertIntoTable({
+          'event_id': eventId,
+          'user_id': userId,
+        }, table: tableName);
+        if (resp.status == 201) {
+          response.didSucced = true;
+          response.message = 'Success';
+          response.data = resp.data;
+        }
+        return response;
+      } else {
+        final resp = await DatabaseService.deleteRowBy2ColumnValue(
+          eventId,
+          userId,
+          column1Name: EVENT_ID_COLUMN,
+          column2Name: EVENT_USER_ID_COLUMN,
+          tableName: tableName,
+        );
+        if (resp.status == 200) {
+          response.didSucced = true;
+          response.message = 'Success';
+          response.data = resp.data;
+        }
+        return response;
+      }
+    } catch (_) {
+      _logger.e('Error rsvp event $_');
+      rethrow;
+    }
+  }
+
+  //  REMOVE BOOKMARK
+
+  //  ADD/REMOVE ATTENDEE
+  static rsvpEvent(String eventId, String userId,
+      {bool going = true, String tableName = ATTENDEES_TABLE_NAME}) async {
     try {
       if (going) {
         final response = await DatabaseService.insertIntoTable({
           'event_id': eventId,
           'user_id': userId,
-        }, table: ATTENDEES_TABLE_NAME);
+        }, table: tableName);
         return response;
       } else {
         final response = await DatabaseService.deleteRowBy2ColumnValue(
@@ -130,7 +218,7 @@ class EventService {
           userId,
           column1Name: EVENT_ID_COLUMN,
           column2Name: EVENT_USER_ID_COLUMN,
-          tableName: ATTENDEES_TABLE_NAME,
+          tableName: tableName,
         );
         return response;
       }

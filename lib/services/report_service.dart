@@ -26,7 +26,7 @@ class ReportService {
     try {
       final resp = await DatabaseService.findRowByColumnValue(
         id,
-        columnName: USERID_COLUMN,
+        columnName: ID_COLUMN,
         tableName: _tableName,
       );
       if (resp.status == 200) {

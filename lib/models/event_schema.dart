@@ -21,21 +21,22 @@ class EventModel extends ChangeNotifier {
   String? address;
   bool? private;
   bool? deleted;
+  bool? bookmark;
 
-  EventModel({
-    this.id,
-    this.name,
-    this.description,
-    this.createdAt,
-    this.startsAt,
-    this.endsAt,
-    this.address,
-    this.coverImage,
-    this.private,
-    this.deleted,
-    this.attendees,
-    this.host,
-  });
+  EventModel(
+      {this.id,
+      this.name,
+      this.description,
+      this.createdAt,
+      this.startsAt,
+      this.endsAt,
+      this.address,
+      this.coverImage,
+      this.private,
+      this.deleted,
+      this.attendees,
+      this.host,
+      this.bookmark = false});
 
   EventModel.init() {
     id = const Uuid().v4();
@@ -49,6 +50,7 @@ class EventModel extends ChangeNotifier {
     private = false;
     deleted = false;
     attendees = [];
+    bookmark = false;
     host = UserModel.init();
   }
 
@@ -64,6 +66,7 @@ class EventModel extends ChangeNotifier {
     private = event.private;
     deleted = event.deleted;
     attendees = [];
+    bookmark = event.bookmark;
     host = UserModel.init();
   }
 
@@ -80,6 +83,7 @@ class EventModel extends ChangeNotifier {
       bool? private,
       bool? deleted,
       List<UserModel>? attendees,
+      bool? bookmark,
       UserModel? host}) {
     return EventModel(
       id: id ?? this.id,
@@ -93,6 +97,7 @@ class EventModel extends ChangeNotifier {
       private: private ?? this.private,
       deleted: deleted ?? this.deleted,
       attendees: attendees ?? this.attendees,
+      bookmark: bookmark ?? this.bookmark,
       host: host ?? this.host,
     );
   }
@@ -129,6 +134,7 @@ class EventModel extends ChangeNotifier {
         coverImage: json['coverImage'] as String?,
         private: json['private'] as bool?,
         deleted: json['deleted'] as bool?,
+        bookmark: json['bookmark'] ?? false,
         attendees: (json['attendees'] as List<dynamic>?)
             ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -137,7 +143,32 @@ class EventModel extends ChangeNotifier {
             : UserModel.fromJson(json['user'] as Map<String, dynamic>),
       );
 
-  // overrdie == operator
+  factory EventModel.fromBookmarks(Map<String, dynamic> json) => EventModel(
+        id: json['events']['id'] as String?,
+        name: json['events']['name'] as String?,
+        description: json['events']['description'] as String?,
+        createdAt: json['events']['createdAt'] == null
+            ? null
+            : DateTime.parse(json['events']['createdAt'] as String),
+        startsAt: json['events']['startsAt'] == null
+            ? null
+            : DateTime.parse(json['events']['startsAt'] as String),
+        endsAt: json['events']['endsAt'] == null
+            ? null
+            : DateTime.parse(json['events']['endsAt'] as String),
+        address: json['events']['address'] as String?,
+        coverImage: json['events']['coverImage'] as String?,
+        private: json['events']['private'] as bool?,
+        deleted: json['events']['deleted'] as bool?,
+        bookmark: json['events']['bookmark'] ?? false,
+        attendees: (json['events']['attendees'] as List<dynamic>?)
+            ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        host: json['events']['user'] == null
+            ? null
+            : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -161,4 +192,8 @@ class EventModel extends ChangeNotifier {
 
   @override
   Map<String, dynamic> toJson() => _$EventModelToJson(this);
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
 }

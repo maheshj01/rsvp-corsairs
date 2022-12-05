@@ -250,6 +250,27 @@ class _EventDetailState extends State<EventDetail> {
                                   !_isCollapsed ? Colors.white : Colors.black),
                         ),
                 ),
+                actions: [
+                  IconButton(
+                    onPressed: () async {
+                      final resp = await EventService.updateBookMark(
+                          widget.event.id!, user!.id!,
+                          add: !widget.event.bookmark!);
+                      if (resp.didSucced) {
+                        setState(() {
+                          widget.event.bookmark = !widget.event.bookmark!;
+                        });
+                      }
+                    },
+                    icon: Icon(
+                      !widget.event.bookmark!
+                          ? Icons.bookmark_border
+                          : Icons.bookmark,
+                      size: 40,
+                    ),
+                  ),
+                  16.0.hSpacer(),
+                ],
               ),
               SliverList(
                 delegate: SliverChildListDelegate([

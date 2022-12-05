@@ -5,13 +5,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:rsvp/navbar/events/event_detail.dart';
 import 'package:rsvp/navbar/events/notifications.dart';
+import 'package:rsvp/navbar/events/search.dart';
 import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/size_utils.dart';
-import 'package:rsvp/widgets/event_parallax.dart';
+import 'package:rsvp/widgets/event_tile.dart';
 
 class CorsairEvents extends StatefulWidget {
   static String route = '/';
@@ -110,24 +111,24 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
   final double _offsetThreshold = 50.0;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  String selected = 'All';
   @override
   Widget build(BuildContext context) {
-    final user = AppStateScope.of(context).user;
     final events = AppStateScope.of(context).events ?? [];
-
+    final user = AppStateScope.of(context).user;
     return NestedScrollView(
-      controller: _scrollController,
       headerSliverBuilder: (context, innerBoxScrolled) => [
         SliverAppBar(
             pinned: false,
-            expandedHeight: 80.0,
+            floating: true,
+            expandedHeight: 60.0,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               background: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.only(left: 16, top: 16),
                 child: Text(
-                  'CorsairEvents',
+                  'Corsair Events',
                   style: CorsairsTheme.googleFontsTextTheme.titleSmall!
                       .copyWith(fontSize: 28, fontWeight: FontWeight.w700),
                 ),
@@ -146,28 +147,85 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   )),
               IconButton(
                   onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        barrierColor: Colors.transparent,
-                        useRootNavigator: false,
-                        builder: (context) => const NewPage());
+                    Navigator.of(context, rootNavigator: true).push(
+                        PageRoutes.sharedAxis(const EventsSearch(),
+                            SharedAxisTransitionType.horizontal));
                   },
                   icon: const Icon(
                     Icons.search,
                     color: CorsairsTheme.primaryYellow,
                   ))
             ]),
+        SliverToBoxAdapter(
+          // Horizontal selectable chips
+          child: SizedBox(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                const SizedBox(
+                  width: 16,
+                ),
+                CorsairChip(
+                  label: 'All',
+                  selected: selected == 'All',
+                  onSelected: (x) {
+                    setState(() {
+                      selected = 'All';
+                    });
+                  },
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                CorsairChip(
+                  label: 'Upcoming',
+                  selected: selected == 'Upcoming',
+                  onSelected: (x) {
+                    setState(() {
+                      selected = 'Upcoming';
+                    });
+                  },
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                CorsairChip(
+                  label: 'My Events',
+                  selected: selected == 'My Events',
+                  onSelected: (x) {
+                    setState(() {
+                      selected = 'My Events';
+                    });
+                  },
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                CorsairChip(
+                  label: 'Past Events',
+                  selected: selected == 'Past Events',
+                  onSelected: (x) {
+                    setState(() {
+                      selected = 'Past Events';
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        )
       ],
       body: RefreshIndicator(
         key: _refreshIndicatorKey,
+        color: CorsairsTheme.primaryYellow,
         onRefresh: () async {
           await getEvents();
         },
         child: ListView.builder(
+          controller: _scrollController,
           padding: const EdgeInsets.only(bottom: 24),
           itemBuilder: (_, index) {
-            // Navigate.push(context, EventDetail(event: events[index]));
             return OpenContainer<bool>(
                 openBuilder:
                     (BuildContext context, VoidCallback openContainer) {
@@ -181,15 +239,24 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                     (BuildContext context, VoidCallback openContainer) {
                   return Animate(
                     effects: [
-                      SlideEffect(
-                        // begin based on index of item
-                        begin: Offset(0, 0.8 * index),
-                        end: const Offset(0, 0),
-                        duration: const Duration(milliseconds: 500),
-                      ),
+                      ScaleEffect(
+                        delay: Duration(milliseconds: 100 * (index % 4)),
+                        begin: Offset(0.6, 0.05 * index),
+                        end: const Offset(1, 1),
+                      )
                     ],
-                    child: EventParallaxTile(
+                    child: EventTile(
                       event: events[index],
+                      onBookmarkTap: () async {
+                        final resp = await EventService.updateBookMark(
+                            events[index].id!, user!.id!,
+                            add: !events[index].bookmark!);
+                        if (resp.didSucced) {
+                          setState(() {
+                            events[index].bookmark = !events[index].bookmark!;
+                          });
+                        }
+                      },
                     ),
                   );
                 });
@@ -198,65 +265,6 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
         ),
       ),
     );
-    // return CustomScrollView(
-    //   controller: _scrollController,
-    //   slivers: <Widget>[
-    //     SliverAppBar(
-    //         pinned: false,
-    //         expandedHeight: 80.0,
-    //         flexibleSpace: FlexibleSpaceBar(
-    //           centerTitle: true,
-    //           background: Container(
-    //             alignment: Alignment.centerLeft,
-    //             padding: const EdgeInsets.only(left: 16, top: 16),
-    //             child: Text(
-    //               'CorsairEvents',
-    //               style: CorsairsTheme.googleFontsTextTheme.titleSmall!
-    //                   .copyWith(fontSize: 28, fontWeight: FontWeight.w700),
-    //             ),
-    //           ),
-    //         ),
-    //         actions: [
-    //           IconButton(
-    //               onPressed: () {
-    //                 Navigate.push(context, const NotificationsPage(),
-    //                     slideTransitionType: TransitionType.rtl);
-    //               },
-    //               icon: const Icon(
-    //                 Icons.notifications_on,
-    //                 color: CorsairsTheme.primaryYellow,
-    //               )),
-    //           IconButton(
-    //               onPressed: () {
-    //                 showModalBottomSheet(
-    //                     context: context,
-    //                     isScrollControlled: true,
-    //                     barrierColor: Colors.transparent,
-    //                     useRootNavigator: false,
-    //                     builder: (context) => const NewPage());
-    //               },
-    //               icon: const Icon(
-    //                 Icons.search,
-    //                 color: CorsairsTheme.primaryYellow,
-    //               ))
-    //         ]),
-    //     SliverList(
-    //         delegate: SliverChildListDelegate([
-    //       for (EventModel event in events)
-    //         InkWell(
-    //           onTap: () {
-    //             Navigate.push(context, EventDetail(event: event));
-    //           },
-    //           child: EventParallaxTile(
-    //             event: event,
-    //           ),
-    //         ),
-    //     ])),
-    //     SliverToBoxAdapter(
-    //       child: 100.0.vSpacer(),
-    //     )
-    //   ],
-    // );
   }
 }
 
@@ -293,30 +301,40 @@ class CorsairEventsDesktop extends StatelessWidget {
   }
 }
 
-class NewPage extends StatefulWidget {
-  const NewPage({Key? key}) : super(key: key);
+class CorsairChip extends StatefulWidget {
+  final String label;
+  final bool selected;
+  final Function(bool)? onSelected;
+  const CorsairChip(
+      {Key? key,
+      required this.label,
+      required this.selected,
+      required this.onSelected})
+      : super(key: key);
 
   @override
-  State<NewPage> createState() => _NewPageState();
+  State<CorsairChip> createState() => _CorsairChipState();
 }
 
-class _NewPageState extends State<NewPage> {
+class _CorsairChipState extends State<CorsairChip> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Material(
-      child: SizedBox(
-          height: size.height * 0.9,
-          child: ListView(
-            children: [
-              for (int i = 0; i < 100; i++)
-                ListTile(
-                    title: Text('Item $i'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    })
-            ],
-          )),
-    );
+    // TAPPABLE CHIP
+    return FilterChip(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+                color: widget.selected
+                    ? CorsairsTheme.primaryYellow
+                    : CorsairsTheme.primaryYellow.withOpacity(0.5))),
+        backgroundColor:
+            widget.selected ? CorsairsTheme.primaryYellow : Colors.transparent,
+        label: Text(
+          widget.label,
+          textAlign: TextAlign.center,
+        ),
+        onSelected: (x) {
+          if (widget.onSelected != null) widget.onSelected!(x);
+        });
   }
 }

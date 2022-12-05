@@ -52,6 +52,12 @@ extension CompareUsers on UserModel {
       created_at == other.created_at;
 }
 
+extension ConatainsInBookmarks on EventModel{
+    bool containsInBookmarks(List<EventModel> bookmarks){
+        return bookmarks.any((element) => element.id == id);
+    }
+}
+
 extension DateHelper on DateTime {
   String formatDate() {
     final now = DateTime.now();
