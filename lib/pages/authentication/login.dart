@@ -18,6 +18,7 @@ import 'package:rsvp/utils/settings.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
+import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
 class LoginPage extends StatefulWidget {
@@ -128,6 +129,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  bool _isValid() {
+    for (final fieldKey in _formFieldKeys) {
+      final FormFieldState? state = fieldKey.currentState;
+      if (state == null || !state.isValid) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @override
   void initState() {
     firebaseAnalytics = Analytics();
@@ -142,53 +153,21 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  final List<GlobalKey<FormFieldState>> _formFieldKeys =
+      <GlobalKey<FormFieldState>>[
+    GlobalKey<FormFieldState>(),
+    GlobalKey<FormFieldState>(),
+  ];
   final ValueNotifier<Response> _responseNotifier =
       ValueNotifier<Response>(Response.init());
   UserModel user = UserModel.init();
   late Analytics firebaseAnalytics;
   final Logger _logger = const Logger('LoginPage');
   bool isGoogleSignIn = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     SizeUtils.size = MediaQuery.of(context).size;
-    Widget _csField(String hint, TextEditingController controller, int index) {
-      return Padding(
-        padding: 8.0.verticalPadding,
-        child: TextFormField(
-            controller: controller,
-            autofillHints:
-                index == 0 ? [AutofillHints.email] : [AutofillHints.password],
-            decoration: InputDecoration(
-              hintText: hint,
-              counterText: '',
-            ),
-            cursorHeight: 32,
-            obscureText: index == 1,
-            obscuringCharacter: obscureCharacter,
-            maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
-            keyboardType: keyboardType(index),
-            textInputAction: TextInputAction.next,
-            style: const TextStyle(color: Colors.white),
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) {
-              if (index == 0) {
-                final regexp1 = RegExp(emailPattern);
-                final regexp2 = RegExp(studentIdPattern);
-                if (value != null &&
-                    (value.contains(regexp1) || value.contains(regexp2))) {
-                  return null;
-                }
-                return 'Please enter a valid email';
-              } else {
-                if (value != null && value.length > 3) {
-                  return null;
-                }
-                return 'Please enter a valid password';
-              }
-            }),
-      );
-    }
-
     return ValueListenableBuilder<Response>(
         valueListenable: _responseNotifier,
         builder: (BuildContext context, Response _response, Widget? child) {
@@ -215,75 +194,96 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const BoxDecoration(color: CorsairsTheme.primaryBlue),
               padding: 16.0.horizontalPadding,
               child: AutofillGroup(
-                child: ListView(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: SizeUtils.size.height * 0.12,
-                    ),
-                    const Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'RSVP',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
+                child: Form(
+                  key: _formKey,
+                  onChanged: () {
+                    setState(() {});
+                  },
+                  child: ListView(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: SizeUtils.size.height * 0.12,
+                      ),
+                      const Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'RSVP',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    48.0.vSpacer(),
-                    _csField('email/student id', _emailController, 0),
-                    8.0.vSpacer(),
-                    _csField('password', _passwordController, 1),
-                    const SizedBox(height: 20),
-                    CSButton(
-                        height: 48,
-                        backgroundColor: CorsairsTheme.primaryYellow,
-                        onTap: () {
-                          removeFocus(context);
-                          TextInput.finishAutofillContext(shouldSave: true);
-                          isGoogleSignIn = false;
-                          final _email = _emailController.text.trim();
-                          final _password = _passwordController.text.trim();
-                          if (_email.isEmpty || _password.isEmpty) {
-                            showMessage(
-                                context, 'Please enter valid crednetials');
-                            return;
-                          }
-                          user = user.copyWith(
-                              email: _email.contains('@') ? _email : '',
-                              password: _password,
-                              studentId: _email.contains('@') ? '' : _email,
-                              isLoggedIn: true);
-                          _handleSignIn(context);
-                        },
-                        isLoading: !isGoogleSignIn &&
-                            _response.state == RequestState.active,
-                        label: 'Login'),
-                    // new user sign up
-                    48.0.vSpacer(),
-                    RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(children: [
-                          const TextSpan(
-                              text: 'Don\'t have an account? ',
-                              style: TextStyle(color: Colors.white)),
-                          TextSpan(
-                              text: 'Sign Up',
-                              style: const TextStyle(
-                                  color: CorsairsTheme.primaryYellow),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigate()
-                                      .pushReplace(context, const SignUp());
-                                })
-                        ])),
-                    SizedBox(
-                      height: SizeUtils.size.height * 0.12,
-                    ),
-                    _signInButton()
-                  ],
+                      48.0.vSpacer(),
+                      TransparentField(
+                          fKey: _formFieldKeys[0],
+                          hint: 'email/student id',
+                          controller: _emailController,
+                          autoFillHints: const [AutofillHints.email],
+                          index: USER_ID_VALIDATOR),
+                      8.0.vSpacer(),
+                      TransparentField(
+                          fKey: _formFieldKeys[1],
+                          hint: 'Password',
+                          autoFillHints: const [AutofillHints.password],
+                          controller: _passwordController,
+                          index: PASSWORD_VALIDATOR),
+                      const SizedBox(height: 20),
+                      CSButton(
+                          height: 48,
+                          backgroundColor: CorsairsTheme.primaryYellow,
+                          onTap: _isValid()
+                              ? () {
+                                  removeFocus(context);
+                                  TextInput.finishAutofillContext(
+                                      shouldSave: true);
+                                  isGoogleSignIn = false;
+                                  final _email = _emailController.text.trim();
+                                  final _password =
+                                      _passwordController.text.trim();
+                                  if (_email.isEmpty || _password.isEmpty) {
+                                    showMessage(context,
+                                        'Please enter valid crednetials');
+                                    return;
+                                  }
+                                  user = user.copyWith(
+                                      email: _email.contains('@') ? _email : '',
+                                      password: _password,
+                                      studentId:
+                                          _email.contains('@') ? '' : _email,
+                                      isLoggedIn: true);
+                                  _handleSignIn(context);
+                                }
+                              : null,
+                          isLoading: !isGoogleSignIn &&
+                              _response.state == RequestState.active,
+                          label: 'Login'),
+                      // new user sign up
+                      48.0.vSpacer(),
+                      RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(children: [
+                            const TextSpan(
+                                text: 'Don\'t have an account? ',
+                                style: TextStyle(color: Colors.white)),
+                            TextSpan(
+                                text: 'Sign Up',
+                                style: const TextStyle(
+                                    color: CorsairsTheme.primaryYellow),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigate()
+                                        .pushReplace(context, const SignUp());
+                                  })
+                          ])),
+                      SizedBox(
+                        height: SizeUtils.size.height * 0.12,
+                      ),
+                      _signInButton()
+                    ],
+                  ),
                 ),
               ),
             ),

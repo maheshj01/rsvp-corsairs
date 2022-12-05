@@ -10,6 +10,7 @@ import 'package:rsvp/utils/responsive.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
 import 'package:rsvp/widgets/circle_avatar.dart';
+import 'package:rsvp/widgets/textfield.dart';
 
 class EditProfile extends StatefulWidget {
   final UserModel? user;
@@ -100,6 +101,7 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
+        elevation: 0,
       ),
       body: ValueListenableBuilder<Response>(
           valueListenable: _requestNotifier,
@@ -132,10 +134,14 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                       onPressed: () {},
                     ),
                   ),
-                  VHTextfield(
-                    hint: 'Name',
-                    controller: _nameController,
-                    isReadOnly: true,
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: CSField(
+                      hint: 'Name',
+                      controller: _nameController,
+                      isReadOnly: true,
+                    ),
                   ),
                   ValueListenableBuilder<bool?>(
                       valueListenable: _validNotifier,
@@ -144,18 +150,23 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            VHTextfield(
-                              hint: 'Username',
-                              isReadOnly: request.state == RequestState.active,
-                              controller: _usernameController,
-                              onChanged: (username) {
-                                user = AppStateScope.of(context).user;
-                                if (user!.username == username) {
-                                  _validNotifier.value = null;
-                                  return;
-                                }
-                                validateUsername(username);
-                              },
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              child: CSField(
+                                hint: 'Username',
+                                isReadOnly:
+                                    request.state == RequestState.active,
+                                controller: _usernameController,
+                                onChanged: (username) {
+                                  user = AppStateScope.of(context).user;
+                                  if (user!.username == username) {
+                                    _validNotifier.value = null;
+                                    return;
+                                  }
+                                  validateUsername(username);
+                                },
+                              ),
                             ),
                             isValid == null
                                 ? const SizedBox.shrink()
@@ -170,15 +181,23 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                           ],
                         );
                       }),
-                  VHTextfield(
-                    hint: 'Email',
-                    controller: _emailController,
-                    isReadOnly: true,
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: CSField(
+                      hint: 'Email',
+                      controller: _emailController,
+                      isReadOnly: true,
+                    ),
                   ),
-                  VHTextfield(
-                    hint: 'Joined',
-                    controller: _joinedController,
-                    isReadOnly: true,
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: CSField(
+                      hint: 'Joined',
+                      controller: _joinedController,
+                      isReadOnly: true,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.center,
@@ -186,7 +205,8 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                       padding: 16.0.allPadding,
                       child: CSButton(
                           height: 48,
-                          backgroundColor: CorsairsTheme.primaryColor,
+                          width: 200,
+                          backgroundColor: CorsairsTheme.primaryYellow,
                           foregroundColor: Colors.white,
                           isLoading: request.state == RequestState.active,
                           onTap: () async {
@@ -232,98 +252,6 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
       body: Center(
         child: Text('Edit Profile Desktop'),
       ),
-    );
-  }
-}
-
-class VHTextfield extends StatefulWidget {
-  final String hint;
-  final TextEditingController? controller;
-  final TextInputType keyboardType;
-  final bool isReadOnly;
-  final bool hasLabel;
-  final int maxLines;
-  final Function(String)? onChanged;
-
-  const VHTextfield(
-      {super.key,
-      required this.hint,
-      this.controller,
-      this.isReadOnly = false,
-      this.hasLabel = true,
-      this.onChanged,
-      this.maxLines = 1,
-      this.keyboardType = TextInputType.text});
-
-  @override
-  State<VHTextfield> createState() => _VHTextfieldState();
-}
-
-class _VHTextfieldState extends State<VHTextfield> {
-  @override
-  void initState() {
-    super.initState();
-    _controller = widget.controller ?? TextEditingController();
-  }
-
-  late TextEditingController _controller;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        !widget.hasLabel
-            ? const SizedBox.shrink()
-            : Padding(
-                padding: 16.0.horizontalPadding,
-                child: Text(
-                  widget.hint,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: const Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: _controller,
-            keyboardType: widget.keyboardType,
-            readOnly: widget.isReadOnly,
-            maxLines: widget.maxLines,
-            onChanged: (x) {
-              if (widget.onChanged != null) {
-                widget.onChanged!(x);
-              }
-            },
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: widget.hint,
-            ),
-          ),
-        ),
-        if (widget.hasLabel) 6.0.vSpacer()
-      ],
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
+import 'package:rsvp/utils/utility.dart';
 
 class CSField extends StatefulWidget {
   final String hint;
@@ -67,7 +69,7 @@ class _CSFieldState extends State<CSField> {
         !widget.hasLabel
             ? const SizedBox.shrink()
             : Padding(
-                padding: 16.0.horizontalPadding,
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   widget.hint,
                   style: TextStyle(
@@ -127,6 +129,51 @@ class _CSFieldState extends State<CSField> {
         ),
         if (widget.hasLabel) 6.0.vSpacer()
       ],
+    );
+  }
+}
+
+class TransparentField extends StatefulWidget {
+  final int index;
+  final String hint;
+  final TextEditingController controller;
+  final Key? fKey;
+  final Iterable<String>? autoFillHints;
+  const TransparentField(
+      {super.key,
+      this.fKey,
+      this.autoFillHints,
+      required this.index,
+      required this.hint,
+      required this.controller});
+
+  @override
+  State<TransparentField> createState() => _TransparentFieldState();
+}
+
+class _TransparentFieldState extends State<TransparentField> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: 8.0.verticalPadding,
+      child: TextFormField(
+        key: widget.fKey,
+        controller: widget.controller,
+        autofillHints: widget.autoFillHints,
+        cursorHeight: 32,
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          counterText: '',
+        ),
+        obscureText: widget.index == PASSWORD_VALIDATOR,
+        obscuringCharacter: obscureCharacter,
+        maxLength: widget.index == STUDENT_ID_VALIDATOR ? 8 : null,
+        keyboardType: keyboardType(widget.index),
+        textInputAction: TextInputAction.next,
+        style: const TextStyle(color: Colors.white),
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: fieldValidator(widget.index),
+      ),
     );
   }
 }

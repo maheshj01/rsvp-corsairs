@@ -17,6 +17,7 @@ import 'package:rsvp/utils/settings.dart';
 import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
+import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
 class SignUp extends StatefulWidget {
@@ -174,28 +175,6 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Widget _csField(Key wkey, hint, TextEditingController controller, int index) {
-    return Padding(
-      padding: 8.0.verticalPadding,
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: hint,
-          counterText: '',
-        ),
-        obscureText: index == PASSWORD_VALIDATOR,
-        obscuringCharacter: obscureCharacter,
-        maxLength: index == STUDENT_ID_VALIDATOR ? 8 : null,
-        keyboardType: keyboardType(index),
-        textInputAction: TextInputAction.next,
-        style: const TextStyle(color: Colors.white),
-        key: wkey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: fieldValidator(index),
-      ),
-    );
-  }
-
   bool isGoogleSignUp = false;
   @override
   Widget build(BuildContext context) {
@@ -254,14 +233,26 @@ class _SignUpState extends State<SignUp> {
                               ),
                             ),
                             48.0.vSpacer(),
-                            _csField(_formFieldKeys[0], 'Name', _nameController,
-                                NAME_VALIDATOR),
-                            _csField(_formFieldKeys[1], 'email',
-                                _emailController, EMAIL_VALIDATOR),
-                            _csField(_formFieldKeys[2], 'Student Id',
-                                _studentIdController, STUDENT_ID_VALIDATOR),
-                            _csField(_formFieldKeys[3], 'Password',
-                                _passwordController, PASSWORD_VALIDATOR),
+                            TransparentField(
+                                fKey: _formFieldKeys[0],
+                                hint: 'Name',
+                                controller: _nameController,
+                                index: NAME_VALIDATOR),
+                            TransparentField(
+                                fKey: _formFieldKeys[1],
+                                hint: 'Email',
+                                controller: _emailController,
+                                index: EMAIL_VALIDATOR),
+                            TransparentField(
+                                fKey: _formFieldKeys[2],
+                                hint: 'Student Id',
+                                controller: _studentIdController,
+                                index: STUDENT_ID_VALIDATOR),
+                            TransparentField(
+                                fKey: _formFieldKeys[3],
+                                hint: 'Password',
+                                controller: _passwordController,
+                                index: PASSWORD_VALIDATOR),
                             48.0.vSpacer(),
                             CSButton(
                                 height: 48,

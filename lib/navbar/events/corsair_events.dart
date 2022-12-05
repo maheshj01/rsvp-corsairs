@@ -179,11 +179,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'Upcoming',
-                  selected: selected == 'Upcoming',
+                  label: 'Going',
+                  selected: selected == 'Going',
                   onSelected: (x) {
                     setState(() {
-                      selected = 'Upcoming';
+                      selected = 'Going';
                     });
                   },
                 ),

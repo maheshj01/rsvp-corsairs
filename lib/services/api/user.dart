@@ -44,7 +44,10 @@ class UserService {
           columnName: USERNAME_COLUMN,
           tableName: _tableName);
       if (response.status == 200) {
-        final user = UserModel.fromJson(response.data);
+        if ((response.data as List).isEmpty) {
+          return true;
+        }
+        final user = UserModel.fromJson((response.data as List).first);
         return !(user.email.isNotEmpty && user.username.isNotEmpty);
       }
       if (response.status == 406) {

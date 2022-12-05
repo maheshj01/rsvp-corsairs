@@ -200,6 +200,16 @@ FormFieldValidator<String> fieldValidator(int field) {
         }
         return 'Please enter a valid Student ID';
       };
+    case USER_ID_VALIDATOR:
+      return (String? value) {
+        final regexp1 = RegExp(emailPattern);
+        final regexp2 = RegExp(studentIdPattern);
+        if (value != null &&
+            (value.contains(regexp1) || value.contains(regexp2))) {
+          return null;
+        }
+        return 'Please enter either a email/studentId';
+      };
     default:
       return (String? value) {
         return null;

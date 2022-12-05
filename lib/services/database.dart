@@ -163,7 +163,6 @@ class DatabaseService {
         .from(tableName)
         .select()
         .eq(columnName, columnValue)
-        .single()
         .execute();
     return response;
   }
