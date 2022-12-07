@@ -9,7 +9,7 @@
 ```
 
 
-3. You will need to setup your own supabase backend as per the ER [diagram below](./flow.drawio) (You can use the [draw.io](https://draw.io) app to view the diagram
+3. You will need to setup your own supabase backend as per the ER [diagram below](./ERDiagram.png) (You can use the [draw.io](https://draw.io) app to view the diagram
 
  a) Set up a table called events with the following columns
 ```
