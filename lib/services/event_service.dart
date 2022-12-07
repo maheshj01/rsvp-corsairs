@@ -116,10 +116,12 @@ class EventService {
 
   static Future<List<EventModel>> getGoingEvents(BuildContext context) async {
     final user = AppStateScope.of(context).user;
-    final response = await DatabaseService.findRowsByInnerJoinOn1ColumnValue(
-        table1: ATTENDEES_TABLE_NAME,
-        table2: EVENTS_TABLE_NAME,
-        value: user!.id!);
+    final response = await DatabaseService.findRowWithInnerjoinColumnValue(
+        user!.id!,
+        table1: EVENTS_TABLE_NAME,
+        table2: ATTENDEES_TABLE_NAME,
+        table3: USER_TABLE_NAME,
+        columnName: ID_COLUMN);
     List<EventModel> events = [];
     if (response.status == 200) {
       events = (response.data as List)
@@ -138,16 +140,12 @@ class EventService {
 
   static Future<List<EventModel>> getMyEvents(BuildContext context) async {
     final user = AppStateScope.of(context).user;
-    final response = await DatabaseService.findRowsByInnerJoinOn1ColumnValue(
-        table1: EVENTS_TABLE_NAME,
-        table2: USER_TABLE_NAME,
-        table3: ATTENDEES_TABLE_NAME,
-        column: HOST_COLUMN,
-        value: user!.id!);
+    final response = await DatabaseService.findMyEvents(
+        column: HOST_COLUMN, value: user!.id!);
     List<EventModel> events = [];
     if (response.status == 200) {
       events = (response.data as List)
-          .map((e) => EventModel.fromBookmarks(e))
+          .map((e) => EventModel.fromAllSchema(e))
           .toList();
       final user = AppStateScope.of(context).user;
       final bookmarks = await EventService.getBookmarks(user!.id!);

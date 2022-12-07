@@ -447,7 +447,7 @@ class _InviteSheetState extends State<InviteSheet> {
             children: [
               ListTile(
                 leading: CircularAvatar(
-                  name: 'John Doe'.initals(),
+                  name: 'John Doe'.initials(),
                   radius: 40,
                 ),
                 title: const Text('John Doe'),

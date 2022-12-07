@@ -7,10 +7,62 @@
 ```
   flutter pub run build_runner build --delete-conflicting-outputs
 ```
-3. You will require a secrets.dart file to run this project on your local machine. This file is not included in the repo for obvious reasons.You can dm me and I will provide you the command to generate the secrets file
+
+
+3. You will need to setup your own supabase backend as per the ER [diagram below](./flow.drawio) (You can use the [draw.io](https://draw.io) app to view the diagram
+
+ a) Set up a table called events with the following columns
+```
+  id: uuid(PK)
+  title: text
+  description: text
+  cover_image: text
+  start_time: timestamp
+  end_time: timestamp
+  location: text
+  host: uuid
+  created_at: timestamp
+  updated_at: timestamp
+```
+b) Set up a table called users with the following columns
+```
+  id: uuid(PK)
+  name: text
+  username: text
+  email: text
+  profile_image: text
+  created_at: timestamp
+  updated_at: timestamp
+```
+
+c) Set up a table called bookmarks with the following columns
+```
+  id: uuid(PK)
+  user_id: uuid
+  event_id: uuid
+  created_at: timestamp
+  updated_at: timestamp
+```
+
+d) Set up a table called "rsvp" with the following columns
+```
+  id: uuid(PK)
+  user_id: uuid
+  event_id: uuid
+  created_at: timestamp
+  updated_at: timestamp
+```
+e) Set up a table called "attendees" with the following columns
+
+```
+  id: uuid(PK)
+  user_id: uuid
+  event_id: uuid
+  created_at: timestamp
+  updated_at: timestamp
+```
+
 4. Run the project using the command
 ```
   flutter run
 ```
-
-_This project was generated using the [flutter_create template](https://github.com/maheshmnj/flutter_create).

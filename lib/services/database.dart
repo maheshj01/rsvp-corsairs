@@ -95,6 +95,28 @@ class DatabaseService {
     }
   }
 
+  static Future<PostgrestResponse> findMyEvents({
+    String table1 = EVENTS_TABLE_NAME,
+    bool ascending = false,
+    String column = USER_ID_COLUMN,
+    String value = '',
+    String table2 = USER_TABLE_NAME,
+    String table3 = ATTENDEES_TABLE_NAME,
+  }) async {
+    try {
+      final response = await _supabase
+          .from(table1)
+          .select('*, $table2!inner(*)')
+          .eq(column, value)
+          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .execute();
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: $_');
+      rethrow;
+    }
+  }
+
   /// ```
   /// final response = await _supabase
   ///      .from('$table1')
