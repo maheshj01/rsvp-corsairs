@@ -6,7 +6,7 @@ import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
+  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
   static const String _bucketName = 'event-covers';
   static const Logger _logger = Logger('DatabaseService');
 

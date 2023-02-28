@@ -16,7 +16,7 @@ import 'package:supabase/supabase.dart';
 /// Global Vocabulary table's api.
 class EventService {
   static String tableName = EVENTS_TABLE_NAME;
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
+  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
   static const _logger = Logger('EventService');
   static Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,
