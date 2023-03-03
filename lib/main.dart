@@ -24,7 +24,7 @@ Future<void> main() async {
   analytics = FirebaseAnalytics.instance;
   usePathUrlStrategy();
   Settings.init();
-  runApp(CorsairsApp());
+  runApp(const CorsairsApp());
 }
 
 const _logger = Logger('CorsairsApp');
@@ -38,6 +38,8 @@ FirebaseAnalyticsObserver observer =
     FirebaseAnalyticsObserver(analytics: analytics);
 
 class CorsairsApp extends StatefulWidget {
+  const CorsairsApp({super.key});
+
   @override
   _CorsairsAppState createState() => _CorsairsAppState();
 }
