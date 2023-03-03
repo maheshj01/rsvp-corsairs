@@ -1,6 +1,7 @@
 ### TODO
 
 ### App
+
 - [ ] Use fonts similar to duolingo
 
 ### Events
@@ -10,8 +11,9 @@
 - [X] View event detail
 - [X] Edit an event
 - [X] RSVP to an event
-- [] Improve card UI and Date
-- [] Bookmark an event
+- [X] Improve card UI 
+- [X] Bookmark an event
+- [] Event Duration should be shown in days if >24
 - [] View attendees
 - [] Add filter out expired events
 - [] Search Events
@@ -34,24 +36,25 @@
 - [X] Login and signup seamless
 - [X] Login with Google or Username
 - [X] Signup with Google or Username
-- [] Edit user profile
+- [X] Edit user profile
 
 ### Game elements
 
-- [] A
+- [] Points system.
 - []
 
 ### UMD Points
 - [] Get points for attending events
 - [] Get points for creating events
+- [] Get points for inviting friends
+- [] Points to be allocated for public events only
 
 
 Known UX Issues
 
-- [] On incorrect password (existing User) we are currently prompting user to signup.
+- [X] On incorrect password (existing User) we are currently prompting user to signup.
 - [] No option for forggot password
 - [] We are storing passwords in a plain text format atleasr we should be using bcrypt or something similar.
-
 
 ### Architecture Scalability Issues
 - [] Unposted images are being stored in the server

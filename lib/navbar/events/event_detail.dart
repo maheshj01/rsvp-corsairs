@@ -91,6 +91,7 @@ class _EventDetailState extends State<EventDetail> {
     size = MediaQuery.of(context).size;
     user = AppStateScope.of(context).user;
     bool isHost = user!.email == widget.event.host?.email;
+    bool isEventEnded = widget.event.endsAt!.isBefore(DateTime.now());
     Widget _buildDetails() {
       return Padding(
         padding: 16.0.allPadding,
@@ -279,7 +280,7 @@ class _EventDetailState extends State<EventDetail> {
               ),
             ]),
           ),
-          isHost
+          isHost || isEventEnded
               ? const SizedBox.shrink()
               : Center(
                   child: ValueListenableBuilder<Response>(

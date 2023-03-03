@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="WZWgRQ6d6za5VYxM8k4h" name="Page-1">
-        <mxGraphModel dx="1906" dy="1700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1102" dy="309" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -87,9 +87,6 @@
                 </mxCell>
                 <mxCell id="65" value="Attendees (Visible to only host)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="22" vertex="1">
                     <mxGeometry y="270" width="200" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="33" value="What a student can expect from a event post" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="640" y="-30" width="140" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="50" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry">

@@ -7,7 +7,7 @@ import 'package:supabase/supabase.dart';
 
 class UserService {
   static const String _tableName = USER_TABLE_NAME;
-  final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
+  final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
   static const _logger = Logger('UserService');
   Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,

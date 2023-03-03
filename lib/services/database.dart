@@ -6,7 +6,7 @@ import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class DatabaseService {
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, APIkey);
+  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
   static const String _bucketName = 'event-covers';
   static const Logger _logger = Logger('DatabaseService');
 
@@ -85,6 +85,28 @@ class DatabaseService {
       final response = await _supabase
           .from(table1)
           .select('*, $table2!inner(*),$table3!inner(*)')
+          .eq(column, value)
+          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .execute();
+      return response;
+    } on PostgrestException catch (_) {
+      _logger.e('Error: $_');
+      rethrow;
+    }
+  }
+
+  static Future<PostgrestResponse> findMyEvents({
+    String table1 = EVENTS_TABLE_NAME,
+    bool ascending = false,
+    String column = USER_ID_COLUMN,
+    String value = '',
+    String table2 = USER_TABLE_NAME,
+    String table3 = ATTENDEES_TABLE_NAME,
+  }) async {
+    try {
+      final response = await _supabase
+          .from(table1)
+          .select('*, $table2!inner(*)')
           .eq(column, value)
           .order(CREATED_AT_COLUMN, ascending: ascending)
           .execute();

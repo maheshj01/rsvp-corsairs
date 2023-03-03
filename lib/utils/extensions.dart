@@ -13,7 +13,7 @@ extension StringExtension on String {
   }
 
   /// Returns the first letter of each word in the string.
-  String initals() {
+  String initials() {
     if (isEmpty) return '';
     if (contains(' ')) {
       return split(' ').map((e) => e.capitalize()!.substring(0, 1)).join();

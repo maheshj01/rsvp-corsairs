@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -32,12 +33,14 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
   @override
   void initState() {
     super.initState();
-    getEvents();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      getEvents();
+    });
     fetchAppVersion();
   }
 
   Future<void> getEvents() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 300));
     showCircularIndicator(context);
     final events = await EventService.getAllEvents(context);
     if (events.isNotEmpty) {
