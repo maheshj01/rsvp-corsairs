@@ -8,7 +8,7 @@ import 'package:rsvp/pages/authentication/signup.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
-import 'package:rsvp/services/authentication.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       message: 'Signing in with Google...',
     );
     try {
-      user = (await auth.googleSignIn())!;
+      user = (await auth.signIn(user.email, user.password))!;
       if (user.email.isNotEmpty) {
         final existingUser = await UserService.findByUsername(
             username: user.email, isEmail: true);
@@ -92,29 +92,35 @@ class _LoginPageState extends State<LoginPage> {
         state: RequestState.active,
         message: 'Signing in User',
       );
-      String userId = user.email.isEmpty ? user.studentId : user.email;
-      final existingUser = await UserService.findByUsername(
-          username: userId, isEmail: user.email.isNotEmpty);
-      if (existingUser.email.isEmpty) {
-        showMessage(context, 'Enter a valid username/password');
-        _responseNotifier.value = _responseNotifier.value.copyWith(
-            state: RequestState.done, didSucced: true, data: existingUser);
-      } else {
-        _logger.d('found existing user ${user.email}');
-        if (user.password == existingUser.password) {
-          await Settings.setIsSignedIn(true, email: existingUser.email);
-          await AuthService.updateLoginStatus(
-              email: existingUser.email, isLoggedIn: true);
-          state.setUser(existingUser.copyWith(isLoggedIn: true));
-          Navigate.pushAndPopAll(context, const AdaptiveLayout());
-          firebaseAnalytics.logSignIn(user);
-        } else {
-          _logger.e('Incorrect password entered');
-          showMessage(context, 'Incorrect password');
-          _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done, didSucced: true, data: existingUser);
-        }
-      }
+      user = (await auth.signIn(user.email, user.password))!;
+      await Settings.setIsSignedIn(true, email: user.email);
+      await AuthService.updateLoginStatus(email: user.email, isLoggedIn: true);
+      state.setUser(user.copyWith(isLoggedIn: true));
+      Navigate.pushAndPopAll(context, const AdaptiveLayout());
+      firebaseAnalytics.logSignIn(user);
+      // String userId = user.email.isEmpty ? user.studentId : user.email;
+      // final existingUser = await UserService.findByUsername(
+      //     username: userId, isEmail: user.email.isNotEmpty);
+      // if (existingUser.email.isEmpty) {
+      //   showMessage(context, 'Enter a valid username/password');
+      //   _responseNotifier.value = _responseNotifier.value.copyWith(
+      //       state: RequestState.done, didSucced: true, data: existingUser);
+      // } else {
+      //   _logger.d('found existing user ${user.email}');
+      //   if (user.password == existingUser.password) {
+      //     await Settings.setIsSignedIn(true, email: existingUser.email);
+      //     await AuthService.updateLoginStatus(
+      //         email: existingUser.email, isLoggedIn: true);
+      //     state.setUser(existingUser.copyWith(isLoggedIn: true));
+      //     Navigate.pushAndPopAll(context, const AdaptiveLayout());
+      //     firebaseAnalytics.logSignIn(user);
+      //   } else {
+      //     _logger.e('Incorrect password entered');
+      //     showMessage(context, 'Incorrect password');
+      //     _responseNotifier.value = _responseNotifier.value.copyWith(
+      //         state: RequestState.done, didSucced: true, data: existingUser);
+      //   }
+      // }
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = Response.init();
@@ -230,6 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: CorsairsTheme.primaryYellow,
                           onTap: _isValid()
                               ? () {
+                                  auth.setAuthStrategy(EmailAuthStrategy());
                                   removeFocus(context);
                                   TextInput.finishAutofillContext(
                                       shouldSave: true);

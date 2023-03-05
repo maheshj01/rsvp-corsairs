@@ -1,13 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
-import 'package:rsvp/services/api/user.dart';
-import 'package:rsvp/services/authentication.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
@@ -37,56 +35,59 @@ class _SignUpState extends State<SignUp> {
       state: RequestState.active,
     );
     try {
-      if (isGoogleSignUp) {
-        user = (await auth.googleSignIn())!;
-      } else {
-        user = _buildUserModel();
-      }
-      if (user != null) {
-        final existingUser =
-            await UserService.findByUsername(username: user!.email);
-        if (existingUser.email.isEmpty) {
-          _logger.d('registering new user ${user!.email}');
-          if (user!.studentId.isEmpty) {
-            user = user!.copyWith(studentId: user!.id);
-          }
-          final resp = await AuthService.registerUser(user!);
-          if (resp.didSucced) {
-            state.setUser(user!.copyWith(isLoggedIn: true));
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-            );
-            Navigate.pushAndPopAll(context, const AdaptiveLayout(),
-                slideTransitionType: TransitionType.ttb);
-            await Settings.setIsSignedIn(true, email: user!.email);
-          } else {
-            await Settings.setIsSignedIn(false, email: existingUser.email);
-            showMessage(context, signInFailure);
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-              didSucced: false,
-              message: signInFailure,
-            );
-            throw 'failed to register new user';
-          }
-        } else {
-          _logger.d('found existing user ${user!.email}');
-          await Settings.setIsSignedIn(true, email: existingUser.email);
-          _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-              didSucced: true,
-              message: 'User already exists',
-              data: existingUser);
-          throw 'User with email ${user!.email} already exists';
-        }
-      } else {
+      user = _buildUserModel();
+      final resp = await auth.signUp(user!);
+      if (resp != null) {
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
-          didSucced: false,
-          message: 'failed to register new user',
         );
-        throw 'failed to register new user';
       }
+      // if (user != null) {
+      //   final existingUser =
+      //       await UserService.findByUsername(username: user!.email);
+
+      // if (existingUser.email.isEmpty) {
+      //   _logger.d('registering new user ${user!.email}');
+      //   if (user!.studentId.isEmpty) {
+      //     user = user!.copyWith(studentId: user!.id);
+      //   }
+      //   final resp = await AuthService.registerUser(user!);
+      //   if (resp.didSucced) {
+      //     state.setUser(user!.copyWith(isLoggedIn: true));
+      //     _responseNotifier.value = _responseNotifier.value.copyWith(
+      //       state: RequestState.done,
+      //     );
+      //     Navigate.pushAndPopAll(context, const AdaptiveLayout(),
+      //         slideTransitionType: TransitionType.ttb);
+      //     await Settings.setIsSignedIn(true, email: user!.email);
+      //   } else {
+      //     await Settings.setIsSignedIn(false, email: existingUser.email);
+      //     showMessage(context, signInFailure);
+      //     _responseNotifier.value = _responseNotifier.value.copyWith(
+      //       state: RequestState.done,
+      //       didSucced: false,
+      //       message: signInFailure,
+      //     );
+      //     throw 'failed to register new user';
+      //   }
+      // } else {
+      //   _logger.d('found existing user ${user!.email}');
+      //   await Settings.setIsSignedIn(true, email: existingUser.email);
+      //   _responseNotifier.value = _responseNotifier.value.copyWith(
+      //       state: RequestState.done,
+      //       didSucced: true,
+      //       message: 'User already exists',
+      //       data: existingUser);
+      //   throw 'User with email ${user!.email} already exists';
+      // }
+      // } else {
+      //   _responseNotifier.value = _responseNotifier.value.copyWith(
+      //     state: RequestState.done,
+      //     didSucced: false,
+      //     message: 'failed to register new user',
+      //   );
+      //   throw 'failed to register new user';
+      // }
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -192,6 +193,7 @@ class _SignUpState extends State<SignUp> {
                   isLoading:
                       isGoogleSignUp && _response.state == RequestState.active,
                   onTap: () {
+                    auth.setAuthStrategy(GoogleAuthStrategy());
                     isGoogleSignUp = true;
                     _handleSignUp(context);
                   },
@@ -261,6 +263,8 @@ class _SignUpState extends State<SignUp> {
                                     _response.state == RequestState.active,
                                 onTap: _isValid()
                                     ? () {
+                                        auth.setAuthStrategy(
+                                            EmailAuthStrategy());
                                         removeFocus(context);
                                         isGoogleSignUp = false;
                                         _handleSignUp(context);

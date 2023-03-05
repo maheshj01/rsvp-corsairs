@@ -6,7 +6,7 @@ import 'package:rsvp/navbar/profile/about.dart';
 import 'package:rsvp/navbar/profile/report.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/api/appstate.dart';
-import 'package:rsvp/services/authentication.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/navigator.dart';

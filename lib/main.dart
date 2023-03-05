@@ -15,7 +15,7 @@ import 'package:rsvp/utils/firebase_options.dart';
 import 'package:rsvp/utils/logger.dart';
 
 import 'constants/constants.dart';
-import 'services/authentication.dart';
+import 'services/auth/authentication.dart';
 import 'utils/settings.dart';
 
 Future<void> main() async {
