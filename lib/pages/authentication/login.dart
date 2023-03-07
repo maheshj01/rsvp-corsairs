@@ -100,8 +100,21 @@ class _LoginPageState extends State<LoginPage> {
           state.setUser(user.copyWith(isLoggedIn: true));
           _responseNotifier.value = _responseNotifier.value.copyWith(
             state: RequestState.done,
-            message: 'Signing response received',
+            message: 'Signin response received',
           );
+          final resp = Response(didSucced: false, message: "Failed");
+          final json = user.schematoJson();
+          // TODO: User should be inserted into database only on email verification
+          final response = await DatabaseService.insertIntoTable(json,
+              table: USER_TABLE_NAME);
+          if (response.status == 201) {
+            resp.didSucced = true;
+            resp.message = 'Success';
+          } else {
+            await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
+            // TODO: This should never happen otherwise we would have inconsistent data
+            _logger.e('Failed to register new user');
+          }
           TextInput.finishAutofillContext(shouldSave: true);
           Navigate.pushAndPopAll(context, const AdaptiveLayout());
           firebaseAnalytics.logSignIn(user);

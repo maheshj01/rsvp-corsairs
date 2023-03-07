@@ -41,14 +41,14 @@ class _SignUpState extends State<SignUp> {
       user = _buildUserModel();
       final resp = auth.signUp(user!);
       resp.then((value) {
+        showMessage(context,
+            "An email confirmation has been sent to your email address");
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
         );
         state.setUser(user!.copyWith(isLoggedIn: false));
         Navigate.pushAndPopAll(context, const LoginPage(),
             slideTransitionType: TransitionType.ttb);
-        showMessage(context,
-            "An email confirmation has been sent to your email address");
       }).onError((error, stackTrace) {
         _logger.e('error signing up $error');
         _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -57,52 +57,6 @@ class _SignUpState extends State<SignUp> {
           message: error.toString(),
         );
       });
-      // if (user != null) {
-      //   final existingUser =
-      //       await UserService.findByUsername(username: user!.email);
-
-      // if (existingUser.email.isEmpty) {
-      //   _logger.d('registering new user ${user!.email}');
-      //   if (user!.studentId.isEmpty) {
-      //     user = user!.copyWith(studentId: user!.id);
-      //   }
-      //   final resp = await AuthService.registerUser(user!);
-      //   if (resp.didSucced) {
-      //     state.setUser(user!.copyWith(isLoggedIn: true));
-      //     _responseNotifier.value = _responseNotifier.value.copyWith(
-      //       state: RequestState.done,
-      //     );
-      //     Navigate.pushAndPopAll(context, const AdaptiveLayout(),
-      //         slideTransitionType: TransitionType.ttb);
-      //     await Settings.setIsSignedIn(true, email: user!.email);
-      //   } else {
-      //     await Settings.setIsSignedIn(false, email: existingUser.email);
-      //     showMessage(context, signInFailure);
-      //     _responseNotifier.value = _responseNotifier.value.copyWith(
-      //       state: RequestState.done,
-      //       didSucced: false,
-      //       message: signInFailure,
-      //     );
-      //     throw 'failed to register new user';
-      //   }
-      // } else {
-      //   _logger.d('found existing user ${user!.email}');
-      //   await Settings.setIsSignedIn(true, email: existingUser.email);
-      //   _responseNotifier.value = _responseNotifier.value.copyWith(
-      //       state: RequestState.done,
-      //       didSucced: true,
-      //       message: 'User already exists',
-      //       data: existingUser);
-      //   throw 'User with email ${user!.email} already exists';
-      // }
-      // } else {
-      //   _responseNotifier.value = _responseNotifier.value.copyWith(
-      //     state: RequestState.done,
-      //     didSucced: false,
-      //     message: 'failed to register new user',
-      //   );
-      //   throw 'failed to register new user';
-      // }
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -136,7 +90,6 @@ class _SignUpState extends State<SignUp> {
     if (widget.newUser != null) {
       populateFields();
     }
-    final _supabase = auth.supabaseClient;
     // _subscription = _supabase.auth.onAuthStateChange.listen((data) {
     //   final event = data.event;
     //   if (event == AuthChangeEvent.mfaChallengeVerified) {

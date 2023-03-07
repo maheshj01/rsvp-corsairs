@@ -30,7 +30,7 @@ Future<void> main() async {
     url: CONFIG_URL,
     anonKey: API_KEY,
   );
-  final authService = AuthService(client: Supabase.instance.client);
+  AuthService(client: Supabase.instance.client);
   runApp(const CorsairsApp());
 }
 

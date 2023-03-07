@@ -121,21 +121,7 @@ class EmailAuthStrategy implements AuthStrategy {
           email: user.email,
           emailRedirectTo: REDIRECT_URL,
           data: user.schematoJson());
-      authResponse.then((value) async {
-        final resp = Response(didSucced: false, message: "Failed");
-        final json = user.schematoJson();
-        // TODO: User should be inserted into database only on email verification
-        final response =
-            await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
-        if (response.status == 201) {
-          resp.didSucced = true;
-          resp.message = 'Success';
-        } else {
-          await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
-          // TODO: This should never happen otherwise we would have inconsistent data
-          _logger.e('Failed to register new user');
-        }
-      }).onError((error, stackTrace) {});
+      authResponse.then((value) async {}).onError((error, stackTrace) {});
     } on PostgrestException catch (_) {
       _logger.e('error caught $_');
       throw "Failed to register new user: ${_.details}";

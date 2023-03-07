@@ -79,11 +79,9 @@ class NavigateRoute extends PageRouteBuilder {
             var curve = Curves.ease;
             var tween =
                 Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
             if (type == TransitionType.scale) {
               return child;
             }
-
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
