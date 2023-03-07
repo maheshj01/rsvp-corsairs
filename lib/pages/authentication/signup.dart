@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/constants.dart';
@@ -17,6 +19,7 @@ import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
 import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUp extends StatefulWidget {
   final UserModel? newUser;
@@ -28,7 +31,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   AuthService auth = AuthService();
-
+  StreamSubscription<AuthState>? _subscription;
   Future<void> _handleSignUp(BuildContext context) async {
     final state = AppStateWidget.of(context);
     _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -36,12 +39,9 @@ class _SignUpState extends State<SignUp> {
     );
     try {
       user = _buildUserModel();
-      final resp = await auth.signUp(user!);
-      if (resp != null) {
-        _responseNotifier.value = _responseNotifier.value.copyWith(
-          state: RequestState.done,
-        );
-      }
+      await auth.signUp(user!);
+      showMessage(
+          context, "An email confirmation has been sent to your email address");
       // if (user != null) {
       //   final existingUser =
       //       await UserService.findByUsername(username: user!.email);
@@ -121,6 +121,36 @@ class _SignUpState extends State<SignUp> {
     if (widget.newUser != null) {
       populateFields();
     }
+
+    final _supabase = auth.supabaseClient;
+    _subscription = _supabase.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      _supabase.auth.getSessionFromUrl(Uri.parse(_supabase.authUrl));
+
+      if (session != null && !haveNavigated) {
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+        );
+      }
+      print("Email Verified successfully");
+      Navigate.pushAndPopAll(context, const LoginPage(),
+          slideTransitionType: TransitionType.ttb);
+    });
+    _subscription = _supabase.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.mfaChallengeVerified) {
+        print("MFA Verified successfully");
+      }
+      final session = data.session;
+      if (session != null && !haveNavigated) {
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+        );
+      }
+      print("Email Verified successfully");
+      Navigate.pushAndPopAll(context, const LoginPage(),
+          slideTransitionType: TransitionType.ttb);
+    });
     super.initState();
   }
 
@@ -167,6 +197,7 @@ class _SignUpState extends State<SignUp> {
     _passwordController.dispose();
     _nameController.dispose();
     _studentIdController.dispose();
+    _subscription!.cancel();
     super.dispose();
   }
 
@@ -176,6 +207,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  bool haveNavigated = false;
   bool isGoogleSignUp = false;
   @override
   Widget build(BuildContext context) {

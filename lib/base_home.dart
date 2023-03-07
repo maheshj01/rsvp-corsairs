@@ -6,9 +6,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rsvp/constants/constants.dart';
+import 'package:rsvp/main.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/utility.dart';
@@ -114,7 +116,6 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     } else {
       bannerHeight = 0;
     }
-
     final configStream = FirebaseFirestore.instance
         .collection(CONFIG_COLLECTION_KEY)
         .snapshots();
@@ -383,6 +384,8 @@ class _DesktopHomeState extends State<DesktopHome> {
 }
 
 class ScrollableEvent extends StatelessWidget {
+  const ScrollableEvent({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

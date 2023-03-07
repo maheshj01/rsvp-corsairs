@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
       await Settings.setIsSignedIn(true, email: user.email);
       await AuthService.updateLoginStatus(email: user.email, isLoggedIn: true);
       state.setUser(user.copyWith(isLoggedIn: true));
+
       Navigate.pushAndPopAll(context, const AdaptiveLayout());
       firebaseAnalytics.logSignIn(user);
       // String userId = user.email.isEmpty ? user.studentId : user.email;
@@ -122,9 +123,24 @@ class _LoginPageState extends State<LoginPage> {
       //   }
       // }
     } catch (error) {
-      showMessage(context, error.toString());
-      _responseNotifier.value = Response.init();
-      showMessage(context, '$error');
+      final existingUser =
+          await UserService.findByUsername(username: user.email, isEmail: true);
+      if (existingUser.email.isEmpty) {
+        showMessage(context, 'New User please register');
+        Navigate.push(
+            context,
+            SignUp(
+              newUser: user,
+            ));
+      } else {
+        showMessage(context, error.toString());
+        _responseNotifier.value = Response.init();
+        showMessage(context, '$error');
+      }
+      _responseNotifier.value = _responseNotifier.value.copyWith(
+        state: RequestState.done,
+        message: 'Create a new User',
+      );
       await Settings.setIsSignedIn(false);
     }
   }
@@ -219,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                       48.0.vSpacer(),
                       TransparentField(
                           fKey: _formFieldKeys[0],
-                          hint: 'email/student id',
+                          hint: 'username',
                           controller: _emailController,
                           autoFillHints: const [AutofillHints.email],
                           index: USER_ID_VALIDATOR),

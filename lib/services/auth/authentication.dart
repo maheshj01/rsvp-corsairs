@@ -3,9 +3,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:rsvp/utils/utility.dart';
-import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../constants/constants.dart';
 
@@ -16,11 +15,19 @@ class AuthService {
       //   'https://www.googleapis.com/auth/contacts.readonly',
     ],
   );
+
+  static final AuthService _instance = AuthService._internal();
+
+  factory AuthService.instance() => _instance;
+
+  AuthService._internal();
   late AuthStrategy _authStrategy;
 
-  AuthService({AuthStrategy? authStrategy}) {
+  AuthService({AuthStrategy? authStrategy, SupabaseClient? client}) {
     _authStrategy = authStrategy ?? EmailAuthStrategy();
   }
+
+  SupabaseClient get supabaseClient => Supabase.instance.client;
 
   void setAuthStrategy(AuthStrategy strategy) {
     _authStrategy = strategy;
@@ -76,7 +83,7 @@ abstract class AuthStrategy {
 
 class EmailAuthStrategy implements AuthStrategy {
   static const _logger = Logger('EmailAuthService');
-  final _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  static final _supabase = AuthService.instance().supabaseClient;
 
   @override
   Future<UserModel?> signIn(String email, String password) {
@@ -88,15 +95,12 @@ class EmailAuthStrategy implements AuthStrategy {
       email: email,
       password: password,
     );
-    if (response == null) {
-      return Future.value(null);
-    }
-    return response.then((value) {
-      // if (value.. != null) {
-      //   _logger.e();
-      //   return null;
-      // }
-      return UserModel.fromJson(value.user!.toJson());
+    return response.then((data) {
+      _supabase.auth.setSession(data.session!.refreshToken!);
+      return UserModel.fromJson(data.user!.toJson());
+    }).onError((error, stackTrace) {
+      _logger.e(error.toString());
+      throw "Invalid email or password";
     });
   }
 
@@ -117,8 +121,8 @@ class EmailAuthStrategy implements AuthStrategy {
       final AuthResponse authResponse = await _supabase.auth.signUp(
           password: user.password,
           email: user.email,
+          emailRedirectTo: 'com.wml.rsvp://login-callback/',
           data: user.schematoJson());
-
       // final resp = Response(didSucced: false, message: "Failed");
       // final json = user.schematoJson();
       // final response =
@@ -145,12 +149,11 @@ class GoogleAuthStrategy implements AuthStrategy {
       //   'https://www.googleapis.com/auth/contacts.readonly',
     ],
   );
-  final _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  final _supabase = AuthService.instance().supabaseClient;
   static const _logger = Logger('GoogleAuthService');
 
   @override
   Future<UserModel?> signIn(String email, String password) async {
-    // TODO: implement signIn
     final response = await _supabase.auth
         .signInWithPassword(email: email, password: password);
     if (response.user != null) {

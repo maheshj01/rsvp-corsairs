@@ -2,21 +2,22 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/main.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
     // ignore: library_prefixes
     if (dart.library.html) 'package:rsvp/platform/web.dart' as platformOnly;
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:rsvp/utils/utils.dart';
 import 'package:supabase/supabase.dart';
 
 /// Global Vocabulary table's api.
 class EventService {
   static String tableName = EVENTS_TABLE_NAME;
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  static final _supabase = AuthService.instance().supabaseClient;
   static const _logger = Logger('EventService');
   static Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,

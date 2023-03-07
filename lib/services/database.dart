@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/main.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DatabaseService {
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  static final _supabase = AuthService.instance().supabaseClient;
   static const String _bucketName = 'event-covers';
   static const Logger _logger = Logger('DatabaseService');
 

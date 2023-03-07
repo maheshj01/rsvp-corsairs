@@ -1,13 +1,13 @@
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/user.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
 
 class UserService {
   static const String _tableName = USER_TABLE_NAME;
-  final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  static final _supabase = AuthService.instance().supabaseClient;
   static const _logger = Logger('UserService');
   Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,

@@ -122,5 +122,6 @@ const int USER_ID_VALIDATOR = 12;
 enum RequestState { active, done, error, none }
 
 const String emailPattern = r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z]{4,}.[a-z]{3}$';
+const String userPattern = r'^[a-zA-Z0-9]{3,}$';
 const String firstAndLastNamePattern = r'^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$';
 const String studentIdPattern = r'^[0-9]{8}$';

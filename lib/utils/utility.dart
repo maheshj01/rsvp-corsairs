@@ -23,7 +23,7 @@ void showMessage(BuildContext context, String message,
             message,
             style: Theme.of(context)
                 .textTheme
-                .headline5!
+                .headlineSmall!
                 .copyWith(color: Colors.white),
           ),
           duration: duration,
@@ -202,13 +202,12 @@ FormFieldValidator<String> fieldValidator(int field) {
       };
     case USER_ID_VALIDATOR:
       return (String? value) {
-        final regexp1 = RegExp(emailPattern);
-        final regexp2 = RegExp(studentIdPattern);
-        if (value != null &&
-            (value.contains(regexp1) || value.contains(regexp2))) {
+        // final usernamePattern = RegExp(userPattern);
+        final ePattern = RegExp(emailPattern);
+        if (value != null && (value.contains(ePattern))) {
           return null;
         }
-        return 'Please enter either a email/studentId';
+        return 'Please enter a valid email';
       };
     default:
       return (String? value) {

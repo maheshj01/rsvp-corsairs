@@ -13,6 +13,8 @@ import 'package:rsvp/splashscreen.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/firebase_options.dart';
 import 'package:rsvp/utils/logger.dart';
+import 'package:rsvp/utils/secrets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants/constants.dart';
 import 'services/auth/authentication.dart';
@@ -24,6 +26,11 @@ Future<void> main() async {
   analytics = FirebaseAnalytics.instance;
   usePathUrlStrategy();
   Settings.init();
+  await Supabase.initialize(
+    url: CONFIG_URL,
+    anonKey: API_KEY,
+  );
+  final authService = AuthService(client: Supabase.instance.client);
   runApp(const CorsairsApp());
 }
 
