@@ -92,13 +92,29 @@ class _LoginPageState extends State<LoginPage> {
         state: RequestState.active,
         message: 'Signing in User',
       );
-      user = (await auth.signIn(user.email, user.password))!;
-      await Settings.setIsSignedIn(true, email: user.email);
-      await AuthService.updateLoginStatus(email: user.email, isLoggedIn: true);
-      state.setUser(user.copyWith(isLoggedIn: true));
-
-      Navigate.pushAndPopAll(context, const AdaptiveLayout());
-      firebaseAnalytics.logSignIn(user);
+      auth.signIn(user.email, user.password).then((signedInUser) async {
+        if (signedInUser != null) {
+          await Settings.setIsSignedIn(true, email: user.email);
+          await AuthService.updateLoginStatus(
+              email: user.email, isLoggedIn: true);
+          state.setUser(user.copyWith(isLoggedIn: true));
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            message: 'Signing response received',
+          );
+          TextInput.finishAutofillContext(shouldSave: true);
+          Navigate.pushAndPopAll(context, const AdaptiveLayout());
+          firebaseAnalytics.logSignIn(user);
+        } else {
+          showMessage(context, 'Something went wrong');
+        }
+      }).onError((error, stackTrace) {
+        showMessage(context, error.toString());
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+          message: error.toString(),
+        );
+      });
       // String userId = user.email.isEmpty ? user.studentId : user.email;
       // final existingUser = await UserService.findByUsername(
       //     username: userId, isEmail: user.email.isNotEmpty);
@@ -199,107 +215,112 @@ class _LoginPageState extends State<LoginPage> {
                   isLoading:
                       isGoogleSignIn && _response.state == RequestState.active,
                   onTap: () {
+                    auth.setAuthStrategy(GoogleAuthStrategy());
                     isGoogleSignIn = true;
                     _handleGoogleSignIn(context);
                   },
                 ));
           }
 
-          return Scaffold(
-            body: Container(
-              decoration: const BoxDecoration(color: CorsairsTheme.primaryBlue),
-              padding: 16.0.horizontalPadding,
-              child: AutofillGroup(
-                child: Form(
-                  key: _formKey,
-                  onChanged: () {
-                    setState(() {});
-                  },
-                  child: ListView(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: SizeUtils.size.height * 0.12,
-                      ),
-                      const Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'RSVP',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
+          return IgnorePointer(
+            ignoring: _response.state == RequestState.active,
+            child: Scaffold(
+              body: Container(
+                decoration:
+                    const BoxDecoration(color: CorsairsTheme.primaryBlue),
+                padding: 16.0.horizontalPadding,
+                child: AutofillGroup(
+                  child: Form(
+                    key: _formKey,
+                    onChanged: () {
+                      setState(() {});
+                    },
+                    child: ListView(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: SizeUtils.size.height * 0.12,
+                        ),
+                        const Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'RSVP',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      48.0.vSpacer(),
-                      TransparentField(
-                          fKey: _formFieldKeys[0],
-                          hint: 'username',
-                          controller: _emailController,
-                          autoFillHints: const [AutofillHints.email],
-                          index: USER_ID_VALIDATOR),
-                      8.0.vSpacer(),
-                      TransparentField(
-                          fKey: _formFieldKeys[1],
-                          hint: 'Password',
-                          autoFillHints: const [AutofillHints.password],
-                          controller: _passwordController,
-                          index: PASSWORD_VALIDATOR),
-                      const SizedBox(height: 20),
-                      CSButton(
-                          height: 48,
-                          backgroundColor: CorsairsTheme.primaryYellow,
-                          onTap: _isValid()
-                              ? () {
-                                  auth.setAuthStrategy(EmailAuthStrategy());
-                                  removeFocus(context);
-                                  TextInput.finishAutofillContext(
-                                      shouldSave: true);
-                                  isGoogleSignIn = false;
-                                  final _email = _emailController.text.trim();
-                                  final _password =
-                                      _passwordController.text.trim();
-                                  if (_email.isEmpty || _password.isEmpty) {
-                                    showMessage(context,
-                                        'Please enter valid crednetials');
-                                    return;
+                        48.0.vSpacer(),
+                        TransparentField(
+                            fKey: _formFieldKeys[0],
+                            hint: 'username',
+                            controller: _emailController,
+                            autoFillHints: const [AutofillHints.email],
+                            index: USER_ID_VALIDATOR),
+                        8.0.vSpacer(),
+                        TransparentField(
+                            fKey: _formFieldKeys[1],
+                            hint: 'Password',
+                            autoFillHints: const [AutofillHints.password],
+                            controller: _passwordController,
+                            index: PASSWORD_VALIDATOR),
+                        const SizedBox(height: 20),
+                        CSButton(
+                            height: 48,
+                            backgroundColor: CorsairsTheme.primaryYellow,
+                            onTap: _isValid()
+                                ? () {
+                                    auth.setAuthStrategy(EmailAuthStrategy());
+                                    removeFocus(context);
+                                    TextInput.finishAutofillContext(
+                                        shouldSave: true);
+                                    isGoogleSignIn = false;
+                                    final _email = _emailController.text.trim();
+                                    final _password =
+                                        _passwordController.text.trim();
+                                    if (_email.isEmpty || _password.isEmpty) {
+                                      showMessage(context,
+                                          'Please enter valid crednetials');
+                                      return;
+                                    }
+                                    user = user.copyWith(
+                                        email:
+                                            _email.contains('@') ? _email : '',
+                                        password: _password,
+                                        studentId:
+                                            _email.contains('@') ? '' : _email,
+                                        isLoggedIn: true);
+                                    _handleSignIn(context);
                                   }
-                                  user = user.copyWith(
-                                      email: _email.contains('@') ? _email : '',
-                                      password: _password,
-                                      studentId:
-                                          _email.contains('@') ? '' : _email,
-                                      isLoggedIn: true);
-                                  _handleSignIn(context);
-                                }
-                              : null,
-                          isLoading: !isGoogleSignIn &&
-                              _response.state == RequestState.active,
-                          label: 'Login'),
-                      // new user sign up
-                      48.0.vSpacer(),
-                      RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(children: [
-                            const TextSpan(
-                                text: 'Don\'t have an account? ',
-                                style: TextStyle(color: Colors.white)),
-                            TextSpan(
-                                text: 'Sign Up',
-                                style: const TextStyle(
-                                    color: CorsairsTheme.primaryYellow),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigate()
-                                        .pushReplace(context, const SignUp());
-                                  })
-                          ])),
-                      SizedBox(
-                        height: SizeUtils.size.height * 0.12,
-                      ),
-                      _signInButton()
-                    ],
+                                : null,
+                            isLoading: !isGoogleSignIn &&
+                                _response.state == RequestState.active,
+                            label: 'Login'),
+                        // new user sign up
+                        48.0.vSpacer(),
+                        RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(children: [
+                              const TextSpan(
+                                  text: 'Don\'t have an account? ',
+                                  style: TextStyle(color: Colors.white)),
+                              TextSpan(
+                                  text: 'Sign Up',
+                                  style: const TextStyle(
+                                      color: CorsairsTheme.primaryYellow),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigate.push(context, const SignUp());
+                                    })
+                            ])),
+                        SizedBox(
+                          height: SizeUtils.size.height * 0.12,
+                        ),
+                        _signInButton()
+                      ],
+                    ),
                   ),
                 ),
               ),

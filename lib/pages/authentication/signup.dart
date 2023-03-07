@@ -19,7 +19,6 @@ import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
 import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUp extends StatefulWidget {
   final UserModel? newUser;
@@ -31,7 +30,8 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   AuthService auth = AuthService();
-  StreamSubscription<AuthState>? _subscription;
+  // StreamSubscription<AuthState>? _subscription;
+
   Future<void> _handleSignUp(BuildContext context) async {
     final state = AppStateWidget.of(context);
     _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -121,36 +121,22 @@ class _SignUpState extends State<SignUp> {
     if (widget.newUser != null) {
       populateFields();
     }
-
     final _supabase = auth.supabaseClient;
-    _subscription = _supabase.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      _supabase.auth.getSessionFromUrl(Uri.parse(_supabase.authUrl));
-
-      if (session != null && !haveNavigated) {
-        _responseNotifier.value = _responseNotifier.value.copyWith(
-          state: RequestState.done,
-        );
-      }
-      print("Email Verified successfully");
-      Navigate.pushAndPopAll(context, const LoginPage(),
-          slideTransitionType: TransitionType.ttb);
-    });
-    _subscription = _supabase.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      if (event == AuthChangeEvent.mfaChallengeVerified) {
-        print("MFA Verified successfully");
-      }
-      final session = data.session;
-      if (session != null && !haveNavigated) {
-        _responseNotifier.value = _responseNotifier.value.copyWith(
-          state: RequestState.done,
-        );
-      }
-      print("Email Verified successfully");
-      Navigate.pushAndPopAll(context, const LoginPage(),
-          slideTransitionType: TransitionType.ttb);
-    });
+    // _subscription = _supabase.auth.onAuthStateChange.listen((data) {
+    //   final event = data.event;
+    //   if (event == AuthChangeEvent.mfaChallengeVerified) {
+    //     print("MFA Verified successfully");
+    //   }
+    //   final session = data.session;
+    //   if (session != null && !haveNavigated) {
+    //     _responseNotifier.value = _responseNotifier.value.copyWith(
+    //       state: RequestState.done,
+    //     );
+    //   }
+    //   print("Email Verified successfully");
+    //   Navigate.pushAndPopAll(context, const LoginPage(),
+    //       slideTransitionType: TransitionType.ttb);
+    // });
     super.initState();
   }
 
@@ -197,7 +183,7 @@ class _SignUpState extends State<SignUp> {
     _passwordController.dispose();
     _nameController.dispose();
     _studentIdController.dispose();
-    _subscription!.cancel();
+    // _subscription!.cancel();
     super.dispose();
   }
 
@@ -234,125 +220,137 @@ class _SignUpState extends State<SignUp> {
                 ));
           }
 
-          return GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Scaffold(
-              backgroundColor: CorsairsTheme.primaryBlue,
-              body: ValueListenableBuilder<Response>(
-                  valueListenable: _responseNotifier,
-                  builder: (BuildContext context, Response _response,
-                      Widget? child) {
-                    return Padding(
-                      padding: 16.0.horizontalPadding,
-                      child: Form(
-                        key: _formKey,
-                        onChanged: () {
-                          setState(() {});
-                        },
-                        child: ListView(
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            kBottomNavigationBarHeight.vSpacer(),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
+          return IgnorePointer(
+            ignoring: _response.state == RequestState.active,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Scaffold(
+                backgroundColor: CorsairsTheme.primaryBlue,
+                body: ValueListenableBuilder<Response>(
+                    valueListenable: _responseNotifier,
+                    builder: (BuildContext context, Response _response,
+                        Widget? child) {
+                      return Padding(
+                        padding: 16.0.horizontalPadding,
+                        child: AutofillGroup(
+                          child: Form(
+                            key: _formKey,
+                            onChanged: () {
+                              setState(() {});
+                            },
+                            child: ListView(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                kBottomNavigationBarHeight.vSpacer(),
+                                const Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 50,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            48.0.vSpacer(),
-                            TransparentField(
-                                fKey: _formFieldKeys[0],
-                                hint: 'Name',
-                                controller: _nameController,
-                                index: NAME_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[1],
-                                hint: 'Email',
-                                controller: _emailController,
-                                index: EMAIL_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[2],
-                                hint: 'Student Id',
-                                controller: _studentIdController,
-                                index: STUDENT_ID_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[3],
-                                hint: 'Password',
-                                controller: _passwordController,
-                                index: PASSWORD_VALIDATOR),
-                            48.0.vSpacer(),
-                            CSButton(
-                                height: 48,
-                                backgroundColor: CorsairsTheme.primaryYellow,
-                                isLoading: !isGoogleSignUp &&
-                                    _response.state == RequestState.active,
-                                onTap: _isValid()
-                                    ? () {
-                                        auth.setAuthStrategy(
-                                            EmailAuthStrategy());
-                                        removeFocus(context);
-                                        isGoogleSignUp = false;
-                                        _handleSignUp(context);
-                                      }
-                                    : null,
-                                label: 'SignUp'),
-                            16.0.vSpacer(),
-                            // or divider
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'or',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                48.0.vSpacer(),
+                                TransparentField(
+                                    fKey: _formFieldKeys[0],
+                                    hint: 'Name',
+                                    autoFillHints: const [
+                                      AutofillHints.name,
+                                      AutofillHints.givenName,
+                                      AutofillHints.familyName
+                                    ],
+                                    controller: _nameController,
+                                    index: NAME_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[1],
+                                    hint: 'Email',
+                                    controller: _emailController,
+                                    index: EMAIL_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[2],
+                                    hint: 'Student Id',
+                                    controller: _studentIdController,
+                                    index: STUDENT_ID_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[3],
+                                    hint: 'Password',
+                                    controller: _passwordController,
+                                    index: PASSWORD_VALIDATOR),
+                                48.0.vSpacer(),
+                                CSButton(
+                                    height: 48,
+                                    backgroundColor:
+                                        CorsairsTheme.primaryYellow,
+                                    isLoading: !isGoogleSignUp &&
+                                        _response.state == RequestState.active,
+                                    onTap: _isValid()
+                                        ? () {
+                                            auth.setAuthStrategy(
+                                                EmailAuthStrategy());
+                                            removeFocus(context);
+                                            isGoogleSignUp = false;
+                                            _handleSignUp(context);
+                                          }
+                                        : null,
+                                    label: 'SignUp'),
+                                16.0.vSpacer(),
+                                // or divider
+                                const Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'or',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 20), _signUpWithGoogle(),
+                                // already have an account text button
+                                16.0.vSpacer(),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: TextButton(
+                                      onPressed: () {
+                                        Navigate.pushAndPopAll(
+                                            context, const LoginPage());
+                                      },
+                                      child: RichText(
+                                          text: TextSpan(children: [
+                                        const TextSpan(
+                                            text: 'Already have an account? ',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            )),
+                                        TextSpan(
+                                            text: 'Sign In',
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                Navigate.pushAndPopAll(
+                                                    context, const LoginPage());
+                                              },
+                                            style: const TextStyle(
+                                                color:
+                                                    CorsairsTheme.primaryYellow,
+                                                fontSize: 16,
+                                                decoration:
+                                                    TextDecoration.underline))
+                                      ]))),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 20), _signUpWithGoogle(),
-                            // already have an account text button
-                            16.0.vSpacer(),
-                            Align(
-                              alignment: Alignment.center,
-                              child: TextButton(
-                                  onPressed: () {
-                                    Navigate.pushAndPopAll(
-                                        context, const LoginPage());
-                                  },
-                                  child: RichText(
-                                      text: TextSpan(children: [
-                                    const TextSpan(
-                                        text: 'Already have an account? ',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                        )),
-                                    TextSpan(
-                                        text: 'Sign In',
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            Navigate.pushAndPopAll(
-                                                context, const LoginPage());
-                                          },
-                                        style: const TextStyle(
-                                            color: CorsairsTheme.primaryYellow,
-                                            fontSize: 16,
-                                            decoration:
-                                                TextDecoration.underline))
-                                  ]))),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+              ),
             ),
           );
         });

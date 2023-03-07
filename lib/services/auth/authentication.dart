@@ -87,17 +87,14 @@ class EmailAuthStrategy implements AuthStrategy {
 
   @override
   Future<UserModel?> signIn(String email, String password) {
-    final signedInUser = _supabase.auth.currentUser;
-    if (signedInUser != null) {
-      return Future.value(UserModel.fromJson(signedInUser.toJson()));
-    }
     final Future<AuthResponse> response = _supabase.auth.signInWithPassword(
       email: email,
       password: password,
     );
     return response.then((data) {
       _supabase.auth.setSession(data.session!.refreshToken!);
-      return UserModel.fromJson(data.user!.toJson());
+      final user = UserModel.fromJson(data.user!.appMetadata);
+      return user;
     }).onError((error, stackTrace) {
       _logger.e(error.toString());
       throw "Invalid email or password";
@@ -118,22 +115,25 @@ class EmailAuthStrategy implements AuthStrategy {
   Future<AuthResponse?> signUp(UserModel user) async {
     AuthResponse? authResponse;
     try {
-      final AuthResponse authResponse = await _supabase.auth.signUp(
+      final Future<AuthResponse> authResponse = _supabase.auth.signUp(
           password: user.password,
           email: user.email,
           emailRedirectTo: 'com.wml.rsvp://login-callback/',
           data: user.schematoJson());
-      // final resp = Response(didSucced: false, message: "Failed");
-      // final json = user.schematoJson();
-      // final response =
-      //     await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
-      // if (response.status == 201) {
-      //   resp.didSucced = true;
-      //   resp.message = 'Success';
-      // } else {
-      //   _logger.e('error caught');
-      //   throw "Failed to register new user";
-      // }
+      authResponse.then((value) async {
+        final resp = Response(didSucced: false, message: "Failed");
+        final json = user.schematoJson();
+        final response =
+            await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
+        if (response.status == 201) {
+          resp.didSucced = true;
+          resp.message = 'Success';
+        } else {
+          await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
+          // TODO: This should never happen otherwise we would have inconsistent data
+          _logger.e('Failed to register new user');
+        }
+      }).onError((error, stackTrace) {});
     } on PostgrestException catch (_) {
       _logger.e('error caught $_');
       throw "Failed to register new user: ${_.details}";
@@ -154,10 +154,22 @@ class GoogleAuthStrategy implements AuthStrategy {
 
   @override
   Future<UserModel?> signIn(String email, String password) async {
-    final response = await _supabase.auth
-        .signInWithPassword(email: email, password: password);
-    if (response.user != null) {
-      return UserModel.fromJson(response.user!.userMetadata!);
+    await _googleSignIn.signOut();
+    final result = await _googleSignIn.signIn();
+    final googleKey = await result!.authentication;
+    final String? accessToken = googleKey.accessToken;
+    final String? idToken = googleKey.idToken;
+    final String email = _googleSignIn.currentUser!.email;
+    final response = await Supabase.instance.client.auth.signInWithIdToken(
+        provider: Provider.google,
+        // redirectTo: REDIRECT_URL,
+        idToken: idToken!
+        // authScreenLaunchMode: LaunchMode.inAppWebView
+        );
+    // .signInWithIdToken(provider: Provider.google, idToken: idToken!);
+    if (response.session != null) {
+      final currentUser = response.session!.user;
+      return UserModel.fromJson(currentUser.userMetadata!);
     }
     return null;
   }
