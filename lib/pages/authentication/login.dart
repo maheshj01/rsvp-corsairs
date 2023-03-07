@@ -312,7 +312,7 @@ class _LoginPageState extends State<LoginPage> {
                                       color: CorsairsTheme.primaryYellow),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigate.push(context, const SignUp());
+                                      Navigate.push(context, SignUp());
                                     })
                             ])),
                         SizedBox(

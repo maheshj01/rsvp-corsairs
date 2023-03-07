@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
+import 'package:rsvp/utils/secrets.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -35,6 +36,10 @@ class AuthService {
 
   Future<AuthResponse?> signUp(UserModel user) {
     return _authStrategy.signUp(user);
+  }
+
+  Future<UserModel> signUpWithGoogle() {
+    return _authStrategy.signUpWithGoogle();
   }
 
   Future<UserModel?> signIn(String email, String password) {
@@ -79,6 +84,7 @@ abstract class AuthStrategy {
   Future<UserModel?> signIn(String email, String password);
   Future<bool> signOut(BuildContext context);
   Future<AuthResponse?> signUp(UserModel user);
+  Future<UserModel> signUpWithGoogle();
 }
 
 class EmailAuthStrategy implements AuthStrategy {
@@ -118,11 +124,12 @@ class EmailAuthStrategy implements AuthStrategy {
       final Future<AuthResponse> authResponse = _supabase.auth.signUp(
           password: user.password,
           email: user.email,
-          emailRedirectTo: 'com.wml.rsvp://login-callback/',
+          emailRedirectTo: REDIRECT_URL,
           data: user.schematoJson());
       authResponse.then((value) async {
         final resp = Response(didSucced: false, message: "Failed");
         final json = user.schematoJson();
+        // TODO: User should be inserted into database only on email verification
         final response =
             await DatabaseService.insertIntoTable(json, table: USER_TABLE_NAME);
         if (response.status == 201) {
@@ -139,6 +146,11 @@ class EmailAuthStrategy implements AuthStrategy {
       throw "Failed to register new user: ${_.details}";
     }
     return authResponse;
+  }
+
+  @override
+  Future<UserModel> signUpWithGoogle() {
+    throw UnimplementedError();
   }
 }
 
@@ -157,9 +169,7 @@ class GoogleAuthStrategy implements AuthStrategy {
     await _googleSignIn.signOut();
     final result = await _googleSignIn.signIn();
     final googleKey = await result!.authentication;
-    final String? accessToken = googleKey.accessToken;
     final String? idToken = googleKey.idToken;
-    final String email = _googleSignIn.currentUser!.email;
     final response = await Supabase.instance.client.auth.signInWithIdToken(
         provider: Provider.google,
         // redirectTo: REDIRECT_URL,
@@ -188,7 +198,7 @@ class GoogleAuthStrategy implements AuthStrategy {
 
   @override
   Future<AuthResponse?> signUp(UserModel user) async {
-    UserModel? user;
+    UserModel? newUser = UserModel.init();
     try {
       await _googleSignIn.signOut();
       final result = await _googleSignIn.signIn();
@@ -199,7 +209,7 @@ class GoogleAuthStrategy implements AuthStrategy {
 
       /// default username
       final String username = email.split('@').first;
-      user!.copyWith(
+      newUser.copyWith(
           name: _googleSignIn.currentUser!.displayName ?? '',
           email: _googleSignIn.currentUser!.email,
           avatarUrl: _googleSignIn.currentUser!.photoUrl,
@@ -217,7 +227,33 @@ class GoogleAuthStrategy implements AuthStrategy {
       return authResponse;
     } catch (error) {
       _logger.e(error.toString());
-      throw 'Failed to signIn';
+      throw 'Failed to Signup new user';
     }
+  }
+
+  @override
+  Future<UserModel> signUpWithGoogle() async {
+    UserModel? newUser = UserModel.init();
+    await _googleSignIn.signOut();
+    final result = await _googleSignIn.signIn();
+    final googleKey = await result!.authentication;
+    final String? accessToken = googleKey.accessToken;
+    final String? idToken = googleKey.idToken;
+    final String email = _googleSignIn.currentUser!.email;
+
+    /// default username
+    final String username = email.split('@').first;
+    newUser = newUser.copyWith(
+        name: _googleSignIn.currentUser!.displayName ?? '',
+        email: _googleSignIn.currentUser!.email,
+        avatarUrl: _googleSignIn.currentUser!.photoUrl,
+        idToken: idToken,
+        username: username,
+        isAdmin: false,
+        created_at: DateTime.now().toUtc(),
+        password: '',
+        studentId: '',
+        accessToken: accessToken);
+    return newUser;
   }
 }

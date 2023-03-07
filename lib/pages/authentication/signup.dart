@@ -39,9 +39,32 @@ class _SignUpState extends State<SignUp> {
     );
     try {
       user = _buildUserModel();
-      await auth.signUp(user!);
-      showMessage(
-          context, "An email confirmation has been sent to your email address");
+      if (isGoogleSignUp) {
+        final UserModel googleUser = await auth.signUpWithGoogle();
+        populateFields(newUser: googleUser);
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+        );
+      } else {
+        final resp = auth.signUp(user!);
+        resp.then((value) {
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+          );
+          state.setUser(user!.copyWith(isLoggedIn: false));
+          Navigate.pushAndPopAll(context, const LoginPage(),
+              slideTransitionType: TransitionType.ttb);
+          showMessage(context,
+              "An email confirmation has been sent to your email address");
+        }).onError((error, stackTrace) {
+          _logger.e('error signing up $error');
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            didSucced: false,
+            message: error.toString(),
+          );
+        });
+      }
       // if (user != null) {
       //   final existingUser =
       //       await UserService.findByUsername(username: user!.email);
@@ -140,11 +163,18 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-  void populateFields() {
-    _emailController.text = widget.newUser!.email;
-    _nameController.text = widget.newUser!.name;
-    _studentIdController.text = widget.newUser!.studentId;
-    user = widget.newUser;
+  void populateFields({UserModel? newUser}) {
+    if (newUser != null) {
+      _emailController.text = newUser.email;
+      _nameController.text = newUser.name;
+      _studentIdController.text = newUser.studentId;
+      user = newUser;
+    } else {
+      _emailController.text = widget.newUser!.email;
+      _nameController.text = widget.newUser!.name;
+      _studentIdController.text = widget.newUser!.studentId;
+      user = widget.newUser;
+    }
   }
 
   final ValueNotifier<Response> _responseNotifier =
