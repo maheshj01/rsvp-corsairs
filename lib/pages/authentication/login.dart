@@ -73,10 +73,10 @@ class _LoginPageState extends State<LoginPage> {
           message: signInFailure,
         );
         showMessage(context, signInFailure);
-        throw 'failed to register new user';
+        throw 'Sign in failed';
       }
     } catch (error) {
-      showMessage(context, error.toString());
+      showMessage(context, "Couldn't sign in with Google");
       _responseNotifier.value = _responseNotifier.value.copyWith(
         state: RequestState.done,
         message: error.toString(),
@@ -312,7 +312,7 @@ class _LoginPageState extends State<LoginPage> {
                                       color: CorsairsTheme.primaryYellow),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigate.push(context, SignUp());
+                                      Navigate.push(context, const SignUp());
                                     })
                             ])),
                         SizedBox(

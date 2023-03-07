@@ -39,32 +39,24 @@ class _SignUpState extends State<SignUp> {
     );
     try {
       user = _buildUserModel();
-      if (isGoogleSignUp) {
-        final UserModel googleUser = await auth.signUpWithGoogle();
-        populateFields(newUser: googleUser);
+      final resp = auth.signUp(user!);
+      resp.then((value) {
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
         );
-      } else {
-        final resp = auth.signUp(user!);
-        resp.then((value) {
-          _responseNotifier.value = _responseNotifier.value.copyWith(
-            state: RequestState.done,
-          );
-          state.setUser(user!.copyWith(isLoggedIn: false));
-          Navigate.pushAndPopAll(context, const LoginPage(),
-              slideTransitionType: TransitionType.ttb);
-          showMessage(context,
-              "An email confirmation has been sent to your email address");
-        }).onError((error, stackTrace) {
-          _logger.e('error signing up $error');
-          _responseNotifier.value = _responseNotifier.value.copyWith(
-            state: RequestState.done,
-            didSucced: false,
-            message: error.toString(),
-          );
-        });
-      }
+        state.setUser(user!.copyWith(isLoggedIn: false));
+        Navigate.pushAndPopAll(context, const LoginPage(),
+            slideTransitionType: TransitionType.ttb);
+        showMessage(context,
+            "An email confirmation has been sent to your email address");
+      }).onError((error, stackTrace) {
+        _logger.e('error signing up $error');
+        _responseNotifier.value = _responseNotifier.value.copyWith(
+          state: RequestState.done,
+          didSucced: false,
+          message: error.toString(),
+        );
+      });
       // if (user != null) {
       //   final existingUser =
       //       await UserService.findByUsername(username: user!.email);
@@ -330,18 +322,18 @@ class _SignUpState extends State<SignUp> {
                                     label: 'SignUp'),
                                 16.0.vSpacer(),
                                 // or divider
-                                const Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'or',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20), _signUpWithGoogle(),
+                                // const Align(
+                                //   alignment: Alignment.center,
+                                //   child: Text(
+                                //     'or',
+                                //     style: TextStyle(
+                                //       color: Colors.white,
+                                //       fontSize: 20,
+                                //       fontWeight: FontWeight.bold,
+                                //     ),
+                                //   ),
+                                // ),
+                                // const SizedBox(height: 20), _signUpWithGoogle(),
                                 // already have an account text button
                                 16.0.vSpacer(),
                                 Align(

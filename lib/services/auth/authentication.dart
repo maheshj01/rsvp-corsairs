@@ -38,10 +38,6 @@ class AuthService {
     return _authStrategy.signUp(user);
   }
 
-  Future<UserModel> signUpWithGoogle() {
-    return _authStrategy.signUpWithGoogle();
-  }
-
   Future<UserModel?> signIn(String email, String password) {
     return _authStrategy.signIn(email, password);
   }
@@ -84,7 +80,6 @@ abstract class AuthStrategy {
   Future<UserModel?> signIn(String email, String password);
   Future<bool> signOut(BuildContext context);
   Future<AuthResponse?> signUp(UserModel user);
-  Future<UserModel> signUpWithGoogle();
 }
 
 class EmailAuthStrategy implements AuthStrategy {
