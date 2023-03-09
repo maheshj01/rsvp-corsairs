@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
-import 'package:rsvp/main.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
     // ignore: library_prefixes

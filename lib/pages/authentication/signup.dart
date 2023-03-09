@@ -43,12 +43,7 @@ class _SignUpState extends State<SignUp> {
       resp.then((value) {
         showMessage(context,
             "An email confirmation has been sent to your email address");
-        _responseNotifier.value = _responseNotifier.value.copyWith(
-          state: RequestState.done,
-        );
         state.setUser(user!.copyWith(isLoggedIn: false));
-        Navigate.pushAndPopAll(context, const LoginPage(),
-            slideTransitionType: TransitionType.ttb);
       }).onError((error, stackTrace) {
         _logger.e('error signing up $error');
         _responseNotifier.value = _responseNotifier.value.copyWith(

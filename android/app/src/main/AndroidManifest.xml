@@ -28,7 +28,8 @@
         <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
         <data
           android:scheme="com.wml.rsvp"
-          android:host="login-callback" />
+          android:host="login-callback"
+        />
       </intent-filter>
       <meta-data
         android:name="io.flutter.embedding.android.NormalTheme"

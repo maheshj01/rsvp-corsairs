@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:rsvp/base_home.dart';
 import 'package:rsvp/models/event_schema.dart';
+import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/deep_links.dart';
 import 'package:rsvp/splashscreen.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/firebase_options.dart';
@@ -70,6 +74,7 @@ class _CorsairsAppState extends State<CorsairsApp> {
     totalNotifier.dispose();
     searchController.dispose();
     listNotifier.dispose();
+    _deepLinkService.dispose();
     super.dispose();
   }
 
@@ -77,8 +82,12 @@ class _CorsairsAppState extends State<CorsairsApp> {
   void initState() {
     super.initState();
     initializeApp();
+    _deepLinkService = DeepLinkService(navigatorKey: _navigatorKey);
   }
 
+  late DeepLinkService _deepLinkService;
+
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   @override
   Widget build(BuildContext context) {
     return AppStateWidget(
@@ -90,9 +99,15 @@ class _CorsairsAppState extends State<CorsairsApp> {
               debugShowCheckedModeBanner: !kDebugMode,
               darkTheme: CorsairsTheme.darkThemeData,
               theme: CorsairsTheme.lightThemeData,
+              navigatorKey: _navigatorKey,
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/verified': (context) => const LoginPage()
+              },
               themeMode:
                   CorsairsTheme.isDark ? ThemeMode.dark : ThemeMode.light,
-              home: const SplashScreen(),
+              // home: const SplashScreen(),
             );
           }),
     );
