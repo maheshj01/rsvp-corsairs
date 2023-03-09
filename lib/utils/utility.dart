@@ -168,23 +168,23 @@ Future<XFile?> pickImageAndCrop(context) async {
 
 FormFieldValidator<String> fieldValidator(int field) {
   switch (field) {
-    case NAME_VALIDATOR:
+    case Constants.NAME_VALIDATOR:
       return (String? value) {
-        final regexp = RegExp(firstAndLastNamePattern);
+        final regexp = RegExp(Constants.firstAndLastNamePattern);
         if (value == null || value.isEmpty || !value.contains(regexp)) {
           return 'Please enter a valid first and last name';
         }
         return null;
       };
-    case EMAIL_VALIDATOR:
+    case Constants.EMAIL_VALIDATOR:
       return (String? value) {
-        final regexp = RegExp(emailPattern);
+        final regexp = RegExp(Constants.emailPattern);
         if (value != null && value.length > 5 && value.contains(regexp)) {
           return null;
         }
         return 'Please enter a valid email address';
       };
-    case PASSWORD_VALIDATOR:
+    case Constants.PASSWORD_VALIDATOR:
       return (String? value) {
         if (value != null && value.length > 7) {
           return null;
@@ -192,18 +192,18 @@ FormFieldValidator<String> fieldValidator(int field) {
         return 'Password must be at least 8 characters long';
       };
 
-    case STUDENT_ID_VALIDATOR:
+    case Constants.STUDENT_ID_VALIDATOR:
       return (String? value) {
-        final regexp = RegExp(studentIdPattern);
+        final regexp = RegExp(Constants.studentIdPattern);
         if (value != null && value.contains(regexp)) {
           return null;
         }
         return 'Please enter a valid Student ID';
       };
-    case USER_ID_VALIDATOR:
+    case Constants.USER_ID_VALIDATOR:
       return (String? value) {
         // final usernamePattern = RegExp(userPattern);
-        final ePattern = RegExp(emailPattern);
+        final ePattern = RegExp(Constants.emailPattern);
         if (value != null && (value.contains(ePattern))) {
           return null;
         }
@@ -218,13 +218,13 @@ FormFieldValidator<String> fieldValidator(int field) {
 
 TextInputType keyboardType(int index) {
   switch (index) {
-    case NAME_VALIDATOR:
+    case Constants.NAME_VALIDATOR:
       return TextInputType.name;
-    case EMAIL_VALIDATOR:
+    case Constants.EMAIL_VALIDATOR:
       return TextInputType.emailAddress;
-    case PASSWORD_VALIDATOR:
+    case Constants.PASSWORD_VALIDATOR:
       return TextInputType.visiblePassword;
-    case STUDENT_ID_VALIDATOR:
+    case Constants.STUDENT_ID_VALIDATOR:
       return TextInputType.number;
     default:
       return TextInputType.text;

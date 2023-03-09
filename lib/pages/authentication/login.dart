@@ -271,14 +271,14 @@ class _LoginPageState extends State<LoginPage> {
                             hint: 'username',
                             controller: _emailController,
                             autoFillHints: const [AutofillHints.email],
-                            index: USER_ID_VALIDATOR),
+                            index: Constants.USER_ID_VALIDATOR),
                         8.0.vSpacer(),
                         TransparentField(
                             fKey: _formFieldKeys[1],
                             hint: 'Password',
                             autoFillHints: const [AutofillHints.password],
                             controller: _passwordController,
-                            index: PASSWORD_VALIDATOR),
+                            index: Constants.PASSWORD_VALIDATOR),
                         const SizedBox(height: 20),
                         CSButton(
                             height: 48,

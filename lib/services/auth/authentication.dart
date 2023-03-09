@@ -3,7 +3,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -46,7 +45,7 @@ class AuthService {
     return _authStrategy.signOut(context);
   }
 
-  static const String _tableName = USER_TABLE_NAME;
+  static const String _tableName = Constants.USER_TABLE_NAME;
   static const _logger = Logger('AuthService');
 
   static Future<Response> updateLoginStatus(
@@ -54,10 +53,10 @@ class AuthService {
     final resp = Response.init();
     try {
       final response = await DatabaseService.updateColumn(
-          searchColumn: USER_EMAIL_COLUMN,
+          searchColumn: Constants.USER_EMAIL_COLUMN,
           searchValue: email,
           columnValue: isLoggedIn,
-          columnName: USER_LOGGEDIN_COLUMN,
+          columnName: Constants.USER_LOGGEDIN_COLUMN,
           tableName: _tableName);
       if (response.status == 200 || response.status == 204) {
         return resp.copyWith(
@@ -119,7 +118,7 @@ class EmailAuthStrategy implements AuthStrategy {
       final Future<AuthResponse> authResponse = _supabase.auth.signUp(
           password: user.password,
           email: user.email,
-          emailRedirectTo: REDIRECT_URL,
+          emailRedirectTo: Constants.REDIRECT_URL,
           data: user.schematoJson());
       authResponse.then((value) async {}).onError((error, stackTrace) {});
     } on PostgrestException catch (_) {

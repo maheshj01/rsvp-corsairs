@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:rsvp/exports.dart';
+import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/about.dart';
 import 'package:rsvp/navbar/profile/report.dart';
@@ -95,6 +95,7 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
               : settingTile(
                   'Reports and Feedbacks',
                   onTap: () {
+                    ;
                     Navigate.push(context, const ViewBugReports());
                   },
                 ),
@@ -102,12 +103,12 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
           // heading('terms of service'),
           // const SizedBox(height: 16),
           settingTile('Privacy Policy', onTap: () {
-            launchUrl(Uri.parse(PRIVACY_POLICY),
+            launchUrl(Uri.parse(Constants.PRIVACY_POLICY),
                 mode: LaunchMode.externalApplication);
           }),
           hLine(),
           settingTile('Contact Us', onTap: () {
-            launchUrl(Uri.parse('mailto:$FEEDBACK_EMAIL_TO'),
+            launchUrl(Uri.parse('mailto:${Constants.FEEDBACK_EMAIL_TO}'),
                 mode: LaunchMode.externalApplication);
           }),
           hLine(),

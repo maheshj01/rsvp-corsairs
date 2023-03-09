@@ -57,7 +57,7 @@ class _EventDetailState extends State<EventDetail> {
     final response = await DatabaseService.findRowByColumnValue(
       widget.event.id!,
       columnName: 'event_id',
-      tableName: ATTENDEES_TABLE_NAME,
+      tableName: Constants.ATTENDEES_TABLE_NAME,
     );
     try {
       if (response.status == 200) {

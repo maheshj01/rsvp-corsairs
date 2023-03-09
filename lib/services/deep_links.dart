@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rsvp/utils/secrets.dart';
+import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -48,7 +48,7 @@ class DeepLinkService {
   Future<void>? handleDeepLinks(String link) {
     // Parse the link and warn the user, if it is not correct
     print("link $link");
-    if (link.contains(REDIRECT_URL)) {
+    if (link.contains(Constants.REDIRECT_URL)) {
       // parse link
       _navigatorKey.currentState!.pushNamed('/verified');
       showMessage(

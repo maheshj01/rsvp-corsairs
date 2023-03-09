@@ -235,22 +235,22 @@ class _SignUpState extends State<SignUp> {
                                       AutofillHints.familyName
                                     ],
                                     controller: _nameController,
-                                    index: NAME_VALIDATOR),
+                                    index: Constants.NAME_VALIDATOR),
                                 TransparentField(
                                     fKey: _formFieldKeys[1],
                                     hint: 'Email',
                                     controller: _emailController,
-                                    index: EMAIL_VALIDATOR),
+                                    index: Constants.EMAIL_VALIDATOR),
                                 TransparentField(
                                     fKey: _formFieldKeys[2],
                                     hint: 'Student Id',
                                     controller: _studentIdController,
-                                    index: STUDENT_ID_VALIDATOR),
+                                    index: Constants.STUDENT_ID_VALIDATOR),
                                 TransparentField(
                                     fKey: _formFieldKeys[3],
                                     hint: 'Password',
                                     controller: _passwordController,
-                                    index: PASSWORD_VALIDATOR),
+                                    index: Constants.PASSWORD_VALIDATOR),
                                 48.0.vSpacer(),
                                 CSButton(
                                     height: 48,

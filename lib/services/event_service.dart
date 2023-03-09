@@ -15,12 +15,12 @@ import 'package:supabase/supabase.dart';
 
 /// Global Vocabulary table's api.
 class EventService {
-  static String tableName = EVENTS_TABLE_NAME;
+  static String tableName = Constants.EVENTS_TABLE_NAME;
   static final _supabase = AuthService.instance().supabaseClient;
   static const _logger = Logger('EventService');
   static Future<PostgrestResponse> findById(String id) async {
     final response = await DatabaseService.findSingleRowByColumnValue(id,
-        columnName: ID_COLUMN, tableName: tableName);
+        columnName: Constants.ID_COLUMN, tableName: tableName);
     return response;
   }
 
@@ -30,9 +30,9 @@ class EventService {
     }
     final response = await DatabaseService.findRowWithInnerjoinColumnValue(
         eventId,
-        columnName: ID_COLUMN,
+        columnName: Constants.ID_COLUMN,
         table1: tableName,
-        table2: USER_TABLE_NAME);
+        table2: Constants.USER_TABLE_NAME);
     EventModel? result;
     if (response.status == 200) {
       result = EventModel.fromAllSchema(response.data);
@@ -73,7 +73,7 @@ class EventService {
       final response = await DatabaseService.updateRow(
           colValue: event.id!,
           data: json,
-          columnName: ID_COLUMN,
+          columnName: Constants.ID_COLUMN,
           tableName: tableName);
       if (response.status == 204) {
         return eventResponse.copyWith(
@@ -118,10 +118,10 @@ class EventService {
     final user = AppStateScope.of(context).user;
     final response = await DatabaseService.findRowWithInnerjoinColumnValue(
         user!.id!,
-        table1: EVENTS_TABLE_NAME,
-        table2: ATTENDEES_TABLE_NAME,
-        table3: USER_TABLE_NAME,
-        columnName: ID_COLUMN);
+        table1: Constants.EVENTS_TABLE_NAME,
+        table2: Constants.ATTENDEES_TABLE_NAME,
+        table3: Constants.USER_TABLE_NAME,
+        columnName: Constants.ID_COLUMN);
     List<EventModel> events = [];
     if (response.status == 200) {
       events = (response.data as List)
@@ -141,7 +141,7 @@ class EventService {
   static Future<List<EventModel>> getMyEvents(BuildContext context) async {
     final user = AppStateScope.of(context).user;
     final response = await DatabaseService.findMyEvents(
-        column: HOST_COLUMN, value: user!.id!);
+        column: Constants.HOST_COLUMN, value: user!.id!);
     List<EventModel> events = [];
     if (response.status == 200) {
       events = (response.data as List)
@@ -172,8 +172,8 @@ class EventService {
 
   static Future<List<EventModel>> getAttendees(String eventId) async {
     final response = await DatabaseService.findRowsByInnerJoinOnColumn(
-      table1: EVENTS_TABLE_NAME,
-      table2: ATTENDEES_TABLE_NAME,
+      table1: Constants.EVENTS_TABLE_NAME,
+      table2: Constants.ATTENDEES_TABLE_NAME,
     );
     List<EventModel> events = [];
     if (response.status == 200) {
@@ -187,9 +187,9 @@ class EventService {
     try {
       final response = await DatabaseService.findRowWithInnerjoinColumnValue(
         userId,
-        table1: BOOKMARKS_TABLE_NAME,
-        table2: EVENTS_TABLE_NAME,
-        columnName: EDIT_USER_ID_COLUMN,
+        table1: Constants.BOOKMARKS_TABLE_NAME,
+        table2: Constants.EVENTS_TABLE_NAME,
+        columnName: Constants.EDIT_USER_ID_COLUMN,
       );
       List<EventModel> events = [];
       if (response.status == 200) {
@@ -232,7 +232,8 @@ class EventService {
   // }
 
   static Future<Response> updateBookMark(String eventId, String userId,
-      {bool add = true, String tableName = BOOKMARKS_TABLE_NAME}) async {
+      {bool add = true,
+      String tableName = Constants.BOOKMARKS_TABLE_NAME}) async {
     final response = Response(didSucced: false, message: "Failed");
     try {
       if (add) {
@@ -250,8 +251,8 @@ class EventService {
         final resp = await DatabaseService.deleteRowBy2ColumnValue(
           eventId,
           userId,
-          column1Name: EVENT_ID_COLUMN,
-          column2Name: EVENT_USER_ID_COLUMN,
+          column1Name: Constants.EVENT_ID_COLUMN,
+          column2Name: Constants.EVENT_USER_ID_COLUMN,
           tableName: tableName,
         );
         if (resp.status == 200) {
@@ -271,7 +272,8 @@ class EventService {
 
   //  ADD/REMOVE ATTENDEE
   static rsvpEvent(String eventId, String userId,
-      {bool going = true, String tableName = ATTENDEES_TABLE_NAME}) async {
+      {bool going = true,
+      String tableName = Constants.ATTENDEES_TABLE_NAME}) async {
     try {
       if (going) {
         final response = await DatabaseService.insertIntoTable({
@@ -283,8 +285,8 @@ class EventService {
         final response = await DatabaseService.deleteRowBy2ColumnValue(
           eventId,
           userId,
-          column1Name: EVENT_ID_COLUMN,
-          column2Name: EVENT_USER_ID_COLUMN,
+          column1Name: Constants.EVENT_ID_COLUMN,
+          column2Name: Constants.EVENT_USER_ID_COLUMN,
           tableName: tableName,
         );
         return response;
@@ -298,12 +300,12 @@ class EventService {
   static Future<EventModel> getLastUpdatedRecord() async {
     final response = await DatabaseService.findRecentlyUpdatedRow(
         'created_at', '',
-        table1: WORD_OF_THE_DAY_TABLE_NAME,
-        table2: EVENTS_TABLE_NAME,
+        table1: Constants.WORD_OF_THE_DAY_TABLE_NAME,
+        table2: Constants.EVENTS_TABLE_NAME,
         ascending: false);
     if (response.status == 200) {
       EventModel lastWordOfTheDay =
-          EventModel.fromJson(response.data[0][EVENTS_TABLE_NAME]);
+          EventModel.fromJson(response.data[0][Constants.EVENTS_TABLE_NAME]);
       lastWordOfTheDay.createdAt =
           DateTime.parse(response.data[0]['created_at']);
       return lastWordOfTheDay;
@@ -315,7 +317,7 @@ class EventService {
   static Future<List<EventModel>> searchEvents(String query,
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsContaining(query,
-        columnName: EVENT_NAME_COLUMN, tableName: tableName);
+        columnName: Constants.EVENT_NAME_COLUMN, tableName: tableName);
     List<EventModel> words = [];
     if (response.status == 200) {
       words =
@@ -346,10 +348,10 @@ class EventService {
     required EventModel event,
   }) async {
     final response = await DatabaseService.updateColumn(
-        searchColumn: ID_COLUMN,
+        searchColumn: Constants.ID_COLUMN,
         searchValue: id,
         columnValue: event.description,
-        columnName: MEANING_COLUMN,
+        columnName: Constants.MEANING_COLUMN,
         tableName: tableName);
     return response;
   }
@@ -357,7 +359,7 @@ class EventService {
   static Future<PostgrestResponse> deleteById(String id) async {
     _logger.i(tableName);
     final response = await DatabaseService.deleteRow(id,
-        tableName: tableName, columnName: ID_COLUMN);
+        tableName: tableName, columnName: Constants.ID_COLUMN);
     return response;
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:rsvp/base_home.dart';
+import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/analytics.dart';
@@ -17,10 +18,8 @@ import 'package:rsvp/splashscreen.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/firebase_options.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'constants/constants.dart';
 import 'services/auth/authentication.dart';
 import 'utils/settings.dart';
 
@@ -31,8 +30,8 @@ Future<void> main() async {
   usePathUrlStrategy();
   Settings.init();
   await Supabase.initialize(
-    url: CONFIG_URL,
-    anonKey: API_KEY,
+    url: Constants.SUPABASE_URL,
+    anonKey: Constants.SUPABASE_API_KEY,
   );
   AuthService(client: Supabase.instance.client);
   runApp(const CorsairsApp());
@@ -95,7 +94,7 @@ class _CorsairsAppState extends State<CorsairsApp> {
           animation: Settings(),
           builder: (BuildContext context, Widget? child) {
             return MaterialApp(
-              title: APP_TITLE,
+              title: Constants.APP_TITLE,
               debugShowCheckedModeBanner: !kDebugMode,
               darkTheme: CorsairsTheme.darkThemeData,
               theme: CorsairsTheme.lightThemeData,
