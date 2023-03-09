@@ -28,9 +28,9 @@ dependencies:
   google_sign_in: ^5.4.2
   image_cropper: ^3.0.1
   image_picker: ^0.8.6
-  intl: ^0.17.0
+  intl: ^0.18.0
   json_annotation: ^4.7.0
-  navbar_router: ^0.3.2
+  navbar_router: ^0.4.2
   package_info_plus: ^3.0.2
   pull_to_refresh: ^2.0.0
   realtime_client: ^1.0.0
