@@ -28,7 +28,6 @@ class _LeaderBoardState extends State<LeaderBoard> {
     notifier.addListener(() async {
       int index = NavbarNotifier.currentIndex;
       if (index == 1) {
-        print("play");
         // confettiController.play();
         // TODO: This is crashing the app
         // FlutterRingtonePlayer.play(
@@ -40,7 +39,6 @@ class _LeaderBoardState extends State<LeaderBoard> {
         //   // asAlarm: true,
         // );
       } else {
-        print("stop");
         // await stopRingtone();
         // confettiController.stop();
       }

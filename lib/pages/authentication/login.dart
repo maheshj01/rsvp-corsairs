@@ -268,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                         48.0.vSpacer(),
                         TransparentField(
                             fKey: _formFieldKeys[0],
-                            hint: 'username',
+                            hint: 'email',
                             controller: _emailController,
                             autoFillHints: const [AutofillHints.email],
                             index: Constants.USER_ID_VALIDATOR),

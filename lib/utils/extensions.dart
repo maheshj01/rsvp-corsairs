@@ -38,7 +38,6 @@ extension CompareEvents on EventModel {
 extension CompareUsers on UserModel {
   bool equals(UserModel other) =>
       runtimeType == other.runtimeType &&
-      idToken == other.idToken &&
       accessToken == other.accessToken &&
       listEquals(hosted, other.hosted) &&
       listEquals(bookmarks, other.bookmarks) &&

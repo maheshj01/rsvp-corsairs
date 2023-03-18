@@ -8,7 +8,6 @@ part 'user.g.dart';
 @JsonSerializable()
 class UserModel extends ChangeNotifier {
   String? id;
-  String? idToken;
   String? accessToken;
   // events hosted or attended by user
   List<EventModel> hosted;
@@ -29,7 +28,6 @@ class UserModel extends ChangeNotifier {
       this.name = '',
       this.email = '',
       this.avatarUrl,
-      this.idToken,
       this.isAdmin = false,
       this.accessToken,
       this.username = '',
@@ -51,7 +49,6 @@ class UserModel extends ChangeNotifier {
         name: w.name,
         email: w.email,
         avatarUrl: w.avatarUrl,
-        idToken: w.idToken,
         accessToken: w.accessToken,
         isAdmin: w.isAdmin,
         username: w.username,
@@ -68,7 +65,6 @@ class UserModel extends ChangeNotifier {
       name: w.name,
       email: w.email,
       avatarUrl: w.avatarUrl,
-      idToken: w.idToken,
       accessToken: w.accessToken,
       isAdmin: w.isAdmin,
       username: w.username,
@@ -101,7 +97,6 @@ class UserModel extends ChangeNotifier {
         name: name ?? this.name,
         email: email ?? this.email,
         avatarUrl: avatarUrl ?? this.avatarUrl,
-        idToken: idToken ?? this.idToken,
         accessToken: accessToken ?? this.accessToken,
         isAdmin: isAdmin ?? this.isAdmin,
         username: username ?? this.username,
@@ -121,7 +116,6 @@ class UserModel extends ChangeNotifier {
         name: name,
         email: email,
         avatarUrl: '',
-        idToken: '',
         accessToken: '',
         hosted: [],
         bookmarks: [],
@@ -147,7 +141,6 @@ class UserModel extends ChangeNotifier {
 
   Map<String, dynamic> schematoJson() => <String, dynamic>{
         'id': const Uuid().v4(),
-        'idToken': idToken,
         'accessToken': accessToken,
         'email': email,
         'name': name,
@@ -155,7 +148,6 @@ class UserModel extends ChangeNotifier {
         'isLoggedIn': true,
         'isAdmin': isAdmin,
         'username': username,
-        'password': password,
         'studentId': studentId,
         'reputation': reputation,
         'created_at': created_at?.toIso8601String(),
@@ -168,11 +160,6 @@ class UserModel extends ChangeNotifier {
 
   set setName(String m) {
     name = m;
-    notifyListeners();
-  }
-
-  set setIdToken(String m) {
-    idToken = m;
     notifyListeners();
   }
 
@@ -200,7 +187,6 @@ class UserModel extends ChangeNotifier {
     if (user == null) {
       avatarUrl = null;
       accessToken = null;
-      idToken = null;
       name = '';
       email = '';
       username = '';
@@ -209,7 +195,6 @@ class UserModel extends ChangeNotifier {
     } else {
       avatarUrl = user.avatarUrl;
       accessToken = user.accessToken;
-      idToken = user.idToken;
       name = user.name;
       email = user.email;
       reputation = user.reputation;

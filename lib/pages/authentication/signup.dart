@@ -73,7 +73,6 @@ class _SignUpState extends State<SignUp> {
     registerUser.username = registerUser.email.split('@')[0];
     if (widget.newUser != null) {
       registerUser.accessToken = widget.newUser!.accessToken;
-      registerUser.idToken = widget.newUser!.idToken;
       registerUser.avatarUrl = widget.newUser!.avatarUrl;
     }
     return registerUser;

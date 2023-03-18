@@ -13,6 +13,7 @@
 - [X] RSVP to an event
 - [X] Improve card UI 
 - [X] Bookmark an event
+- [] Unbookmark an event not updated in UI
 - [] Event Duration should be shown in days if >24
 - [] View attendees
 - [] Add filter out expired events
@@ -38,6 +39,7 @@
 - [X] Login with Google
 - [X] Signup with email
 - [X] Edit user profile
+- [ ] Existing user error not shown on signup (Already signed in using Google signin sign's up)
 - [ ] Update user table with user details on email confirmation
 - [ ] Update user table on Google SignIn if not already present
 - [ ] For first time GoogleSignIn users, we should prompt them to enter their details along with user avatar (Should be skippable)

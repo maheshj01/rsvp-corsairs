@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/utils/logger.dart';
 import 'package:rsvp/utils/utility.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -22,6 +23,8 @@ class DeepLinkService {
 
   factory DeepLinkService.instance() => _instance;
 
+  final Logger _logger = const Logger("DeepLinkService");
+
   Future<void> initUniLinks() async {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
@@ -33,7 +36,7 @@ class DeepLinkService {
         // Parse the link and warn the user, if it is not correct
         handleDeepLinks(link!);
       }, onError: (err) {
-        print("could not parse link $err");
+        _logger.e("could not parse link $err");
         // Handle exception by warning the user their action did not succeed
       });
 
