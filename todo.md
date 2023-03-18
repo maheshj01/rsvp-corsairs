@@ -13,6 +13,7 @@
 - [X] RSVP to an event
 - [X] Improve card UI 
 - [X] Bookmark an event
+- [] Unbookmark an event not updated in UI
 - [] Event Duration should be shown in days if >24
 - [] View attendees
 - [] Add filter out expired events
@@ -24,8 +25,9 @@
 - [] Draft save events for publishing later
 
 ### Profile
-- [] View host/users profile
-- [] View events attended/hosted and bookmarked
+- [ ] View host/users profile
+- [ ] View events attended/hosted and bookmarked
+- [ ] Update user profile picture
 
 ### Leaderboard
 - [] Create table for leaderboard
@@ -33,15 +35,20 @@
 - []
 
 ### Authentication
-- [X] Login and signup seamless
-- [X] Login with Google or Username
-- [X] Signup with Google or Username
+[] Login and signup seamless
+- [X] Login with Google
+- [X] Signup with email
 - [X] Edit user profile
+- [ ] Existing user error not shown on signup (Already signed in using Google signin sign's up)
+- [ ] Update user table with user details on email confirmation
+- [ ] Update user table on Google SignIn if not already present
+- [ ] For first time GoogleSignIn users, we should prompt them to enter their details along with user avatar (Should be skippable)
+
 
 ### Game elements
 
 - [] Points system.
-- []
+- [] 
 
 ### UMD Points
 - [] Get points for attending events

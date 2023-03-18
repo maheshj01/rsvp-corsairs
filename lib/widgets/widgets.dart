@@ -71,7 +71,7 @@ SelectableText buildExample(String example, String word, {TextStyle? style}) {
 }
 
 Widget storeRedirect(BuildContext context,
-    {String redirectUrl = PLAY_STORE_URL,
+    {String redirectUrl = Constants.PLAY_STORE_URL,
     String assetUrl = 'assets/googleplay.png'}) {
   return GestureDetector(
     onTap: () {
@@ -149,7 +149,8 @@ class VersionBuilder extends StatelessWidget {
           future: getAppDetails(),
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             return snapshot.data == null
-                ? Text(VERSION, style: Theme.of(context).textTheme.bodySmall)
+                ? Text(Constants.VERSION,
+                    style: Theme.of(context).textTheme.bodySmall)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -245,17 +245,10 @@ class _AddEventState extends State<AddEvent> {
                         color: CorsairsTheme.primaryYellow),
                     onTap: () {
                       final now = DateTime.now().toUtc();
-                      showCSPickerSheet(
-                          context,
-                          (newDate) {
-                            _eventNotifier.value = _event.copyWith(
-                                startsAt: newDate, createdAt: now);
-                          },
-                          'Event Starts At',
-                          _event.startsAt!,
-                          onClosed: () {
-                            print('closed');
-                          });
+                      showCSPickerSheet(context, (newDate) {
+                        _eventNotifier.value =
+                            _event.copyWith(startsAt: newDate, createdAt: now);
+                      }, 'Event Starts At', _event.startsAt!, onClosed: () {});
                     },
                     title: Text(_event.startsAt!.formatDate()),
                     subtitle: Text(_event.startsAt!.standardTime()),

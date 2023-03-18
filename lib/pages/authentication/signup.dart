@@ -1,13 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rsvp/base_home.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
-import 'package:rsvp/services/api/user.dart';
-import 'package:rsvp/services/authentication.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
@@ -30,6 +30,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   AuthService auth = AuthService();
+  // StreamSubscription<AuthState>? _subscription;
 
   Future<void> _handleSignUp(BuildContext context) async {
     final state = AppStateWidget.of(context);
@@ -37,56 +38,20 @@ class _SignUpState extends State<SignUp> {
       state: RequestState.active,
     );
     try {
-      if (isGoogleSignUp) {
-        user = (await auth.googleSignIn())!;
-      } else {
-        user = _buildUserModel();
-      }
-      if (user != null) {
-        final existingUser =
-            await UserService.findByUsername(username: user!.email);
-        if (existingUser.email.isEmpty) {
-          _logger.d('registering new user ${user!.email}');
-          if (user!.studentId.isEmpty) {
-            user = user!.copyWith(studentId: user!.id);
-          }
-          final resp = await AuthService.registerUser(user!);
-          if (resp.didSucced) {
-            state.setUser(user!.copyWith(isLoggedIn: true));
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-            );
-            Navigate.pushAndPopAll(context, const AdaptiveLayout(),
-                slideTransitionType: TransitionType.ttb);
-            await Settings.setIsSignedIn(true, email: user!.email);
-          } else {
-            await Settings.setIsSignedIn(false, email: existingUser.email);
-            showMessage(context, signInFailure);
-            _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-              didSucced: false,
-              message: signInFailure,
-            );
-            throw 'failed to register new user';
-          }
-        } else {
-          _logger.d('found existing user ${user!.email}');
-          await Settings.setIsSignedIn(true, email: existingUser.email);
-          _responseNotifier.value = _responseNotifier.value.copyWith(
-              state: RequestState.done,
-              didSucced: true,
-              message: 'User already exists',
-              data: existingUser);
-          throw 'User with email ${user!.email} already exists';
-        }
-      } else {
+      user = _buildUserModel();
+      final resp = auth.signUp(user!);
+      resp.then((value) {
+        showMessage(context,
+            "An email confirmation has been sent to your email address");
+        state.setUser(user!.copyWith(isLoggedIn: false));
+      }).onError((error, stackTrace) {
+        _logger.e('error signing up $error');
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
           didSucced: false,
-          message: 'failed to register new user',
+          message: error.toString(),
         );
-        throw 'failed to register new user';
-      }
+      });
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -108,7 +73,6 @@ class _SignUpState extends State<SignUp> {
     registerUser.username = registerUser.email.split('@')[0];
     if (widget.newUser != null) {
       registerUser.accessToken = widget.newUser!.accessToken;
-      registerUser.idToken = widget.newUser!.idToken;
       registerUser.avatarUrl = widget.newUser!.avatarUrl;
     }
     return registerUser;
@@ -120,14 +84,36 @@ class _SignUpState extends State<SignUp> {
     if (widget.newUser != null) {
       populateFields();
     }
+    // _subscription = _supabase.auth.onAuthStateChange.listen((data) {
+    //   final event = data.event;
+    //   if (event == AuthChangeEvent.mfaChallengeVerified) {
+    //     print("MFA Verified successfully");
+    //   }
+    //   final session = data.session;
+    //   if (session != null && !haveNavigated) {
+    //     _responseNotifier.value = _responseNotifier.value.copyWith(
+    //       state: RequestState.done,
+    //     );
+    //   }
+    //   print("Email Verified successfully");
+    //   Navigate.pushAndPopAll(context, const LoginPage(),
+    //       slideTransitionType: TransitionType.ttb);
+    // });
     super.initState();
   }
 
-  void populateFields() {
-    _emailController.text = widget.newUser!.email;
-    _nameController.text = widget.newUser!.name;
-    _studentIdController.text = widget.newUser!.studentId;
-    user = widget.newUser;
+  void populateFields({UserModel? newUser}) {
+    if (newUser != null) {
+      _emailController.text = newUser.email;
+      _nameController.text = newUser.name;
+      _studentIdController.text = newUser.studentId;
+      user = newUser;
+    } else {
+      _emailController.text = widget.newUser!.email;
+      _nameController.text = widget.newUser!.name;
+      _studentIdController.text = widget.newUser!.studentId;
+      user = widget.newUser;
+    }
   }
 
   final ValueNotifier<Response> _responseNotifier =
@@ -166,6 +152,7 @@ class _SignUpState extends State<SignUp> {
     _passwordController.dispose();
     _nameController.dispose();
     _studentIdController.dispose();
+    // _subscription!.cancel();
     super.dispose();
   }
 
@@ -175,6 +162,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  bool haveNavigated = false;
   bool isGoogleSignUp = false;
   @override
   Widget build(BuildContext context) {
@@ -192,6 +180,7 @@ class _SignUpState extends State<SignUp> {
                   isLoading:
                       isGoogleSignUp && _response.state == RequestState.active,
                   onTap: () {
+                    auth.setAuthStrategy(GoogleAuthStrategy());
                     isGoogleSignUp = true;
                     _handleSignUp(context);
                   },
@@ -200,123 +189,137 @@ class _SignUpState extends State<SignUp> {
                 ));
           }
 
-          return GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Scaffold(
-              backgroundColor: CorsairsTheme.primaryBlue,
-              body: ValueListenableBuilder<Response>(
-                  valueListenable: _responseNotifier,
-                  builder: (BuildContext context, Response _response,
-                      Widget? child) {
-                    return Padding(
-                      padding: 16.0.horizontalPadding,
-                      child: Form(
-                        key: _formKey,
-                        onChanged: () {
-                          setState(() {});
-                        },
-                        child: ListView(
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            kBottomNavigationBarHeight.vSpacer(),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
+          return IgnorePointer(
+            ignoring: _response.state == RequestState.active,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Scaffold(
+                backgroundColor: CorsairsTheme.primaryBlue,
+                body: ValueListenableBuilder<Response>(
+                    valueListenable: _responseNotifier,
+                    builder: (BuildContext context, Response _response,
+                        Widget? child) {
+                      return Padding(
+                        padding: 16.0.horizontalPadding,
+                        child: AutofillGroup(
+                          child: Form(
+                            key: _formKey,
+                            onChanged: () {
+                              setState(() {});
+                            },
+                            child: ListView(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                kBottomNavigationBarHeight.vSpacer(),
+                                const Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 50,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            48.0.vSpacer(),
-                            TransparentField(
-                                fKey: _formFieldKeys[0],
-                                hint: 'Name',
-                                controller: _nameController,
-                                index: NAME_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[1],
-                                hint: 'Email',
-                                controller: _emailController,
-                                index: EMAIL_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[2],
-                                hint: 'Student Id',
-                                controller: _studentIdController,
-                                index: STUDENT_ID_VALIDATOR),
-                            TransparentField(
-                                fKey: _formFieldKeys[3],
-                                hint: 'Password',
-                                controller: _passwordController,
-                                index: PASSWORD_VALIDATOR),
-                            48.0.vSpacer(),
-                            CSButton(
-                                height: 48,
-                                backgroundColor: CorsairsTheme.primaryYellow,
-                                isLoading: !isGoogleSignUp &&
-                                    _response.state == RequestState.active,
-                                onTap: _isValid()
-                                    ? () {
-                                        removeFocus(context);
-                                        isGoogleSignUp = false;
-                                        _handleSignUp(context);
-                                      }
-                                    : null,
-                                label: 'SignUp'),
-                            16.0.vSpacer(),
-                            // or divider
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'or',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                48.0.vSpacer(),
+                                TransparentField(
+                                    fKey: _formFieldKeys[0],
+                                    hint: 'Name',
+                                    autoFillHints: const [
+                                      AutofillHints.name,
+                                      AutofillHints.givenName,
+                                      AutofillHints.familyName
+                                    ],
+                                    controller: _nameController,
+                                    index: Constants.NAME_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[1],
+                                    hint: 'Email',
+                                    controller: _emailController,
+                                    index: Constants.EMAIL_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[2],
+                                    hint: 'Student Id',
+                                    controller: _studentIdController,
+                                    index: Constants.STUDENT_ID_VALIDATOR),
+                                TransparentField(
+                                    fKey: _formFieldKeys[3],
+                                    hint: 'Password',
+                                    controller: _passwordController,
+                                    index: Constants.PASSWORD_VALIDATOR),
+                                48.0.vSpacer(),
+                                CSButton(
+                                    height: 48,
+                                    backgroundColor:
+                                        CorsairsTheme.primaryYellow,
+                                    isLoading: !isGoogleSignUp &&
+                                        _response.state == RequestState.active,
+                                    onTap: _isValid()
+                                        ? () {
+                                            auth.setAuthStrategy(
+                                                EmailAuthStrategy());
+                                            removeFocus(context);
+                                            isGoogleSignUp = false;
+                                            _handleSignUp(context);
+                                          }
+                                        : null,
+                                    label: 'SignUp'),
+                                16.0.vSpacer(),
+                                // or divider
+                                // const Align(
+                                //   alignment: Alignment.center,
+                                //   child: Text(
+                                //     'or',
+                                //     style: TextStyle(
+                                //       color: Colors.white,
+                                //       fontSize: 20,
+                                //       fontWeight: FontWeight.bold,
+                                //     ),
+                                //   ),
+                                // ),
+                                // const SizedBox(height: 20), _signUpWithGoogle(),
+                                // already have an account text button
+                                16.0.vSpacer(),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: TextButton(
+                                      onPressed: () {
+                                        Navigate.pushAndPopAll(
+                                            context, const LoginPage());
+                                      },
+                                      child: RichText(
+                                          text: TextSpan(children: [
+                                        const TextSpan(
+                                            text: 'Already have an account? ',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            )),
+                                        TextSpan(
+                                            text: 'Sign In',
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                Navigate.pushAndPopAll(
+                                                    context, const LoginPage());
+                                              },
+                                            style: const TextStyle(
+                                                color:
+                                                    CorsairsTheme.primaryYellow,
+                                                fontSize: 16,
+                                                decoration:
+                                                    TextDecoration.underline))
+                                      ]))),
                                 ),
-                              ),
+                              ],
                             ),
-                            const SizedBox(height: 20), _signUpWithGoogle(),
-                            // already have an account text button
-                            16.0.vSpacer(),
-                            Align(
-                              alignment: Alignment.center,
-                              child: TextButton(
-                                  onPressed: () {
-                                    Navigate.pushAndPopAll(
-                                        context, const LoginPage());
-                                  },
-                                  child: RichText(
-                                      text: TextSpan(children: [
-                                    const TextSpan(
-                                        text: 'Already have an account? ',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                        )),
-                                    TextSpan(
-                                        text: 'Sign In',
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            Navigate.pushAndPopAll(
-                                                context, const LoginPage());
-                                          },
-                                        style: const TextStyle(
-                                            color: CorsairsTheme.primaryYellow,
-                                            fontSize: 16,
-                                            decoration:
-                                                TextDecoration.underline))
-                                  ]))),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+              ),
             ),
           );
         });

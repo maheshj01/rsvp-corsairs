@@ -45,7 +45,6 @@ doc/api/
 .pub/
 /build/
 /lib/models/*.g.dart
-/lib/utils/secrets.dart
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -109,5 +108,3 @@ macos/**/xcuserdata/
 
 ios/Flutter/Debug.xcconfig
 ios/Flutter/Release.xcconfig
-
-secrets.txt

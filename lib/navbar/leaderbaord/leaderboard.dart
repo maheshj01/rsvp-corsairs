@@ -28,20 +28,19 @@ class _LeaderBoardState extends State<LeaderBoard> {
     notifier.addListener(() async {
       int index = NavbarNotifier.currentIndex;
       if (index == 1) {
-        print("play");
-        confettiController.play();
-        FlutterRingtonePlayer.play(
-          // android: AndroidSounds.notification,
-          // ios: IosSounds.horn,
-          fromAsset: 'assets/applause.mp3',
-          looping: false,
-          volume: 0.2,
-          // asAlarm: true,
-        );
+        // confettiController.play();
+        // TODO: This is crashing the app
+        // FlutterRingtonePlayer.play(
+        //   // android: AndroidSounds.notification,
+        //   // ios: IosSounds.horn,
+        //   fromAsset: 'assets/applause.mp3',
+        //   looping: false,
+        //   volume: 0.2,
+        //   // asAlarm: true,
+        // );
       } else {
-        print("stop");
-        await stopRingtone();
-        confettiController.stop();
+        // await stopRingtone();
+        // confettiController.stop();
       }
     });
   }

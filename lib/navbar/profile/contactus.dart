@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/utility.dart';
+
+import '../../constants/constants.dart';
 
 class ContactUs extends StatefulWidget {
   const ContactUs({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _ContactUsState extends State<ContactUs> {
               ),
               onTap: () {
                 // launch email app
-                launchURL('mailto:$FEEDBACK_EMAIL_TO');
+                launchURL('mailto:${Constants.FEEDBACK_EMAIL_TO}');
               })
         ]));
   }

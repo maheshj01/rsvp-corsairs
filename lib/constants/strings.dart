@@ -1,7 +1,3 @@
-import 'package:rsvp/models/event_schema.dart';
-import 'package:rsvp/models/user.dart';
-import 'package:uuid/uuid.dart';
-
 /// app string constants  from the UI go here in this page
 /// e.g
 const String GITHUB_ASSET_PATH = 'assets/images/github.png';

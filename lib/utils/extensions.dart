@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rsvp/constants/const.dart';
-import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/themes/theme.dart';
@@ -39,7 +38,6 @@ extension CompareEvents on EventModel {
 extension CompareUsers on UserModel {
   bool equals(UserModel other) =>
       runtimeType == other.runtimeType &&
-      idToken == other.idToken &&
       accessToken == other.accessToken &&
       listEquals(hosted, other.hosted) &&
       listEquals(bookmarks, other.bookmarks) &&
@@ -52,10 +50,10 @@ extension CompareUsers on UserModel {
       created_at == other.created_at;
 }
 
-extension ConatainsInBookmarks on EventModel{
-    bool containsInBookmarks(List<EventModel> bookmarks){
-        return bookmarks.any((element) => element.id == id);
-    }
+extension ConatainsInBookmarks on EventModel {
+  bool containsInBookmarks(List<EventModel> bookmarks) {
+    return bookmarks.any((element) => element.id == id);
+  }
 }
 
 extension DateHelper on DateTime {
@@ -67,7 +65,7 @@ extension DateHelper on DateTime {
     } else if (differenceInDays == 1) {
       return 'Yesterday';
     } else {
-      final formatter = DateFormat(dateFormatter);
+      final formatter = DateFormat(Constants.dateFormatter);
       return formatter.format(this);
     }
   }
@@ -82,12 +80,12 @@ extension DateHelper on DateTime {
   }
 
   String standardDate() {
-    final formatter = DateFormat(dateFormatter);
+    final formatter = DateFormat(Constants.dateFormatter);
     return formatter.format(this);
   }
 
   String standardTime() {
-    final formatter = DateFormat(timeFormatter);
+    final formatter = DateFormat(Constants.timeFormatter);
     return formatter.format(this);
   }
 

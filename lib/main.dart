@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -6,16 +8,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:rsvp/base_home.dart';
+import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/models/event_schema.dart';
+import 'package:rsvp/pages/authentication/login.dart';
 import 'package:rsvp/services/analytics.dart';
 import 'package:rsvp/services/api/appstate.dart';
+import 'package:rsvp/services/deep_links.dart';
 import 'package:rsvp/splashscreen.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/firebase_options.dart';
 import 'package:rsvp/utils/logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'constants/constants.dart';
-import 'services/authentication.dart';
+import 'services/auth/authentication.dart';
 import 'utils/settings.dart';
 
 Future<void> main() async {
@@ -24,6 +29,11 @@ Future<void> main() async {
   analytics = FirebaseAnalytics.instance;
   usePathUrlStrategy();
   Settings.init();
+  await Supabase.initialize(
+    url: Constants.SUPABASE_URL,
+    anonKey: Constants.SUPABASE_API_KEY,
+  );
+  AuthService(client: Supabase.instance.client);
   runApp(const CorsairsApp());
 }
 
@@ -63,6 +73,7 @@ class _CorsairsAppState extends State<CorsairsApp> {
     totalNotifier.dispose();
     searchController.dispose();
     listNotifier.dispose();
+    _deepLinkService.dispose();
     super.dispose();
   }
 
@@ -70,8 +81,12 @@ class _CorsairsAppState extends State<CorsairsApp> {
   void initState() {
     super.initState();
     initializeApp();
+    _deepLinkService = DeepLinkService(navigatorKey: _navigatorKey);
   }
 
+  late DeepLinkService _deepLinkService;
+
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   @override
   Widget build(BuildContext context) {
     return AppStateWidget(
@@ -79,13 +94,19 @@ class _CorsairsAppState extends State<CorsairsApp> {
           animation: Settings(),
           builder: (BuildContext context, Widget? child) {
             return MaterialApp(
-              title: APP_TITLE,
+              title: Constants.APP_TITLE,
               debugShowCheckedModeBanner: !kDebugMode,
               darkTheme: CorsairsTheme.darkThemeData,
               theme: CorsairsTheme.lightThemeData,
+              navigatorKey: _navigatorKey,
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/verified': (context) => const LoginPage()
+              },
               themeMode:
                   CorsairsTheme.isDark ? ThemeMode.dark : ThemeMode.light,
-              home: const SplashScreen(),
+              // home: const SplashScreen(),
             );
           }),
     );

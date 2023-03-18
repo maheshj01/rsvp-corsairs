@@ -1,18 +1,19 @@
 import 'dart:io';
 
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/utils/logger.dart';
-import 'package:rsvp/utils/secrets.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DatabaseService {
-  static final SupabaseClient _supabase = SupabaseClient(CONFIG_URL, API_KEY);
+  static final _supabase = AuthService.instance().supabaseClient;
   static const String _bucketName = 'event-covers';
   static const Logger _logger = Logger('DatabaseService');
 
   static Future<PostgrestResponse> findRowByColumnValue(String columnValue,
-      {String columnName = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      {String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -24,9 +25,9 @@ class DatabaseService {
   static Future<PostgrestResponse> findRowBy2ColumnValues(
     String column1Value,
     String column2Value, {
-    String column1Name = ID_COLUMN,
-    String column2Name = USER_EMAIL_COLUMN,
-    String tableName = EVENTS_TABLE_NAME,
+    String column1Name = Constants.ID_COLUMN,
+    String column2Name = Constants.USER_EMAIL_COLUMN,
+    String tableName = Constants.EVENTS_TABLE_NAME,
     bool ascending = false,
   }) async {
     final response = await _supabase
@@ -34,14 +35,14 @@ class DatabaseService {
         .select()
         .eq(column1Name, column1Value)
         .eq(column2Name, column2Value)
-        .order(CREATED_AT_COLUMN, ascending: ascending)
+        .order(Constants.CREATED_AT_COLUMN, ascending: ascending)
         .execute();
     return response;
   }
 
   static Future<PostgrestResponse> findRowsContaining(String columnValue,
-      {String columnName = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      {String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -54,15 +55,15 @@ class DatabaseService {
   /// returns data from two table joined on the basis of a column
   /// associated via foreign key
   static Future<PostgrestResponse> findRowsByInnerJoinOnColumn({
-    String table1 = EVENTS_TABLE_NAME,
+    String table1 = Constants.EVENTS_TABLE_NAME,
     bool ascending = false,
-    String table2 = USER_TABLE_NAME,
+    String table2 = Constants.USER_TABLE_NAME,
   }) async {
     try {
       final response = await _supabase
           .from(table1)
           .select('*, $table2!inner(*)')
-          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .order(Constants.CREATED_AT_COLUMN, ascending: ascending)
           .execute();
       return response;
     } on PostgrestException catch (_) {
@@ -74,19 +75,19 @@ class DatabaseService {
   /// returns data from two table joined on the basis of a column
   /// associated via foreign key
   static Future<PostgrestResponse> findRowsByInnerJoinOn1ColumnValue({
-    String table1 = EVENTS_TABLE_NAME,
+    String table1 = Constants.EVENTS_TABLE_NAME,
     bool ascending = false,
-    String column = USER_ID_COLUMN,
+    String column = Constants.USER_ID_COLUMN,
     String value = '',
-    String table2 = ATTENDEES_TABLE_NAME,
-    String table3 = USER_TABLE_NAME,
+    String table2 = Constants.ATTENDEES_TABLE_NAME,
+    String table3 = Constants.USER_TABLE_NAME,
   }) async {
     try {
       final response = await _supabase
           .from(table1)
           .select('*, $table2!inner(*),$table3!inner(*)')
           .eq(column, value)
-          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .order(Constants.CREATED_AT_COLUMN, ascending: ascending)
           .execute();
       return response;
     } on PostgrestException catch (_) {
@@ -96,19 +97,19 @@ class DatabaseService {
   }
 
   static Future<PostgrestResponse> findMyEvents({
-    String table1 = EVENTS_TABLE_NAME,
+    String table1 = Constants.EVENTS_TABLE_NAME,
     bool ascending = false,
-    String column = USER_ID_COLUMN,
+    String column = Constants.USER_ID_COLUMN,
     String value = '',
-    String table2 = USER_TABLE_NAME,
-    String table3 = ATTENDEES_TABLE_NAME,
+    String table2 = Constants.USER_TABLE_NAME,
+    String table3 = Constants.ATTENDEES_TABLE_NAME,
   }) async {
     try {
       final response = await _supabase
           .from(table1)
           .select('*, $table2!inner(*)')
           .eq(column, value)
-          .order(CREATED_AT_COLUMN, ascending: ascending)
+          .order(Constants.CREATED_AT_COLUMN, ascending: ascending)
           .execute();
       return response;
     } on PostgrestException catch (_) {
@@ -132,9 +133,9 @@ class DatabaseService {
       String value1,
       String innerJoinColumn2,
       String value2,
-      {String table1 = EVENTS_TABLE_NAME,
+      {String table1 = Constants.EVENTS_TABLE_NAME,
       bool ascending = false,
-      String table2 = USER_TABLE_NAME}) async {
+      String table2 = Constants.USER_TABLE_NAME}) async {
     final response = await _supabase
         .from(table1)
         .select('*, $table2!inner(*)')
@@ -164,7 +165,7 @@ class DatabaseService {
   // }
 
   static Future<PostgrestResponse> findAll(
-      {String tableName = EVENTS_TABLE_NAME}) async {
+      {String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response = await _supabase.from(tableName).select().execute();
     return response;
   }
@@ -179,7 +180,7 @@ class DatabaseService {
   // }
 
   static Future<PostgrestResponse> findLimitedWords(
-      {String tableName = EVENTS_TABLE_NAME, int page = 0}) async {
+      {String tableName = Constants.EVENTS_TABLE_NAME, int page = 0}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -189,9 +190,9 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findRecentlyUpdatedRow(
       String innerJoinColumn, String value,
-      {String table1 = EVENTS_TABLE_NAME,
+      {String table1 = Constants.EVENTS_TABLE_NAME,
       bool ascending = false,
-      String table2 = USER_TABLE_NAME}) async {
+      String table2 = Constants.USER_TABLE_NAME}) async {
     final response = await _supabase
         .from(table1)
         .select('*, $table2!inner(*)')
@@ -202,8 +203,8 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findSingleRowByColumnValue(
       String columnValue,
-      {String columnName = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      {String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response = await _supabase
         .from(tableName)
         .select()
@@ -214,10 +215,10 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findRowWithInnerjoinColumnValue(
     String columnValue, {
-    String columnName = ID_COLUMN,
-    String table1 = EVENTS_TABLE_NAME,
-    String table2 = USER_TABLE_NAME,
-    String table3 = USER_TABLE_NAME,
+    String columnName = Constants.ID_COLUMN,
+    String table1 = Constants.EVENTS_TABLE_NAME,
+    String table2 = Constants.USER_TABLE_NAME,
+    String table3 = Constants.USER_TABLE_NAME,
   }) async {
     try {
       final response = await _supabase
@@ -233,7 +234,7 @@ class DatabaseService {
   }
 
   static Future<PostgrestResponse> insertIntoTable(Map<String, dynamic> data,
-      {String table = EVENTS_TABLE_NAME}) async {
+      {String table = Constants.EVENTS_TABLE_NAME}) async {
     try {
       final response = await _supabase.from(table).insert(data).execute();
       return response;
@@ -247,8 +248,8 @@ class DatabaseService {
   /// conflict column refers to the columns which should be unique across all the rows
   /// it is responsible to determine whether insert or update is called.
   static Future<PostgrestResponse> upsertIntoTable(Map<String, dynamic> data,
-      {String table = EVENTS_TABLE_NAME,
-      String conflictColumn = ID_COLUMN}) async {
+      {String table = Constants.EVENTS_TABLE_NAME,
+      String conflictColumn = Constants.ID_COLUMN}) async {
     final response = await _supabase
         .from(table)
         .upsert(data, onConflict: 'id')
@@ -263,8 +264,8 @@ class DatabaseService {
   static Future<PostgrestResponse> updateRow(
       {required String colValue,
       required Map<String, dynamic> data,
-      String columnName = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     try {
       final response = await _supabase
           .from(tableName)
@@ -301,14 +302,14 @@ class DatabaseService {
   }
 
   static Future<PostgrestResponse> upsertRow(Map<String, dynamic> data,
-      {String tableName = EVENTS_TABLE_NAME}) async {
+      {String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response = await _supabase.from(tableName).upsert(data);
     return response;
   }
 
   static Future<PostgrestResponse> deleteRow(String columnValue,
-      {String columnName = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      {String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     final response =
         await _supabase.from(tableName).delete().eq(columnName, columnValue);
     return response;
@@ -316,9 +317,9 @@ class DatabaseService {
 
   static Future<PostgrestResponse> deleteRowBy2ColumnValue(
       String column1Value, String column2Value,
-      {String column1Name = ID_COLUMN,
-      String column2Name = ID_COLUMN,
-      String tableName = EVENTS_TABLE_NAME}) async {
+      {String column1Name = Constants.ID_COLUMN,
+      String column2Name = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
     // delete row based on two columns
     final response = await _supabase
         .from(tableName)
@@ -330,7 +331,7 @@ class DatabaseService {
   }
 
   static Future<Response> uploadImage(File imageFile,
-      {String tableName = EVENTS_TABLE_NAME}) async {
+      {String tableName = Constants.EVENTS_TABLE_NAME}) async {
     Response response = Response.init();
     try {
       // final bytes = await imageFile.readAsBytes();

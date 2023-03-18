@@ -71,7 +71,7 @@ class _AboutAppWidgetMobileState extends State<AboutAppWidgetMobile> {
             const Expanded(child: SizedBox.shrink()),
             Center(
               child: Link(
-                  uri: Uri.parse(SOURCE_CODE_URL),
+                  uri: Uri.parse(Constants.SOURCE_CODE_URL),
                   target: LinkTarget.blank,
                   builder: (context, followLink) {
                     return TextButton(

@@ -6,13 +6,13 @@ import 'package:rsvp/utils/logger.dart';
 import 'package:supabase/supabase.dart';
 
 class ReportService {
-  static const String _tableName = FEEDBACK_TABLE_NAME;
+  static const String _tableName = Constants.FEEDBACK_TABLE_NAME;
   static const Logger _logger = Logger('ReportService');
 
   static Future<List<ReportModel>>? getReports() async {
     final resp = await DatabaseService.findRowsByInnerJoinOnColumn(
       table1: _tableName,
-      table2: USER_TABLE_NAME,
+      table2: Constants.USER_TABLE_NAME,
     );
     if (resp.status == 200) {
       return (resp.data as List).map((e) => ReportModel.fromJson(e)).toList();
@@ -26,7 +26,7 @@ class ReportService {
     try {
       final resp = await DatabaseService.findRowByColumnValue(
         id,
-        columnName: ID_COLUMN,
+        columnName: Constants.ID_COLUMN,
         tableName: _tableName,
       );
       if (resp.status == 200) {

@@ -114,9 +114,8 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     } else {
       bannerHeight = 0;
     }
-
     final configStream = FirebaseFirestore.instance
-        .collection(CONFIG_COLLECTION_KEY)
+        .collection(Constants.CONFIG_COLLECTION_KEY)
         .snapshots();
     return ValueListenableBuilder<int>(
         valueListenable: _selectedIndex,
@@ -130,14 +129,15 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                 if (snapshot.hasData) {
                   final Map<String, dynamic> data =
                       snapshot.data!.docs.first.data() as Map<String, dynamic>;
-                  final version = data[VERSION_KEY];
-                  updateDestination = data[UPDATE_URL_KEY];
-                  final buildNumber = int.parse(data[BUILD_NUMBER_KEY]);
+                  final version = data[Constants.VERSION_KEY];
+                  updateDestination = data[Constants.UPDATE_URL_KEY];
+                  final buildNumber =
+                      int.parse(data[Constants.BUILD_NUMBER_KEY]);
                   if (appVersion == version && appBuildNumber == buildNumber) {
                     hasUpdate = false;
                   } else {
                     hasUpdate = true;
-                    isForceUpdate = data[FORCE_UPDATE_KEY];
+                    isForceUpdate = data[Constants.FORCE_UPDATE_KEY];
                   }
                 }
                 return Scaffold(
@@ -269,7 +269,8 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                                                                     if (updateDestination
                                                                         .isEmpty) {
                                                                       updateDestination =
-                                                                          PLAY_STORE_URL;
+                                                                          Constants
+                                                                              .PLAY_STORE_URL;
                                                                     }
                                                                     launchUrl(
                                                                         Uri.parse(
@@ -383,6 +384,8 @@ class _DesktopHomeState extends State<DesktopHome> {
 }
 
 class ScrollableEvent extends StatelessWidget {
+  const ScrollableEvent({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
