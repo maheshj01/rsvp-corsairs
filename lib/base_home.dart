@@ -185,122 +185,121 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                           ),
                     body: Stack(
                       children: [
-                        IgnorePointer(
-                          ignoring: hasUpdate && isForceUpdate,
-                          child: NavbarRouter(
-                            errorBuilder: (context) {
-                              return const Center(child: Text('Error 404'));
-                            },
-                            onBackButtonPressed: (isExiting) {
-                              if (isExiting) {
-                                newTime = DateTime.now();
-                                int difference =
-                                    newTime.difference(oldTime).inMilliseconds;
-                                oldTime = newTime;
-                                if (difference < 1000) {
-                                  hideToast();
-                                  return isExiting;
-                                } else {
-                                  showToast('Press back button to exit');
-                                  return false;
-                                }
-                              } else {
+                        NavbarRouter(
+                          errorBuilder: (context) {
+                            return const Center(child: Text('Error 404'));
+                          },
+                          onBackButtonPressed: (isExiting) {
+                            if (isExiting) {
+                              newTime = DateTime.now();
+                              int difference =
+                                  newTime.difference(oldTime).inMilliseconds;
+                              oldTime = newTime;
+                              if (difference < 1000) {
+                                hideToast();
                                 return isExiting;
+                              } else {
+                                showToast('Press back button to exit');
+                                return false;
                               }
-                            },
-                            isDesktop: !SizeUtils.isMobile,
-                            destinationAnimationCurve: Curves.fastOutSlowIn,
-                            destinationAnimationDuration: 600,
-                            onChanged: (x) {},
-                            decoration: NavbarDecoration(
-                                backgroundColor: CorsairsTheme.primaryBlue,
-                                isExtended: SizeUtils.isExtendedDesktop,
-                                // showUnselectedLabels: false,
-                                unselectedItemColor: Colors.white38,
-                                selectedLabelTextStyle: const TextStyle(
-                                    fontSize: 12,
-                                    color: CorsairsTheme.primaryYellow),
-                                unselectedLabelTextStyle:
-                                    const TextStyle(fontSize: 10),
-                                navbarType: BottomNavigationBarType.fixed),
-                            destinations: [
-                              for (int i = 0; i < items.length; i++)
-                                DestinationRouter(
-                                  navbarItem: items[i],
-                                  destinations: [
-                                    for (int j = 0;
-                                        j < _routes[i]!.keys.length;
-                                        j++)
-                                      Destination(
-                                          route: _routes[i]!.keys.elementAt(j),
-                                          widget: Stack(
-                                            children: [
-                                              _routes[i]!.values.elementAt(j),
-                                              if (hasUpdate && showBanner)
-                                                Animate(
-                                                  effects: const [
-                                                    SlideEffect(
-                                                      begin: Offset(0, 1),
-                                                      end: Offset(0, 0),
-                                                    )
-                                                  ],
-                                                  child: Positioned(
-                                                      bottom: bannerHeight,
-                                                      left: 0,
-                                                      right: 0,
-                                                      child: VocabBanner(
-                                                        description: !isForceUpdate
-                                                            ? UPDATE_APP_MESSAGE
-                                                            : FORCE_UPDATE_MESSAGE,
-                                                        onClose: () {
-                                                          if (!isForceUpdate) {
-                                                            setState(() {
-                                                              showBanner =
-                                                                  !showBanner;
-                                                            });
-                                                          }
-                                                        },
-                                                        actions: [
-                                                          !hasUpdate
-                                                              ? const SizedBox
-                                                                  .shrink()
-                                                              : TextButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    if (updateDestination
-                                                                        .isEmpty) {
-                                                                      updateDestination =
-                                                                          Constants
-                                                                              .PLAY_STORE_URL;
-                                                                    }
-                                                                    launchUrl(
-                                                                        Uri.parse(
-                                                                            updateDestination),
-                                                                        mode: LaunchMode
-                                                                            .externalApplication);
-                                                                  },
-                                                                  child: const Text(
-                                                                      'Update',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: CorsairsTheme
-                                                                            .primaryYellow,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontSize:
-                                                                            18,
-                                                                      )),
-                                                                ),
-                                                        ],
-                                                      )),
-                                                ),
-                                            ],
-                                          )),
-                                  ],
-                                  initialRoute: _routes[i]!.keys.elementAt(0),
-                                ),
-                            ],
-                          ),
+                            } else {
+                              return isExiting;
+                            }
+                          },
+                          isDesktop: !SizeUtils.isMobile,
+                          destinationAnimationCurve: Curves.fastOutSlowIn,
+                          destinationAnimationDuration: 600,
+                          onChanged: (x) {},
+                          decoration: NavbarDecoration(
+                              backgroundColor: CorsairsTheme.primaryBlue,
+                              isExtended: SizeUtils.isExtendedDesktop,
+                              // showUnselectedLabels: false,
+                              unselectedItemColor: Colors.white38,
+                              selectedLabelTextStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: CorsairsTheme.primaryYellow),
+                              unselectedLabelTextStyle:
+                                  const TextStyle(fontSize: 10),
+                              navbarType: BottomNavigationBarType.fixed),
+                          destinations: [
+                            for (int i = 0; i < items.length; i++)
+                              DestinationRouter(
+                                navbarItem: items[i],
+                                destinations: [
+                                  for (int j = 0;
+                                      j < _routes[i]!.keys.length;
+                                      j++)
+                                    Destination(
+                                        route: _routes[i]!.keys.elementAt(j),
+                                        widget: Stack(
+                                          children: [
+                                            IgnorePointer(
+                                                ignoring:
+                                                    hasUpdate && isForceUpdate,
+                                                child: _routes[i]!
+                                                    .values
+                                                    .elementAt(j)),
+                                            if (hasUpdate && showBanner)
+                                              Animate(
+                                                effects: const [
+                                                  SlideEffect(
+                                                    begin: Offset(0, 1),
+                                                    end: Offset(0, 0),
+                                                  )
+                                                ],
+                                                child: Positioned(
+                                                    bottom: bannerHeight,
+                                                    left: 0,
+                                                    right: 0,
+                                                    child: VocabBanner(
+                                                      description: !isForceUpdate
+                                                          ? UPDATE_APP_MESSAGE
+                                                          : FORCE_UPDATE_MESSAGE,
+                                                      onClose: () {
+                                                        if (!isForceUpdate) {
+                                                          setState(() {
+                                                            showBanner =
+                                                                !showBanner;
+                                                          });
+                                                        }
+                                                      },
+                                                      actions: [
+                                                        if (hasUpdate)
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              if (updateDestination
+                                                                  .isEmpty) {
+                                                                updateDestination =
+                                                                    Constants
+                                                                        .PLAY_STORE_URL;
+                                                              }
+                                                              launchUrl(
+                                                                  Uri.parse(
+                                                                      updateDestination),
+                                                                  mode: LaunchMode
+                                                                      .externalApplication);
+                                                            },
+                                                            child: const Text(
+                                                                'Update',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: CorsairsTheme
+                                                                      .primaryYellow,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 18,
+                                                                )),
+                                                          ),
+                                                      ],
+                                                    )),
+                                              ),
+                                          ],
+                                        )),
+                                ],
+                                initialRoute: _routes[i]!.keys.elementAt(0),
+                              ),
+                          ],
                         ),
                       ],
                     ));
