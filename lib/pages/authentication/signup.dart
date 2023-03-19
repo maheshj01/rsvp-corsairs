@@ -19,10 +19,13 @@ import 'package:rsvp/utils/utility.dart';
 import 'package:rsvp/widgets/button.dart';
 import 'package:rsvp/widgets/textfield.dart';
 import 'package:rsvp/widgets/widgets.dart';
+import 'package:uuid/uuid.dart';
 
 class SignUp extends StatefulWidget {
   final UserModel? newUser;
-  const SignUp({Key? key, this.newUser}) : super(key: key);
+  final bool isGoogleSignUp;
+  const SignUp({Key? key, this.newUser, this.isGoogleSignUp = false})
+      : super(key: key);
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -40,18 +43,46 @@ class _SignUpState extends State<SignUp> {
     try {
       user = _buildUserModel();
       final resp = auth.signUp(user!);
-      resp.then((value) {
-        showMessage(context,
-            "An email confirmation has been sent to your email address");
-        state.setUser(user!.copyWith(isLoggedIn: false));
-      }).onError((error, stackTrace) {
-        _logger.e('error signing up $error');
+      if (!widget.isGoogleSignUp) {
+        resp.then((value) {
+          showMessage(context,
+              "An email confirmation has been sent to your email address");
+          state.setUser(user!.copyWith(isLoggedIn: false));
+        }).onError((error, stackTrace) {
+          _logger.e('error signing up $error');
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            didSucced: false,
+            message: error.toString(),
+          );
+        });
+      } else {
+        _passwordController.text = const Uuid().v4();
+        state.setUser(user!.copyWith(isLoggedIn: true));
         _responseNotifier.value = _responseNotifier.value.copyWith(
           state: RequestState.done,
-          didSucced: false,
-          message: error.toString(),
+          didSucced: true,
+          message: 'Success',
         );
-      });
+
+        final response = await DatabaseService.insertIntoTable(
+            user!.signUpSchema(),
+            table: Constants.USER_TABLE_NAME);
+        if (response.status == 201) {
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            didSucced: true,
+            message: 'Success',
+          );
+        } else {
+          _responseNotifier.value = _responseNotifier.value.copyWith(
+            state: RequestState.done,
+            didSucced: false,
+            message: 'Something went wrong!',
+          );
+        }
+        Navigate.push(context, const LoginPage());
+      }
     } catch (error) {
       showMessage(context, error.toString());
       _responseNotifier.value = _responseNotifier.value.copyWith(
@@ -104,13 +135,31 @@ class _SignUpState extends State<SignUp> {
 
   void populateFields({UserModel? newUser}) {
     if (newUser != null) {
-      _emailController.text = newUser.email;
+      final list = newUser.name.split(' ');
+      if (list.length > 2) {
+        _nameController.text = list[0] + ' ' + list[1];
+      } else {
+        _nameController.text = newUser.name;
+      }
       _nameController.text = newUser.name;
       _studentIdController.text = newUser.studentId;
-      user = newUser;
+      user = newUser.copyWith(
+        email: newUser.email,
+        name: newUser.name,
+        studentId: newUser.studentId,
+        password: _passwordController.text,
+      );
     } else {
+      final list = widget.newUser!.name.split(' ');
+      if (list.length > 2) {
+        _nameController.text = list[0] + ' ' + list[1];
+      } else {
+        _nameController.text = widget.newUser!.name;
+      }
+      if (widget.isGoogleSignUp) {
+        _passwordController.text = const Uuid().v4();
+      }
       _emailController.text = widget.newUser!.email;
-      _nameController.text = widget.newUser!.name;
       _studentIdController.text = widget.newUser!.studentId;
       user = widget.newUser;
     }
@@ -238,6 +287,8 @@ class _SignUpState extends State<SignUp> {
                                 TransparentField(
                                     fKey: _formFieldKeys[1],
                                     hint: 'Email',
+                                    readOnly: widget.isGoogleSignUp &&
+                                        _emailController.text.isNotEmpty,
                                     controller: _emailController,
                                     index: Constants.EMAIL_VALIDATOR),
                                 TransparentField(
@@ -248,6 +299,8 @@ class _SignUpState extends State<SignUp> {
                                 TransparentField(
                                     fKey: _formFieldKeys[3],
                                     hint: 'Password',
+                                    readOnly: widget.isGoogleSignUp &&
+                                        _passwordController.text.isNotEmpty,
                                     controller: _passwordController,
                                     index: Constants.PASSWORD_VALIDATOR),
                                 48.0.vSpacer(),

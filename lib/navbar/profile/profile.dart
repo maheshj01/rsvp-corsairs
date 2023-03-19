@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/constants/strings.dart';
 import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/edit.dart';
 import 'package:rsvp/navbar/profile/settings.dart';
@@ -135,7 +136,8 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                                   255, 25, 79, 172)
                                               .withOpacity(0.8),
                                           child: CircularAvatar(
-                                            url: '${user.avatarUrl}',
+                                            url: user.avatarUrl ??
+                                                defaultAvatarUrl,
                                             name: user.name.initials(),
                                             radius: 40,
                                           )),

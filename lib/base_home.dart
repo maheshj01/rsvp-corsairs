@@ -117,6 +117,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     final configStream = FirebaseFirestore.instance
         .collection(Constants.CONFIG_COLLECTION_KEY)
         .snapshots();
+
     return ValueListenableBuilder<int>(
         valueListenable: _selectedIndex,
         builder: (context, int currentIndex, Widget? child) {
@@ -128,7 +129,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {
                   final Map<String, dynamic> data =
-                      snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                      snapshot.data!.docs[0].data() as Map<String, dynamic>;
                   final version = data[Constants.VERSION_KEY];
                   updateDestination = data[Constants.UPDATE_URL_KEY];
                   final buildNumber =

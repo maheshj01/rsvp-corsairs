@@ -8,7 +8,7 @@ class Constants {
   static const UPDATE_URL_KEY = 'update_url';
   static const FORCE_UPDATE_KEY = 'forceUpdate';
   static const CONFIG_COLLECTION_KEY = 'config';
-  static const UPDATE_DOC_KEY = 'update';
+  static const UPDATE_DOC_KEY = 'app';
   static const BUILD_NUMBER_KEY = 'buildNumber';
   static const REPO_NAME = 'rsvp-corsairs';
   static const SOURCE_CODE_URL = 'https://github.com/maheshmnj/$REPO_NAME';
@@ -94,8 +94,11 @@ class Constants {
   static const int PASSWORD_VALIDATOR = 3;
   static const int USER_ID_VALIDATOR = 12;
 
-  static const String emailPattern =
-      r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z]{4,}.[a-z]{3}$';
+  // static const String emailPattern =
+  //     r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z]{4,}.[a-z]{3}$';
+  // email pattern for @domain.com or @domain.co.in or @domain.in etc
+  static const String emailPattern = r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z._]{4,}$';
+
   static const String userPattern = r'^[a-zA-Z0-9]{3,}$';
   static const String firstAndLastNamePattern = r'^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$';
   static const String studentIdPattern = r'^[0-9]{8}$';

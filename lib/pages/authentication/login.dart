@@ -45,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
         final existingUser = await UserService.findByUsername(
             username: user.email, isEmail: true);
         if (existingUser.email.isEmpty) {
-          showMessage(context, 'User not found please register');
           await Future.delayed(const Duration(seconds: 2));
           _responseNotifier.value = _responseNotifier.value.copyWith(
             state: RequestState.done,
@@ -55,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               context,
               SignUp(
                 newUser: user,
+                isGoogleSignUp: true,
               ));
         } else {
           _logger.d('found existing user ${user.email}');

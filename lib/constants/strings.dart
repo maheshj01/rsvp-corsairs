@@ -17,4 +17,7 @@ const String ABOUT_TEXT =
 const String urlPrefix =
     'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 
+const String defaultAvatarUrl =
+    'https://i.pinimg.com/564x/c7/4c/66/c74c665ea9bb0c7cdc5dc67f7711e3c2.jpg';
+
 const String obscureCharacter = '◦';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:rsvp/exports.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:uuid/uuid.dart';
 
@@ -148,6 +149,21 @@ class UserModel extends ChangeNotifier {
         'isLoggedIn': true,
         'isAdmin': isAdmin,
         'username': username,
+        'studentId': studentId,
+        'reputation': reputation,
+        'created_at': created_at?.toIso8601String(),
+      };
+  Map<String, dynamic> signUpSchema() => <String, dynamic>{
+        'id': const Uuid().v4(),
+        'accessToken': accessToken,
+        'email': email,
+        'name': name,
+        'avatarUrl': avatarUrl,
+        'isLoggedIn': true,
+        'isAdmin': isAdmin,
+        'username': username,
+        'password': password,
+        'avatarUrl': avatarUrl ?? defaultAvatarUrl,
         'studentId': studentId,
         'reputation': reputation,
         'created_at': created_at?.toIso8601String(),

@@ -138,10 +138,12 @@ class TransparentField extends StatefulWidget {
   final String hint;
   final TextEditingController controller;
   final Key? fKey;
+  final bool readOnly;
   final Iterable<String>? autoFillHints;
   const TransparentField(
       {super.key,
       this.fKey,
+      this.readOnly = false,
       this.autoFillHints,
       required this.index,
       required this.hint,
@@ -158,6 +160,7 @@ class _TransparentFieldState extends State<TransparentField> {
       padding: 8.0.verticalPadding,
       child: TextFormField(
         key: widget.fKey,
+        readOnly: widget.readOnly,
         controller: widget.controller,
         autofillHints: widget.autoFillHints,
         cursorHeight: 32,
