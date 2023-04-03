@@ -321,12 +321,8 @@ class DatabaseService {
       String column2Name = Constants.ID_COLUMN,
       String tableName = Constants.EVENTS_TABLE_NAME}) async {
     // delete row based on two columns
-    final response = await _supabase
-        .from(tableName)
-        .delete()
-        .eq(column1Name, column1Value)
-        .eq(column2Name, column2Value)
-        .execute();
+    final response = await _supabase.from(tableName).delete().match(
+        {column1Name: column1Value, column2Name: column2Value}).execute();
     return response;
   }
 

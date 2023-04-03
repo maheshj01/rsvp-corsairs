@@ -261,7 +261,7 @@ class EventService {
           column2Name: Constants.EVENT_USER_ID_COLUMN,
           tableName: tableName,
         );
-        if (resp.status == 200) {
+        if (resp.status == 204) {
           response.didSucced = true;
           response.message = 'Success';
           response.data = resp.data;
