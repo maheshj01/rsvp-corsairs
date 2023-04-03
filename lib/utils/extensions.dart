@@ -95,11 +95,23 @@ extension DateHelper on DateTime {
 
 // return time difference in hrs and minutes
 // format: 1hr 30min
+// if difference is less than 1hr, return minutes
+// format: 30min
+// if difference is greater than 24hrs, return days
+// format: 1day 2hrs
   String standardTimeDifference(DateTime date) {
     final difference = this.difference(date).inMinutes;
     final hours = difference ~/ 60;
     final minutes = difference % 60;
-    return '$hours hr' + (minutes > 0 ? ' $minutes mins' : '');
+    if (hours > 24) {
+      final days = hours ~/ 24;
+      final hrs = hours % 24;
+      return '$days day${days > 1 ? 's' : ''} $hrs hr${hrs > 1 ? 's' : ''}';
+    } else if (hours > 0) {
+      return '$hours hr${hours > 1 ? 's' : ''} $minutes min';
+    } else {
+      return '$minutes min';
+    }
   }
 }
 

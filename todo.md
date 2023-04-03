@@ -13,7 +13,7 @@
 - [X] RSVP to an event
 - [X] Improve card UI 
 - [X] Bookmark an event
-- [] Unbookmark an event not updated in UI
+- [X] Unbookmark an event not updated in UI
 - [] Event Duration should be shown in days if >24
 - [] View attendees
 - [] Add filter out expired events
