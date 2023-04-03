@@ -50,6 +50,26 @@ class _EventDetailState extends State<EventDetail> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchAttendees();
     });
+    // scrollToBottomAndTop();
+  }
+
+  // helper method only to generate gif for demo
+  void scrollToBottomAndTop() {
+    _scrollController
+        .animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 3500),
+      curve: Curves.easeOut,
+    )
+        .then((value) {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        _scrollController.animateTo(
+          _scrollController.position.minScrollExtent,
+          duration: const Duration(milliseconds: 3500),
+          curve: Curves.easeOut,
+        );
+      });
+    });
   }
 
   Future<void> fetchAttendees() async {
@@ -103,7 +123,7 @@ class _EventDetailState extends State<EventDetail> {
               children: [
                 Flexible(
                   child: Text('${widget.event.name}',
-                      style: CorsairsTheme.googleFontsTextTheme.headline3!
+                      style: CorsairsTheme.googleFontsTextTheme.displaySmall!
                           .copyWith(color: Colors.white)),
                 ),
                 isHost
@@ -136,7 +156,7 @@ class _EventDetailState extends State<EventDetail> {
             16.0.vSpacer(),
             // description
             Text('${widget.event.description}',
-                style: CorsairsTheme.googleFontsTextTheme.bodyText1!
+                style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                     .copyWith(color: Colors.white)),
             16.0.vSpacer(),
             ListTile(
@@ -169,7 +189,7 @@ class _EventDetailState extends State<EventDetail> {
                         child: Text(
                             widget.event.endsAt!
                                 .standardTimeDifference(widget.event.startsAt!),
-                            style: CorsairsTheme.googleFontsTextTheme.bodyText1!
+                            style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                                 .copyWith(color: Colors.white, fontSize: 18)),
                       ),
                       16.0.vSpacer(),
@@ -214,6 +234,28 @@ class _EventDetailState extends State<EventDetail> {
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
               subtitle: Text(widget.event.host!.email,
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.checkroom,
+                  color: CorsairsTheme.primaryYellow),
+              onTap: () {},
+              title: Text("Wondering what clothes to wear?",
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+              subtitle: Text("Get clothese curated for you from H&M",
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.car_rental,
+                  color: CorsairsTheme.primaryYellow),
+              onTap: () {},
+              title: Text("Don't have a car?",
+                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                      .copyWith(color: Colors.white)),
+              subtitle: Text("Uber available in your area in 10 minutes",
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
             ),

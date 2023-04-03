@@ -96,6 +96,7 @@ class EventService {
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsByInnerJoinOnColumn();
     List<EventModel> events = [];
+    List<EventModel> filteredEvents = [];
     if (response.status == 200) {
       events = (response.data as List)
           .map((e) => EventModel.fromAllSchema(e))
@@ -103,15 +104,20 @@ class EventService {
       if (sort) {
         events.sort((a, b) => a.createdAt!.isBefore(b.createdAt!) ? 1 : -1);
       }
+      for (var event in events) {
+        if (!event.hasEnded()) {
+          filteredEvents.add(event);
+        }
+      }
       final user = AppStateScope.of(context).user;
       final bookmarks = await EventService.getBookmarks(user!.id!);
-      for (EventModel element in events) {
+      for (EventModel element in filteredEvents) {
         if (element.containsInBookmarks(bookmarks)) {
           element.bookmark = true;
         }
       }
     }
-    return events;
+    return filteredEvents;
   }
 
   static Future<List<EventModel>> getGoingEvents(BuildContext context) async {

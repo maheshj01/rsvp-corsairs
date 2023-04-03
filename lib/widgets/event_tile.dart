@@ -28,7 +28,7 @@ class EventTile extends StatelessWidget {
               buildGradient(),
               _buildTitleAndSubtitle(),
               // grey out the event if it's in the past
-              if (event.endsAt!.isBefore(DateTime.now())) buildGreyOut(),
+              if (event.hasEnded()) buildGreyOut(),
               // bookmark icon
               Positioned(
                   top: 0,

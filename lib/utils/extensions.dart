@@ -33,6 +33,10 @@ extension CompareEvents on EventModel {
       endsAt == other.endsAt &&
       coverImage == other.coverImage &&
       listEquals(attendees, other.attendees);
+
+  bool hasEnded() {
+    return endsAt!.isBefore(DateTime.now().toLocal());
+  }
 }
 
 extension CompareUsers on UserModel {

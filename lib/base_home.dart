@@ -93,7 +93,7 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
     SizeUtils.size = MediaQuery.of(context).size;
     List<NavbarItem> items = const [
       NavbarItem(Icons.event, 'Events'),
-      NavbarItem(Icons.leaderboard, 'Leaderboard'),
+      // NavbarItem(Icons.leaderboard, 'Leaderboard'),
       NavbarItem(Icons.person, 'Profile'),
     ];
 
@@ -102,10 +102,10 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
         CorsairEvents.route: const CorsairEvents(),
         EventDetail.route: EventDetail(event: EventModel.init()),
       },
-      1: {
-        LeaderBoard.route: const LeaderBoard(),
-      },
-      2: {UserProfile.route: const UserProfile()},
+      // 1: {
+      //   LeaderBoard.route: const LeaderBoard(),
+      // },
+      1: {UserProfile.route: const UserProfile()},
     };
 
     if (hasUpdate) {
