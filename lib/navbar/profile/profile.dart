@@ -42,12 +42,15 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return const UserProfileMobile();
+    return UserProfileMobile();
   }
 }
 
 class UserProfileMobile extends StatefulWidget {
-  const UserProfileMobile({Key? key}) : super(key: key);
+  bool isReadOnly;
+  final String? email;
+  UserProfileMobile({Key? key, this.email, this.isReadOnly = false})
+      : super(key: key);
 
   @override
   State<UserProfileMobile> createState() => _UserProfileMobileState();
@@ -62,6 +65,14 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
     );
     _statsNotifier.value = _statsNotifier.value
         .copyWith(data: userModel, state: RequestState.done);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isReadOnly) {
+      getUserProfile(widget.email!);
+    }
   }
 
   @override
@@ -95,6 +106,12 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                       horizontal: 8.0, vertical: 4.0),
                   child: ListView(
                     children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: widget.isReadOnly
+                            ? const BackButton()
+                            : const SizedBox.shrink(),
+                      ),
                       Container(
                         decoration: BoxDecoration(
                             color: Colors.white,
@@ -108,24 +125,26 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                             padding: 18.0.verticalPadding,
                             child: Column(
                               children: [
-                                Container(
-                                  alignment: Alignment.topRight,
-                                  child: Padding(
-                                    padding: 16.0.horizontalPadding,
-                                    child: VHIcon(
-                                      Icons.settings,
-                                      size: 38,
-                                      onTap: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .push(PageRoutes.sharedAxis(
-                                                const SettingsPageMobile(),
-                                                SharedAxisTransitionType
-                                                    .horizontal));
-                                      },
-                                    ),
-                                  ),
-                                ),
+                                widget.isReadOnly
+                                    ? const SizedBox.shrink()
+                                    : Container(
+                                        alignment: Alignment.topRight,
+                                        child: Padding(
+                                          padding: 16.0.horizontalPadding,
+                                          child: VHIcon(
+                                            Icons.settings,
+                                            size: 38,
+                                            onTap: () {
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .push(PageRoutes.sharedAxis(
+                                                      const SettingsPageMobile(),
+                                                      SharedAxisTransitionType
+                                                          .horizontal));
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                 Stack(
                                   children: [
                                     Padding(
@@ -142,22 +161,25 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                                             radius: 40,
                                           )),
                                     ),
-                                    Positioned(
-                                        right: 8,
-                                        bottom: 16,
-                                        child: VHIcon(Icons.edit, size: 30,
-                                            onTap: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .push(
-                                            PageRoutes.sharedAxis(
-                                              EditProfile(
-                                                user: user,
-                                              ),
-                                              SharedAxisTransitionType.scaled,
-                                            ),
-                                          );
-                                        }))
+                                    widget.isReadOnly
+                                        ? const SizedBox.shrink()
+                                        : Positioned(
+                                            right: 8,
+                                            bottom: 16,
+                                            child: VHIcon(Icons.edit, size: 30,
+                                                onTap: () {
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .push(
+                                                PageRoutes.sharedAxis(
+                                                  EditProfile(
+                                                    user: user,
+                                                  ),
+                                                  SharedAxisTransitionType
+                                                      .scaled,
+                                                ),
+                                              );
+                                            }))
                                   ],
                                 ),
                                 Padding(

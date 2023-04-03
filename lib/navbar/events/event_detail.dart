@@ -6,6 +6,7 @@ import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
 import 'package:rsvp/navbar/pageroute.dart';
+import 'package:rsvp/navbar/profile/profile.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/services/event_service.dart';
@@ -111,7 +112,7 @@ class _EventDetailState extends State<EventDetail> {
     size = MediaQuery.of(context).size;
     user = AppStateScope.of(context).user;
     bool isHost = user!.email == widget.event.host?.email;
-    bool isEventEnded = widget.event.endsAt!.isBefore(DateTime.now());
+    bool isEventEnded = widget.event.hasEnded();
     Widget _buildDetails() {
       return Padding(
         padding: 16.0.allPadding,
@@ -229,36 +230,51 @@ class _EventDetailState extends State<EventDetail> {
             ListTile(
               leading:
                   const Icon(Icons.person, color: CorsairsTheme.primaryYellow),
-              onTap: () {},
+              onTap: () {
+                if (!isHost) {
+                  Navigator.of(context).push(PageRoutes.sharedAxis(
+                      UserProfileMobile(
+                        email: widget.event.host!.email,
+                        isReadOnly: true,
+                      ),
+                      SharedAxisTransitionType.vertical));
+                }
+              },
               title: Text(widget.event.host!.name,
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
               subtitle: Text(widget.event.host!.email,
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
+              trailing: isHost
+                  ? const SizedBox.shrink()
+                  : const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                    ),
             ),
-            ListTile(
-              leading: const Icon(Icons.checkroom,
-                  color: CorsairsTheme.primaryYellow),
-              onTap: () {},
-              title: Text("Wondering what clothes to wear?",
-                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                      .copyWith(color: Colors.white)),
-              subtitle: Text("Get clothese curated for you from H&M",
-                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                      .copyWith(color: Colors.white)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.car_rental,
-                  color: CorsairsTheme.primaryYellow),
-              onTap: () {},
-              title: Text("Don't have a car?",
-                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                      .copyWith(color: Colors.white)),
-              subtitle: Text("Uber available in your area in 10 minutes",
-                  style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
-                      .copyWith(color: Colors.white)),
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.checkroom,
+            //       color: CorsairsTheme.primaryYellow),
+            //   onTap: () {},
+            //   title: Text("Wondering what clothes to wear?",
+            //       style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+            //           .copyWith(color: Colors.white)),
+            //   subtitle: Text("Get clothese curated for you from H&M",
+            //       style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+            //           .copyWith(color: Colors.white)),
+            // ),
+            // ListTile(
+            //   leading: const Icon(Icons.car_rental,
+            //       color: CorsairsTheme.primaryYellow),
+            //   onTap: () {},
+            //   title: Text("Don't have a car?",
+            //       style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+            //           .copyWith(color: Colors.white)),
+            //   subtitle: Text("Uber available in your area in 10 minutes",
+            //       style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+            //           .copyWith(color: Colors.white)),
+            // ),
             (size!.width / 2).vSpacer(),
           ],
         ),
