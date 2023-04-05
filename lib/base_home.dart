@@ -215,6 +215,9 @@ class _AdaptiveLayoutState extends State<AdaptiveLayout> {
                               isExtended: SizeUtils.isExtendedDesktop,
                               // showUnselectedLabels: false,
                               unselectedItemColor: Colors.white38,
+                              selectedLabelColor: CorsairsTheme.primaryYellow,
+                              selectedIconTheme: const IconThemeData(
+                                  color: CorsairsTheme.primaryYellow),
                               selectedLabelTextStyle: const TextStyle(
                                   fontSize: 12,
                                   color: CorsairsTheme.primaryYellow),
