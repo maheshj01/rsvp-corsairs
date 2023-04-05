@@ -252,6 +252,12 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                             events[index].bookmark = !events[index].bookmark!;
                           });
                         }
+
+                        /// Fetch bookmarks when bookmark is removed
+                        if (!events[index].bookmark! &&
+                            selected == Constants.BookmarksLabel) {
+                          getEvents();
+                        }
                       },
                     ),
                   );
