@@ -9,6 +9,7 @@ import 'package:rsvp/navbar/profile/settings.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/api/user.dart';
 import 'package:rsvp/services/database.dart';
+import 'package:rsvp/services/event_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/widgets/circle_avatar.dart';
@@ -68,12 +69,39 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
         .copyWith(data: userModel, state: RequestState.done);
   }
 
+  Future<void> getUserStats(String id) async {
+    // find list of events attended, hosted,
+    final eventsAttended = await EventService.getEventsAttended(id);
+    final allEvents = AppStateWidget.of(context).events;
+    attended = eventsAttended.length;
+    hosted = 0;
+    for (var event in allEvents) {
+      if (event.host!.id == id) {
+        hosted++;
+      }
+    }
+    _statsNotifier.value =
+        _statsNotifier.value.copyWith(state: RequestState.done);
+    // Attendee? attendee =
+    //     attendees.firstWhere((element) => element.user_id == user!.id!);
+    // // if (attendee != null) {
+    // //   _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
+    // // } else {
+    // //   _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
+    // // }
+  }
+
+  int attended = 0;
+  int hosted = 0;
   @override
   void initState() {
     super.initState();
     if (widget.isReadOnly) {
       getUserProfile(widget.email!);
     }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getUserStats(user.id!);
+    });
   }
 
   @override
@@ -85,10 +113,10 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
   final ValueNotifier<Response> _statsNotifier = ValueNotifier(Response.init());
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
-
+  late UserModel user;
   @override
   Widget build(BuildContext context) {
-    UserModel user = AppStateScope.of(context).user!;
+    user = AppStateScope.of(context).user!;
     return Scaffold(
         body: Center(
       child: ValueListenableBuilder<Response>(
@@ -98,7 +126,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
               return const LoadingWidget();
             } else {
               if (widget.isReadOnly) {
-                user = response.data as UserModel;
+                user = response.data as UserModel? ?? user;
               }
               return RefreshIndicator(
                 key: _refreshIndicatorKey,
@@ -226,16 +254,16 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                           ),
                         ),
                       ),
-                      // 16.0.vSpacer(),
-                      // Container(
-                      //     alignment: Alignment.centerLeft,
-                      //     child: heading('Stats')),
+                      16.0.vSpacer(),
+                      Container(
+                          alignment: Alignment.centerLeft,
+                          child: heading('Engagement')),
                       16.0.vSpacer(),
 
                       /// rounded Container with border
 
                       Container(
-                        height: 80,
+                        height: 90,
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: 16.0.allRadius,
@@ -245,45 +273,54 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
                         child: Row(
                           children: [
                             for (int i = 0; i < 3; i++)
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      i == 0
-                                          ? Icons.star_rounded
-                                          : i == 1
-                                              ? Icons.event
-                                              : Icons.bookmark,
-                                      color: CorsairsTheme.primaryYellow,
-                                      size: 28,
+                              widget.isReadOnly && i == 2
+                                  ? const SizedBox.shrink()
+                                  : Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            i == 0
+                                                ? Icons.star_rounded
+                                                : i == 1
+                                                    ? Icons.event
+                                                    : Icons.bookmark,
+                                            color: CorsairsTheme.primaryYellow,
+                                            size: 28,
+                                          ),
+                                          Text(
+                                            i == 0
+                                                ? '$attended'
+                                                : i == 1
+                                                    ? '$hosted'
+                                                    : '0',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium!
+                                                .copyWith(
+                                                    fontSize: 28,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                          ),
+                                          4.0.vSpacer(),
+                                          Text(
+                                            i == 0
+                                                ? 'Events Attended'
+                                                : i == 1
+                                                    ? 'Events Hosted'
+                                                    : 'Events Missed',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall!
+                                                .copyWith(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Text(
-                                      '${user.reputation}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium!
-                                          .copyWith(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w500),
-                                    ),
-                                    4.0.vSpacer(),
-                                    Text(
-                                      i == 0
-                                          ? 'Events Attended'
-                                          : i == 1
-                                              ? 'Events Hosted'
-                                              : 'Bookmarks',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ),
                           ],
                         ),
                       )

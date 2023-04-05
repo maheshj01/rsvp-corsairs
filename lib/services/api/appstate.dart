@@ -71,6 +71,8 @@ class AppStateWidgetState extends State<AppStateWidget> {
     });
   }
 
+  List<EventModel> get events => _data.events ?? [];
+
   @override
   Widget build(BuildContext context) {
     return AppStateScope(

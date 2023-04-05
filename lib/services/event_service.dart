@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
+import 'package:rsvp/models/attendee.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/platform/mobile.dart'
     // ignore: library_prefixes
@@ -176,17 +177,45 @@ class EventService {
     return bookmarks;
   }
 
-  static Future<List<EventModel>> getAttendees(String eventId) async {
-    final response = await DatabaseService.findRowsByInnerJoinOnColumn(
-      table1: Constants.EVENTS_TABLE_NAME,
-      table2: Constants.ATTENDEES_TABLE_NAME,
+  /// gets attendees for a particular event provided the event id
+  static Future<List<Attendee>> getAttendees(String id) async {
+    List<Attendee> attendees = [];
+    final response = await DatabaseService.findRowByColumnValue(
+      id,
+      columnName: Constants.EVENT_ID_COLUMN,
+      tableName: Constants.ATTENDEES_TABLE_NAME,
     );
-    List<EventModel> events = [];
-    if (response.status == 200) {
-      events =
-          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
+    try {
+      if (response.status == 200) {
+        attendees = response.data
+            .map((e) => Attendee.fromJson(e))
+            .toList()
+            .cast<Attendee>();
+      }
+      return attendees;
+    } catch (e) {
+      rethrow;
     }
-    return events;
+  }
+
+  /// Contains events User is going
+  /// These are events user has marked as going
+  static Future<List<Attendee>> getEventsAttended(String userId) async {
+    final response = await DatabaseService.findAll(
+      tableName: Constants.ATTENDEES_TABLE_NAME,
+    );
+    List<Attendee> allAttendees = [];
+    List<Attendee> attendees = [];
+    if (response.status == 200) {
+      allAttendees =
+          (response.data as List).map((e) => Attendee.fromJson(e)).toList();
+      for (var attendee in allAttendees) {
+        if (attendee.user_id == userId) {
+          attendees.add(attendee);
+        }
+      }
+    }
+    return attendees;
   }
 
   static Future<List<EventModel>> getBookmarks(String userId) async {

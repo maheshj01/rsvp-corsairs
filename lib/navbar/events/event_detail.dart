@@ -75,30 +75,20 @@ class _EventDetailState extends State<EventDetail> {
 
   Future<void> fetchAttendees() async {
     _responseNotifier.value.copyWith(state: RequestState.active);
-    final response = await DatabaseService.findRowByColumnValue(
-      widget.event.id!,
-      columnName: 'event_id',
-      tableName: Constants.ATTENDEES_TABLE_NAME,
-    );
     try {
-      if (response.status == 200) {
-        attendees = response.data
-            .map((e) => Attendee.fromJson(e))
-            .toList()
-            .cast<Attendee>();
-        _responseNotifier.value.copyWith(state: RequestState.done);
-      }
-      Attendee? attendee =
-          attendees.firstWhere((element) => element.user_id == user!.id!);
-      if (attendee != null) {
-        _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
-      } else {
-        _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
-      }
+      attendees = await EventService.getAttendees(widget.event.id!);
+      // Attendee? attendee =
+      //     attendees.firstWhere((element) => element.user_id == user!.id!);
+      // // if (attendee != null) {
+      // //   _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
+      // // } else {
+      // //   _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
+      // // }
+      _responseNotifier.value.copyWith(state: RequestState.done);
     } catch (e) {
       _responseNotifier.value.copyWith(state: RequestState.error);
     }
-    setState(() {});
+    // setState(() {});
   }
 
   final ValueNotifier<Response> _responseNotifier =
