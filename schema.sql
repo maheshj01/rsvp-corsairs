@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS csevents.events (
   private BOOLEAN NULL DEFAULT FALSE,
   deleted BOOLEAN NULL DEFAULT FALSE,
   user_id uuid NULL,
+  max_capacity INT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_user_id
     FOREIGN KEY (user_id)

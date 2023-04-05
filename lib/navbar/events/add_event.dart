@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rsvp/models/event_schema.dart';
@@ -35,6 +34,7 @@ class _AddEventState extends State<AddEvent> {
     _titleController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
+    _capacityController.dispose();
     super.dispose();
   }
 
@@ -109,6 +109,7 @@ class _AddEventState extends State<AddEvent> {
       stopCircularIndicator(context);
       return;
     }
+
     Response resp = Response.init();
     if (!widget.isEdit) {
       resp = await EventService.addEvent(_event);
@@ -133,6 +134,7 @@ class _AddEventState extends State<AddEvent> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _capacityController = TextEditingController();
 
   @override
   void initState() {
@@ -286,7 +288,7 @@ class _AddEventState extends State<AddEvent> {
               hint: 'Where is the event taking place?',
               hasLabel: false,
               isTransparent: true,
-              fontSize: 16,
+              fontSize: 18,
               maxLines: 4,
               controller: _locationController,
               onChanged: (x) {
@@ -295,53 +297,67 @@ class _AddEventState extends State<AddEvent> {
               },
             ),
             8.0.vSpacer(),
-            ValueListenableBuilder<EventModel>(
-                valueListenable: _eventNotifier,
-                builder: (context, _event, snapshot) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.lock,
-                            color: CorsairsTheme.primaryYellow),
-                        title: const Text('Private Event'),
-                        subtitle: const Text(
-                            'Only invited members can see this event'),
-                        trailing: CupertinoSwitch(
-                          value: _event.private!,
-                          onChanged: (x) {
-                            _eventNotifier.value = _event.copyWith(private: x);
-                          },
-                        ),
-                      ),
-                      !_event.private!
-                          ? const SizedBox.shrink()
-                          : Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: _subHeading('Invite'),
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.person_add,
-                                      color: CorsairsTheme.primaryYellow),
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: false,
-                                        elevation: 2.0,
-                                        useRootNavigator: false,
-                                        shape: 16.0.roundedTop,
-                                        builder: (context) =>
-                                            const InviteSheet());
-                                  },
-                                  title: const Text('Invite Friends'),
-                                  trailing: const Icon(Icons.arrow_forward_ios),
-                                ),
-                              ],
-                            ),
-                    ],
-                  );
-                }),
+            CSField(
+              hint: 'How many people can rsvp for this event? (defaults to 50)',
+              hasLabel: false,
+              isTransparent: true,
+              fontSize: 18,
+              maxLines: 4,
+              maxLength: 2,
+              keyboardType: TextInputType.number,
+              controller: _capacityController,
+              onChanged: (x) {
+                _eventNotifier.value =
+                    _eventNotifier.value.copyWith(address: x);
+              },
+            ),
+            // ValueListenableBuilder<EventModel>(
+            //     valueListenable: _eventNotifier,
+            //     builder: (context, _event, snapshot) {
+            //       return Column(
+            //         children: [
+            //           ListTile(
+            //             leading: const Icon(Icons.lock,
+            //                 color: CorsairsTheme.primaryYellow),
+            //             title: const Text('Private Event'),
+            //             subtitle: const Text(
+            //                 'Only invited members can see this event'),
+            //             trailing: CupertinoSwitch(
+            //               value: _event.private!,
+            //               onChanged: (x) {
+            //                 _eventNotifier.value = _event.copyWith(private: x);
+            //               },
+            //             ),
+            //           ),
+            //           !_event.private!
+            //               ? const SizedBox.shrink()
+            //               : Column(
+            //                   children: [
+            //                     Align(
+            //                       alignment: Alignment.centerLeft,
+            //                       child: _subHeading('Invite'),
+            //                     ),
+            //                     ListTile(
+            //                       leading: const Icon(Icons.person_add,
+            //                           color: CorsairsTheme.primaryYellow),
+            //                       onTap: () {
+            //                         showModalBottomSheet(
+            //                             context: context,
+            //                             isScrollControlled: false,
+            //                             elevation: 2.0,
+            //                             useRootNavigator: false,
+            //                             shape: 16.0.roundedTop,
+            //                             builder: (context) =>
+            //                                 const InviteSheet());
+            //                       },
+            //                       title: const Text('Invite Friends'),
+            //                       trailing: const Icon(Icons.arrow_forward_ios),
+            //                     ),
+            //                   ],
+            //                 ),
+            //         ],
+            //       );
+            //     }),
             32.0.vSpacer(),
             widget.isEdit && isHost
                 ? OutlinedButton(

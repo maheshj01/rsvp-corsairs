@@ -113,6 +113,7 @@ class _EventDetailState extends State<EventDetail> {
     user = AppStateScope.of(context).user;
     bool isHost = user!.email == widget.event.host?.email;
     bool isEventEnded = widget.event.hasEnded();
+    bool isFull = attendees.length >= widget.event.max_capacity!;
     Widget _buildDetails() {
       return Padding(
         padding: 16.0.allPadding,
@@ -221,7 +222,8 @@ class _EventDetailState extends State<EventDetail> {
               leading:
                   const Icon(Icons.people, color: CorsairsTheme.primaryYellow),
               onTap: () {},
-              title: Text('${attendees.length} Attendees',
+              title: Text(
+                  '${attendees.length}/ ${widget.event.max_capacity} Attendees',
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
                       .copyWith(color: Colors.white)),
             ),
@@ -338,7 +340,15 @@ class _EventDetailState extends State<EventDetail> {
               ),
             ]),
           ),
-          isHost || isEventEnded
+          if (isFull)
+            Center(
+              child: Text(
+                'This event has reached its maximum capacity',
+                style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
+                    .copyWith(color: Colors.red),
+              ),
+            ),
+          isHost || isEventEnded || isFull
               ? const SizedBox.shrink()
               : Center(
                   child: ValueListenableBuilder<Response>(

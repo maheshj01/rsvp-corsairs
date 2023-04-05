@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rsvp/constants/constants.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
@@ -96,6 +97,11 @@ class _CSFieldState extends State<CSField> {
           ),
           child: TextFormField(
             controller: _controller,
+            inputFormatters: [
+              // allow only numbers
+              if (widget.keyboardType == TextInputType.number)
+                FilteringTextInputFormatter.digitsOnly
+            ],
             keyboardType: widget.keyboardType,
             readOnly: widget.isReadOnly,
             autofocus: widget.autoFocus,
@@ -105,6 +111,7 @@ class _CSFieldState extends State<CSField> {
             maxLines: widget.maxLines,
             validator: widget.validator,
             autovalidateMode: widget.autovalidateMode,
+            cursorRadius: const Radius.circular(10),
             onChanged: (x) {
               if (widget.onChanged != null) {
                 widget.onChanged!(x);
@@ -114,7 +121,9 @@ class _CSFieldState extends State<CSField> {
             style: TextStyle(
                 color: Theme.of(context).colorScheme.onBackground,
                 fontSize: widget.fontSize),
+            cursorHeight: widget.fontSize * 1.4,
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(vertical: 4),
               border: !widget.hasBorder ? InputBorder.none : null,
               focusedBorder: !widget.hasBorder ? InputBorder.none : null,
               enabledBorder: !widget.hasBorder ? InputBorder.none : null,

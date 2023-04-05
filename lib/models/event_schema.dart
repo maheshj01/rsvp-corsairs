@@ -22,6 +22,7 @@ class EventModel extends ChangeNotifier {
   bool? private;
   bool? deleted;
   bool? bookmark;
+  int? max_capacity;
 
   EventModel(
       {this.id,
@@ -31,6 +32,7 @@ class EventModel extends ChangeNotifier {
       this.startsAt,
       this.endsAt,
       this.address,
+      this.max_capacity = 50,
       this.coverImage,
       this.private,
       this.deleted,
@@ -50,6 +52,7 @@ class EventModel extends ChangeNotifier {
     private = false;
     deleted = false;
     attendees = [];
+    max_capacity = 50;
     bookmark = false;
     host = UserModel.init();
   }
@@ -66,6 +69,7 @@ class EventModel extends ChangeNotifier {
     private = event.private;
     deleted = event.deleted;
     attendees = [];
+    max_capacity = event.max_capacity;
     bookmark = event.bookmark;
     host = UserModel.init();
   }
@@ -98,6 +102,7 @@ class EventModel extends ChangeNotifier {
       deleted: deleted ?? this.deleted,
       attendees: attendees ?? this.attendees,
       bookmark: bookmark ?? this.bookmark,
+      max_capacity: max_capacity ?? max_capacity,
       host: host ?? this.host,
     );
   }
@@ -114,6 +119,7 @@ class EventModel extends ChangeNotifier {
         'address': address,
         'private': private,
         'host': host!.id,
+        'max_capacity': max_capacity,
         'deleted': deleted,
       };
 
@@ -135,6 +141,7 @@ class EventModel extends ChangeNotifier {
         private: json['private'] as bool?,
         deleted: json['deleted'] as bool?,
         bookmark: json['bookmark'] ?? false,
+        max_capacity: json['max_capacity'] as int?,
         attendees: (json['attendees'] as List<dynamic>?)
             ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -161,6 +168,7 @@ class EventModel extends ChangeNotifier {
         private: json['events']['private'] as bool?,
         deleted: json['events']['deleted'] as bool?,
         bookmark: json['events']['bookmark'] ?? false,
+        max_capacity: json['events']['max_capacity'] as int?,
         attendees: (json['events']['attendees'] as List<dynamic>?)
             ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -186,6 +194,7 @@ class EventModel extends ChangeNotifier {
         other.private == private &&
         other.deleted == deleted &&
         other.attendees == attendees &&
+        other.max_capacity == max_capacity &&
         other.host == host;
   }
 
@@ -194,8 +203,4 @@ class EventModel extends ChangeNotifier {
 
   @override
   Map<String, dynamic> toJson() => _$EventModelToJson(this);
-
-  @override
-  // TODO: implement hashCode
-  int get hashCode => super.hashCode;
 }
