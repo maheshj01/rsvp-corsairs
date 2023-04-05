@@ -5,6 +5,7 @@ import 'package:rsvp/models/attendee.dart';
 import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/events/add_event.dart';
+import 'package:rsvp/navbar/events/attendees.dart';
 import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/profile.dart';
 import 'package:rsvp/services/api/appstate.dart';
@@ -216,7 +217,27 @@ class _EventDetailState extends State<EventDetail> {
             ListTile(
               leading:
                   const Icon(Icons.people, color: CorsairsTheme.primaryYellow),
-              onTap: () {},
+              trailing: attendees.isEmpty
+                  ? const SizedBox.shrink()
+                  : const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                    ),
+              onTap: () {
+                if (attendees.isNotEmpty) {
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      elevation: 2.0,
+                      useRootNavigator: false,
+                      shape: 16.0.roundedTop,
+                      useSafeArea: true,
+                      enableDrag: true,
+                      builder: (context) => AttendeesList(
+                            attendees: attendees,
+                          ));
+                }
+              },
               title: Text(
                   '${attendees.length}/ ${widget.event.max_capacity} Attendees',
                   style: CorsairsTheme.googleFontsTextTheme.bodyLarge!
@@ -234,7 +255,7 @@ class _EventDetailState extends State<EventDetail> {
                         email: widget.event.host!.email,
                         isReadOnly: true,
                       ),
-                      SharedAxisTransitionType.vertical));
+                      SharedAxisTransitionType.horizontal));
                 }
               },
               title: Text(widget.event.host!.name,

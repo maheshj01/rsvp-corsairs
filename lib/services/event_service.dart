@@ -180,11 +180,19 @@ class EventService {
   /// gets attendees for a particular event provided the event id
   static Future<List<Attendee>> getAttendees(String id) async {
     List<Attendee> attendees = [];
-    final response = await DatabaseService.findRowByColumnValue(
-      id,
-      columnName: Constants.EVENT_ID_COLUMN,
-      tableName: Constants.ATTENDEES_TABLE_NAME,
-    );
+    // final response = await DatabaseService.findRowByColumnValue(
+    //   id,
+    //   columnName: Constants.EVENT_ID_COLUMN,
+    //   tableName: Constants.ATTENDEES_TABLE_NAME,
+    // );
+    final response = await _supabase
+        .from(Constants.ATTENDEES_TABLE_NAME)
+        .select(
+            '*, ${Constants.USER_TABLE_NAME}!inner(*), ${Constants.EVENTS_TABLE_NAME}!inner(*)')
+        .filter('event_id', 'eq', id)
+        // .eq(Constants.ATTENDEES_TABLE_NAME, id)
+        // .order('created_at', ascending: ascending)
+        .execute();
     try {
       if (response.status == 200) {
         attendees = response.data
@@ -194,6 +202,7 @@ class EventService {
       }
       return attendees;
     } catch (e) {
+      _logger.e('Error getting attendees $e');
       rethrow;
     }
   }

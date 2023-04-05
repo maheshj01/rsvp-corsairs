@@ -198,6 +198,27 @@ class EventModel extends ChangeNotifier {
         other.host == host;
   }
 
+  factory EventModel.basicJson(Map<String, dynamic> json) => EventModel(
+        id: json['id'] as String?,
+        name: json['name'] as String?,
+        description: json['description'] as String?,
+        createdAt: json['createdAt'] == null
+            ? null
+            : DateTime.parse(json['createdAt'] as String),
+        startsAt: json['startsAt'] == null
+            ? null
+            : DateTime.parse(json['startsAt'] as String),
+        endsAt: json['endsAt'] == null
+            ? null
+            : DateTime.parse(json['endsAt'] as String),
+        address: json['address'] as String?,
+        max_capacity: json['max_capacity'] as int? ?? 50,
+        coverImage: json['coverImage'] as String?,
+        private: json['private'] as bool?,
+        deleted: json['deleted'] as bool?,
+        bookmark: json['bookmark'] as bool? ?? false,
+      );
+
   factory EventModel.fromJson(Map<String, dynamic> json) =>
       _$EventModelFromJson(json);
 
