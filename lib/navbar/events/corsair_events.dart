@@ -71,12 +71,12 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
     });
   }
 
-  Future<void> getEvents() async {
+  Future<void> getEvents({bool sort = true}) async {
     showCircularIndicator(context);
     List<EventModel> events = [];
     switch (selected) {
       case 'All':
-        events = await EventService.getAllEvents(context);
+        events = await EventService.getAllEvents(context, sort: sort);
         break;
       case 'Going':
         events = await EventService.getGoingEvents(context);
@@ -218,7 +218,7 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
         },
         child: ListView.builder(
           controller: _scrollController,
-          padding: const EdgeInsets.only(bottom: 24),
+          padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight),
           itemBuilder: (_, index) {
             return OpenContainer<bool>(
                 openBuilder:

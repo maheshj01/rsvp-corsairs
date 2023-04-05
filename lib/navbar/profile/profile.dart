@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/constants/strings.dart';
+import 'package:rsvp/models/user.dart';
 import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/edit.dart';
 import 'package:rsvp/navbar/profile/settings.dart';
@@ -60,7 +61,7 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
   Future<void> getUserProfile(String email) async {
     _statsNotifier.value =
         _statsNotifier.value.copyWith(state: RequestState.active);
-    final userModel = UserService.findByUsername(
+    final userModel = await UserService.findByUsername(
       username: email,
     );
     _statsNotifier.value = _statsNotifier.value
@@ -87,15 +88,18 @@ class _UserProfileMobileState extends State<UserProfileMobile> {
 
   @override
   Widget build(BuildContext context) {
-    final user = AppStateScope.of(context).user;
+    UserModel user = AppStateScope.of(context).user!;
     return Scaffold(
         body: Center(
       child: ValueListenableBuilder<Response>(
           valueListenable: _statsNotifier,
           builder: (BuildContext context, Response response, Widget? child) {
-            if (user == null || (response.state == RequestState.active)) {
+            if ((response.state == RequestState.active)) {
               return const LoadingWidget();
             } else {
+              if (widget.isReadOnly) {
+                user = response.data as UserModel;
+              }
               return RefreshIndicator(
                 key: _refreshIndicatorKey,
                 onRefresh: () async {

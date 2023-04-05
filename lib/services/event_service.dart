@@ -102,7 +102,7 @@ class EventService {
           .map((e) => EventModel.fromAllSchema(e))
           .toList();
       if (sort) {
-        events.sort((a, b) => a.createdAt!.isBefore(b.createdAt!) ? 1 : -1);
+        events.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
       }
       for (var event in events) {
         if (!event.hasEnded()) {

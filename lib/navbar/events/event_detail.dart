@@ -155,6 +155,13 @@ class _EventDetailState extends State<EventDetail> {
                     : const SizedBox(),
               ],
             ),
+            Text(
+              'Posted on: ' + widget.event.createdAt!.standardDate(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
             16.0.vSpacer(),
             // description
             Text('${widget.event.description}',
