@@ -4,6 +4,13 @@
 
 - [ ] Use fonts similar to duolingo
 
+### Release
+- [ ] Fix Architecture Scalability Issues
+- [ ] Implement event search
+- [ ] Update Privacy Policy
+- [ ] Host should be able to see the attendees list
+- [ ] User Profile: events attended, missed (not public), hosted
+
 ### Events
 - [X] Create a new Event
 - [X] Hide navbar bar on scroll
@@ -20,8 +27,9 @@
 - [] Search Events
 - [] Delete an event
 - [] Categorize the events (custom categories)
-- [] Prevent editing of events in last hour
 - [] Share an event
+- [] Prevent editing of events in last hour
+- [] Disable RSVP to events in last hour
 - [] Draft save events for publishing later
 
 ### Profile
@@ -60,7 +68,7 @@
 Known UX Issues
 
 - [X] On incorrect password (existing User) we are currently prompting user to signup.
-- [] No option for forggot password
+- [] No option for forgot password
 - [] We are storing passwords in a plain text format atleasr we should be using bcrypt or something similar.
 
 ### Architecture Scalability Issues

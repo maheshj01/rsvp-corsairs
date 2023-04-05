@@ -12,7 +12,7 @@ const String UPDATE_APP_MESSAGE = 'New version available. Update now?';
 const String signInFailure = 'failed to sign in User, please try again later';
 
 const String ABOUT_TEXT =
-    "RSVP Corsairs is a event tracking app, specially built for Umass Corsairs to track their events and RSVP for them. It is built using Flutter and Supabase. It is open source and you can contribute to it on Github. You Can also help us improve the app by reporting bugs and suggesting features under the app settings.";
+    "RSVP Corsairs is a event tracking app, specially built for Umassd Corsairs to track their events and RSVP for them. \n\n**Bug Reporting** \n\nYou can help us improve the app by reporting bugs and suggesting features under the app settings.\n\n**Use of personal data  **\n\nAll the data collected is stored is stored in Supabase and is not shared with any third party. For more details on how the data is collected and used, please read our privacy policy under the app settings.\n\n The code to this app is open sourced and is free to use and is governed by MIT license.";
 
 const String urlPrefix =
     'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
