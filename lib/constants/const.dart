@@ -94,6 +94,12 @@ class Constants {
   static const int PASSWORD_VALIDATOR = 3;
   static const int USER_ID_VALIDATOR = 12;
 
+  // Chip Labels
+  static const String BookmarksLabel = 'Bookmarks';
+  static const String AllLabel = 'All';
+  static const String MyEventsLabel = 'My Events';
+  static const String GoingLabel = 'Going';
+
   // static const String emailPattern =
   //     r'^[a-zA-Z]+[a-zA-Z0-9_.+-]+@[a-z]{4,}.[a-z]{3}$';
   // email pattern for @domain.com or @domain.co.in or @domain.in etc

@@ -6,8 +6,8 @@
 
 ### Release
 - [ ] Fix Architecture Scalability Issues
-- [ ] Implement event search
 - [ ] Update Privacy Policy
+- [ ] Implement event search
 - [ ] Host should be able to see the attendees list
 - [ ] User Profile: events attended, missed (not public), hosted
 
@@ -21,9 +21,9 @@
 - [X] Improve card UI 
 - [X] Bookmark an event
 - [X] Unbookmark an event not updated in UI
-- [] Event Duration should be shown in days if >24
+- [X] Event Duration should be shown in days if >24
 - [] View attendees
-- [] Add filter out expired events
+- [X] Add filter out expired events
 - [] Search Events
 - [] Delete an event
 - [] Categorize the events (custom categories)
@@ -33,17 +33,16 @@
 - [] Draft save events for publishing later
 
 ### Profile
-- [ ] View host/users profile
-- [ ] View events attended/hosted and bookmarked
+- [X] View host/users profile
+- [X] View events attended/hosted
 - [ ] Update user profile picture
 
 ### Leaderboard
 - [] Create table for leaderboard
 - [] Allocate points for attending and creating events
-- []
 
 ### Authentication
-[] Login and signup seamless
+- [ ] Login and signup seamless
 - [X] Login with Google
 - [X] Signup with email
 - [X] Edit user profile

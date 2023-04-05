@@ -16,6 +16,8 @@ import 'package:rsvp/utils/size_utils.dart';
 import 'package:rsvp/widgets/event_tile.dart';
 import 'package:rsvp/widgets/widgets.dart';
 
+import '../../constants/constants.dart';
+
 class CorsairEvents extends StatefulWidget {
   static String route = '/';
   const CorsairEvents({Key? key}) : super(key: key);
@@ -75,16 +77,16 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
     showCircularIndicator(context);
     List<EventModel> events = [];
     switch (selected) {
-      case 'All':
+      case Constants.AllLabel:
         events = await EventService.getAllEvents(context, sort: sort);
         break;
-      case 'Going':
+      case Constants.GoingLabel:
         events = await EventService.getGoingEvents(context);
         break;
-      case 'Bookmarked':
+      case Constants.BookmarksLabel:
         events = await EventService.getMyBookmarks(context);
         break;
-      case 'My Events':
+      case Constants.MyEventsLabel:
         events = await EventService.getMyEvents(context);
         break;
       default:
@@ -157,11 +159,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'All',
-                  selected: selected == 'All',
+                  label: Constants.AllLabel,
+                  selected: selected == Constants.AllLabel,
                   onSelected: (x) {
                     setState(() {
-                      selected = 'All';
+                      selected = Constants.AllLabel;
                     });
                     getEvents();
                   },
@@ -170,11 +172,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'Going',
-                  selected: selected == 'Going',
+                  label: Constants.GoingLabel,
+                  selected: selected == Constants.GoingLabel,
                   onSelected: (x) {
                     setState(() {
-                      selected = 'Going';
+                      selected = Constants.GoingLabel;
                     });
                     getEvents();
                   },
@@ -183,11 +185,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'My Events',
-                  selected: selected == 'My Events',
+                  label: Constants.MyEventsLabel,
+                  selected: selected == Constants.MyEventsLabel,
                   onSelected: (x) {
                     setState(() {
-                      selected = 'My Events';
+                      selected = Constants.MyEventsLabel;
                     });
                     getEvents();
                   },
@@ -196,11 +198,11 @@ class _CorsairEventsMobileState extends State<CorsairEventsMobile> {
                   width: 16,
                 ),
                 CorsairChip(
-                  label: 'Bookmarked',
-                  selected: selected == 'Bookmarked',
+                  label: Constants.BookmarksLabel,
+                  selected: selected == Constants.BookmarksLabel,
                   onSelected: (x) {
                     setState(() {
-                      selected = 'Bookmarked';
+                      selected = Constants.BookmarksLabel;
                     });
                     getEvents();
                   },
