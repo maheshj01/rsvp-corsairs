@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS csevents.events (
   private BOOLEAN NULL DEFAULT FALSE,
   deleted BOOLEAN NULL DEFAULT FALSE,
   user_id uuid NULL,
+  max_capacity int NULL DEFAULT 50,
   PRIMARY KEY (id),
   CONSTRAINT fk_user_id
     FOREIGN KEY (user_id)
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS csevents.tags (
 CREATE TABLE IF NOT EXISTS event_tag_map (
   event_id uuid NOT NULL,
   tag_id int NULL,
-  map_id uuid NOT NULL,
+  map_id uuid DEFAULT gen_random_uuid(),
   PRIMARY KEY (map_id),
   CONSTRAINT fk_event_tag_map_event_id
     FOREIGN KEY (event_id)
