@@ -24,8 +24,12 @@ class Attendee {
         event_id: json['event_id'],
         user_id: json['user_id'],
         createdAt: json['created_at'],
-        user: UserModel.fromJson(json[Constants.USER_TABLE_NAME]),
-        event: EventModel.basicJson(json[Constants.EVENTS_TABLE_NAME]),
+        user: json.containsKey(Constants.USER_TABLE_NAME)
+            ? UserModel.fromJson(json[Constants.USER_TABLE_NAME])
+            : UserModel.init(),
+        event: json.containsKey(Constants.EVENTS_TABLE_NAME)
+            ? EventModel.basicJson(json[Constants.EVENTS_TABLE_NAME])
+            : EventModel.init(),
       );
 
   Map<String, dynamic> toJson() => {
