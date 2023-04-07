@@ -26,6 +26,7 @@ class Constants {
 //     'https://docs.google.com/spreadsheets/d/1G1RtQfsEDqHhHP4cgOpO9x_ZtQ1dYa6QrGCq3KFlu50';
 
   static const PRIVACY_POLICY = 'https://maheshmnj.github.io/privacy';
+  static const PRIVACY_POLICY_TITLE = 'Privacy Policy';
 
   static const String profileUrl = 'assets/profile.png';
 

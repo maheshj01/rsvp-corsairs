@@ -71,4 +71,5 @@ Known UX Issues
 - [] We are storing passwords in a plain text format atleasr we should be using bcrypt or something similar.
 
 ### Architecture Scalability Issues
-- [] Unposted images are being stored in the server
+- [X] Unposted images are being stored in the server
+- [ ] We will be deleting events older than 1 month, but the user stats (attended, missed, hosted) should still persist

@@ -5,6 +5,7 @@ import 'package:rsvp/navbar/pageroute.dart';
 import 'package:rsvp/navbar/profile/about.dart';
 import 'package:rsvp/navbar/profile/report.dart';
 import 'package:rsvp/pages/authentication/login.dart';
+import 'package:rsvp/pages/webview.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/themes/theme.dart';
@@ -95,16 +96,22 @@ class _SettingsPageMobileState extends State<SettingsPageMobile> {
               : settingTile(
                   'Reports and Feedbacks',
                   onTap: () {
-                    ;
                     Navigate.push(context, const ViewBugReports());
                   },
                 ),
           hLine(),
           // heading('terms of service'),
           // const SizedBox(height: 16),
-          settingTile('Privacy Policy', onTap: () {
-            launchUrl(Uri.parse(Constants.PRIVACY_POLICY),
-                mode: LaunchMode.externalApplication);
+          settingTile(Constants.PRIVACY_POLICY_TITLE, onTap: () {
+            // launchUrl(Uri.parse(Constants.PRIVACY_POLICY),
+            //     mode: LaunchMode.inAppWebView);
+            Navigator.of(context, rootNavigator: true)
+                .push(PageRoutes.sharedAxis(
+                    const WebViewPage(
+                      title: Constants.PRIVACY_POLICY_TITLE,
+                      url: Constants.PRIVACY_POLICY,
+                    ),
+                    SharedAxisTransitionType.scaled));
           }),
           hLine(),
           settingTile('Contact Us', onTap: () {
