@@ -6,6 +6,7 @@ import 'package:rsvp/models/event_schema.dart';
 import 'package:rsvp/services/api/appstate.dart';
 import 'package:rsvp/services/database.dart';
 import 'package:rsvp/services/event_service.dart';
+import 'package:rsvp/services/storage_service.dart';
 import 'package:rsvp/themes/theme.dart';
 import 'package:rsvp/utils/extensions.dart';
 import 'package:rsvp/utils/utility.dart';
@@ -54,7 +55,7 @@ class _AddEventState extends State<AddEvent> {
     try {
       showCircularIndicator(context);
       File imageFile = File(coverFile!.path);
-      final resp = await DatabaseService.uploadImage(imageFile);
+      final resp = await StorageService.uploadImage(imageFile);
       if (resp.didSucced) {
         imageUploadSuccess = true;
         _eventNotifier.value =
@@ -79,11 +80,13 @@ class _AddEventState extends State<AddEvent> {
     try {
       showCircularIndicator(context);
       final fileName = _eventNotifier.value.coverImage!.split('/').last;
-      final resp = await DatabaseService.deleteImage([fileName]);
-      if (resp.didSucced) {
+      final resp = await StorageService.deleteImage([fileName]);
+      if (resp.didSucced && resp.data != null) {
         _eventNotifier.value = _eventNotifier.value.copyWith(coverImage: '');
+        coverFile = null;
         showMessage(context, 'Image deleted successfully');
         stopCircularIndicator(context);
+        imageUploadSuccess = false;
       } else {
         showMessage(context, resp.message);
         stopCircularIndicator(context);
@@ -189,18 +192,23 @@ class _AddEventState extends State<AddEvent> {
     // BACK BUTTON INTERCEPT
     return WillPopScope(
       onWillPop: () async {
-        // TODO: show dialog only if event Object is not empty
-        bool isExiting = false;
+        final event = _eventNotifier.value;
         FocusScope.of(context).unfocus();
-        await showExitDialog(context, onExit: (exiting) {
-          isExiting = exiting;
-        });
-        if (isExiting) {
-          if (imageUploadSuccess) {
-            await deleteUploadedImage();
+        if (event.isEmpty()) {
+          return true;
+        } else {
+          bool isExiting = false;
+          await showExitDialog(context, onExit: (exiting) {
+            isExiting = exiting;
+          });
+          if (isExiting) {
+            if (_eventNotifier.value.coverImage!.isNotEmpty &&
+                imageUploadSuccess) {
+              await deleteUploadedImage();
+            }
           }
+          return isExiting;
         }
-        return isExiting;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -220,64 +228,60 @@ class _AddEventState extends State<AddEvent> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                color: Colors.red,
-              ),
-              CSField(
-                hint: 'Whats the event title?',
-                hasLabel: false,
-                isTransparent: true,
-                maxLines: 2,
-                autoFocus: true,
-                fontSize: 24,
-                onChanged: (x) {
-                  _eventNotifier.value = _eventNotifier.value.copyWith(name: x);
-                },
-                controller: _titleController,
-              ),
-              _uploadImage(() {
-                pickImage();
-              }),
-              ValueListenableBuilder<EventModel>(
-                  valueListenable: _eventNotifier,
-                  builder: (context, _event, snapshot) {
-                    if (!imageUploadSuccess) {
-                      return Align(
+        body: ValueListenableBuilder<EventModel>(
+            valueListenable: _eventNotifier,
+            builder: (context, _event, snapshot) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      color: Colors.red,
+                    ),
+                    CSField(
+                      hint: 'Whats the event title?',
+                      hasLabel: false,
+                      isTransparent: true,
+                      maxLines: 2,
+                      autoFocus: true,
+                      fontSize: 24,
+                      onChanged: (x) {
+                        _eventNotifier.value =
+                            _eventNotifier.value.copyWith(name: x);
+                      },
+                      controller: _titleController,
+                    ),
+                    _uploadImage(() {
+                      pickImage();
+                    }),
+                    if (!imageUploadSuccess)
+                      Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                               onPressed: uploadImage,
                               child: const Text(
                                 'Retry Upload',
                                 style: TextStyle(color: Colors.red),
-                              )));
-                    } else {
-                      return const SizedBox();
-                    }
-                  }),
-              CSField(
-                hint: 'In few lines explain what the event is about',
-                hasLabel: false,
-                isTransparent: true,
-                fontSize: 16,
-                maxLines: 4,
-                onChanged: (x) {
-                  _eventNotifier.value =
-                      _eventNotifier.value.copyWith(description: x);
-                },
-                controller: _descriptionController,
-              ),
-              8.0.vSpacer(),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: _subHeading('Event Starts At'),
-              ),
-              ValueListenableBuilder<EventModel>(
-                  valueListenable: _eventNotifier,
-                  builder: (context, _event, snapshot) {
-                    return ListTile(
+                              )))
+                    else
+                      const SizedBox(),
+                    CSField(
+                      hint: 'In few lines explain what the event is about',
+                      hasLabel: false,
+                      isTransparent: true,
+                      fontSize: 16,
+                      maxLines: 4,
+                      onChanged: (x) {
+                        _eventNotifier.value =
+                            _eventNotifier.value.copyWith(description: x);
+                      },
+                      controller: _descriptionController,
+                    ),
+                    8.0.vSpacer(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _subHeading('Event Starts At'),
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.calendar_today,
                           color: CorsairsTheme.primaryYellow),
                       onTap: () {
@@ -291,129 +295,130 @@ class _AddEventState extends State<AddEvent> {
                       title: Text(_event.startsAt!.formatDate()),
                       subtitle: Text(_event.startsAt!.standardTime()),
                       trailing: const Icon(Icons.arrow_forward_ios),
-                    );
-                  }),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: _subHeading('Event Ends At'),
-              ),
-              ValueListenableBuilder<EventModel>(
-                  valueListenable: _eventNotifier,
-                  builder: (context, _event, snapshot) {
-                    return ListTile(
-                      leading: const Icon(Icons.calendar_today,
-                          color: CorsairsTheme.primaryYellow),
-                      onTap: () {
-                        showCSPickerSheet(
-                          context,
-                          (newDate) {
-                            _eventNotifier.value =
-                                _event.copyWith(endsAt: newDate);
-                          },
-                          'Event Ends At',
-                          _event.endsAt!,
-                        );
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _subHeading('Event Ends At'),
+                    ),
+                    ValueListenableBuilder<EventModel>(
+                        valueListenable: _eventNotifier,
+                        builder: (context, _event, snapshot) {
+                          return ListTile(
+                            leading: const Icon(Icons.calendar_today,
+                                color: CorsairsTheme.primaryYellow),
+                            onTap: () {
+                              showCSPickerSheet(
+                                context,
+                                (newDate) {
+                                  _eventNotifier.value =
+                                      _event.copyWith(endsAt: newDate);
+                                },
+                                'Event Ends At',
+                                _event.endsAt!,
+                              );
+                            },
+                            title: Text(_event.endsAt!.formatDate()),
+                            subtitle: Text(_event.endsAt!.standardTime()),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                          );
+                        }),
+                    8.0.vSpacer(),
+                    CSField(
+                      hint: 'Where is the event taking place?',
+                      hasLabel: false,
+                      isTransparent: true,
+                      fontSize: 18,
+                      maxLines: 4,
+                      controller: _locationController,
+                      onChanged: (x) {
+                        _eventNotifier.value =
+                            _eventNotifier.value.copyWith(address: x);
                       },
-                      title: Text(_event.endsAt!.formatDate()),
-                      subtitle: Text(_event.endsAt!.standardTime()),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                    );
-                  }),
-              8.0.vSpacer(),
-              CSField(
-                hint: 'Where is the event taking place?',
-                hasLabel: false,
-                isTransparent: true,
-                fontSize: 18,
-                maxLines: 4,
-                controller: _locationController,
-                onChanged: (x) {
-                  _eventNotifier.value =
-                      _eventNotifier.value.copyWith(address: x);
-                },
-              ),
-              8.0.vSpacer(),
-              CSField(
-                hint:
-                    'How many people can rsvp for this event? (defaults to 50)',
-                hasLabel: false,
-                isTransparent: true,
-                fontSize: 18,
-                maxLines: 4,
-                maxLength: 2,
-                keyboardType: TextInputType.number,
-                controller: _capacityController,
-                onChanged: (x) {
-                  _eventNotifier.value =
-                      _eventNotifier.value.copyWith(address: x);
-                },
-              ),
-              // ValueListenableBuilder<EventModel>(
-              //     valueListenable: _eventNotifier,
-              //     builder: (context, _event, snapshot) {
-              //       return Column(
-              //         children: [
-              //           ListTile(
-              //             leading: const Icon(Icons.lock,
-              //                 color: CorsairsTheme.primaryYellow),
-              //             title: const Text('Private Event'),
-              //             subtitle: const Text(
-              //                 'Only invited members can see this event'),
-              //             trailing: CupertinoSwitch(
-              //               value: _event.private!,
-              //               onChanged: (x) {
-              //                 _eventNotifier.value = _event.copyWith(private: x);
-              //               },
-              //             ),
-              //           ),
-              //           !_event.private!
-              //               ? const SizedBox.shrink()
-              //               : Column(
-              //                   children: [
-              //                     Align(
-              //                       alignment: Alignment.centerLeft,
-              //                       child: _subHeading('Invite'),
-              //                     ),
-              //                     ListTile(
-              //                       leading: const Icon(Icons.person_add,
-              //                           color: CorsairsTheme.primaryYellow),
-              //                       onTap: () {
-              //                         showModalBottomSheet(
-              //                             context: context,
-              //                             isScrollControlled: false,
-              //                             elevation: 2.0,
-              //                             useRootNavigator: false,
-              //                             shape: 16.0.roundedTop,
-              //                             builder: (context) =>
-              //                                 const InviteSheet());
-              //                       },
-              //                       title: const Text('Invite Friends'),
-              //                       trailing: const Icon(Icons.arrow_forward_ios),
-              //                     ),
-              //                   ],
-              //                 ),
-              //         ],
-              //       );
-              //     }),
-              32.0.vSpacer(),
-              widget.isEdit && isHost
-                  ? OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(250, 50),
-                        side: const BorderSide(color: Colors.red, width: 2),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        'Delete Event',
-                        style: TextStyle(color: Colors.red),
-                      ))
-                  : const SizedBox.shrink(),
-              const SizedBox(
-                height: 100,
-              ),
-            ],
-          ),
-        ),
+                    ),
+                    8.0.vSpacer(),
+                    CSField(
+                      hint:
+                          'How many people can rsvp for this event? (defaults to 50)',
+                      hasLabel: false,
+                      isTransparent: true,
+                      fontSize: 18,
+                      maxLines: 4,
+                      maxLength: 2,
+                      keyboardType: TextInputType.number,
+                      controller: _capacityController,
+                      onChanged: (x) {
+                        _eventNotifier.value =
+                            _eventNotifier.value.copyWith(address: x);
+                      },
+                    ),
+                    // ValueListenableBuilder<EventModel>(
+                    //     valueListenable: _eventNotifier,
+                    //     builder: (context, _event, snapshot) {
+                    //       return Column(
+                    //         children: [
+                    //           ListTile(
+                    //             leading: const Icon(Icons.lock,
+                    //                 color: CorsairsTheme.primaryYellow),
+                    //             title: const Text('Private Event'),
+                    //             subtitle: const Text(
+                    //                 'Only invited members can see this event'),
+                    //             trailing: CupertinoSwitch(
+                    //               value: _event.private!,
+                    //               onChanged: (x) {
+                    //                 _eventNotifier.value = _event.copyWith(private: x);
+                    //               },
+                    //             ),
+                    //           ),
+                    //           !_event.private!
+                    //               ? const SizedBox.shrink()
+                    //               : Column(
+                    //                   children: [
+                    //                     Align(
+                    //                       alignment: Alignment.centerLeft,
+                    //                       child: _subHeading('Invite'),
+                    //                     ),
+                    //                     ListTile(
+                    //                       leading: const Icon(Icons.person_add,
+                    //                           color: CorsairsTheme.primaryYellow),
+                    //                       onTap: () {
+                    //                         showModalBottomSheet(
+                    //                             context: context,
+                    //                             isScrollControlled: false,
+                    //                             elevation: 2.0,
+                    //                             useRootNavigator: false,
+                    //                             shape: 16.0.roundedTop,
+                    //                             builder: (context) =>
+                    //                                 const InviteSheet());
+                    //                       },
+                    //                       title: const Text('Invite Friends'),
+                    //                       trailing: const Icon(Icons.arrow_forward_ios),
+                    //                     ),
+                    //                   ],
+                    //                 ),
+                    //         ],
+                    //       );
+                    //     }),
+                    32.0.vSpacer(),
+                    widget.isEdit && isHost
+                        ? OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(250, 50),
+                              side:
+                                  const BorderSide(color: Colors.red, width: 2),
+                            ),
+                            onPressed: () {},
+                            child: const Text(
+                              'Delete Event',
+                              style: TextStyle(color: Colors.red),
+                            ))
+                        : const SizedBox.shrink(),
+                    const SizedBox(
+                      height: 100,
+                    ),
+                  ],
+                ),
+              );
+            }),
       ),
     );
   }

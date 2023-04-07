@@ -37,6 +37,14 @@ extension CompareEvents on EventModel {
   bool hasEnded() {
     return endsAt!.isBefore(DateTime.now().toLocal());
   }
+
+  // returns true if basic event details are empty
+  bool isEmpty() {
+    return (name == null || name!.isEmpty) &&
+        (description == null || description!.isEmpty) &&
+        (coverImage == null || coverImage!.isEmpty) &&
+        (address == null || address!.isEmpty);
+  }
 }
 
 extension CompareUsers on UserModel {
