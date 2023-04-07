@@ -23,6 +23,34 @@ void stopCircularIndicator(BuildContext context) {
   Navigator.of(context).pop();
 }
 
+Future<void> showExitDialog(context, {required Function(bool) onExit}) async {
+  bool isExiting = false;
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Discard changes?"),
+      content: const Text('Are you sure you want to exit?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            isExiting = false;
+            Navigator.pop(context, false);
+          },
+          child: const Text('No'),
+        ),
+        TextButton(
+          onPressed: () {
+            isExiting = true;
+            Navigator.pop(context, true);
+          },
+          child: const Text('Yes'),
+        ),
+      ],
+    ),
+  );
+  onExit(isExiting);
+}
+
 class LoadingWidget extends StatelessWidget {
   final Color? color;
   const LoadingWidget({Key? key, this.color}) : super(key: key);

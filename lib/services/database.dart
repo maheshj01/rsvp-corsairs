@@ -353,6 +353,20 @@ class DatabaseService {
     }
     return response;
   }
+
+  static Future<Response> deleteImage(List<String> path) async {
+    try {
+      final resp = await _supabase.storage.from(_bucketName).remove(path);
+      return Response(
+          didSucced: true, message: 'image deleted successfully', data: resp);
+    } on StorageException catch (error) {
+      _logger.e(error.message);
+      return Response(
+          didSucced: false,
+          message: 'Failed to delete image',
+          data: 'error: ${error.message}');
+    }
+  }
 }
 
 class Response {
