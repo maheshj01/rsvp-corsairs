@@ -12,21 +12,29 @@ The presentation can be found [here](https://docs.google.com/presentation/d/1MnP
 
 ### Running the app (The schema has changed and is not compatible with the current code yet)
 
-1. Clone the repo 
+1. Clone the repo
 
 2. Run this command to generate the models
 ```
   flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-3. You will need to setup your supabase backend as per the ER [diagram below](./er-diagram.png). Run the below command in step 4 which will generate a sql script for you.
+3. You will need to setup your supabase backend as per the [ER diagram below](./schema.png). Run the below command in step 4 which will generate a sql script for you.
 
-4. Execute the below command to generate the `schema.sql` file
+4. Execute the below command to generate the `schema.sql` file (if not already generated)
 
 ```
   sh setup.sh
 ```
-The api keys in this project are managed using [--dart-define](https://dartcode.org/docs/using-dart-define-in-flutter/) flags passed to the flutter run command. You can also use the `flutter run --dart-define=SUPABASE_PROJECT_URL=<your project url here> --dart-define=SUPABASE_API_KEY=<your api key here> --dart-define=SUPABASE_REDIRECT_URL=<your redirect url here>` command to run the app from the command line, or If you want to use the launch.json file to run the app, you can copy paste the below configuration to your `.vscode/launch.json` file and pass the keys from the Supabase settings.
+
+5. Use the `schema.sql` file to create the tables and populate data in your supabase project. You can use the Supabase Query editor to do this.
+
+The api keys in this project are managed using [--dart-define](https://dartcode.org/docs/using-dart-define-in-flutter/) flags passed to the flutter run command. You can also use the
+```dart
+flutter <command> --dart-define=SUPABASE_PROJECT_URL=<your project url here> --dart-define=SUPABASE_API_KEY=<your api key here> --dart-define=SUPABASE_REDIRECT_URL=<your redirect url here>
+```
+
+command to run the app from the command line, or If you want to use the launch.json file to run the app, you can copy paste the below configuration to your `.vscode/launch.json` file and pass the keys from the Supabase settings.
 
 ```
  {
@@ -44,7 +52,17 @@ The api keys in this project are managed using [--dart-define](https://dartcode.
 
 4. Run the project using the command
 ```
-  flutter run
+  flutter run --dart-define=SUPABASE_PROJECT_URL=<your project url here> --dart-define=SUPABASE_API_KEY=<your api key here> --dart-define=SUPABASE_REDIRECT_URL=<your redirect url here>
 ```
 
-### features to impelement see [Todo.md](./todo.md)
+### Build the app
+
+1. Run the command
+```
+  flutter build apk --dart-define=SUPABASE_PROJECT_URL=<your project url here> --dart-define=SUPABASE_API_KEY=<your api key here> --dart-define=SUPABASE_REDIRECT_URL=<your redirect url here>
+```
+
+The apk will be generated in the `build/app/outputs/flutter-apk/app-release.apk` folder.
+
+
+### Future plans and features to implement see [Todo.md](./todo.md)
