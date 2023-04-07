@@ -315,7 +315,7 @@ class EventService {
   //  REMOVE BOOKMARK
 
   //  ADD/REMOVE ATTENDEE
-  static rsvpEvent(String eventId, String userId,
+  static Future<PostgrestResponse> rsvpEvent(String eventId, String userId,
       {bool going = true,
       String tableName = Constants.ATTENDEES_TABLE_NAME}) async {
     try {

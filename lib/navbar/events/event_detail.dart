@@ -75,15 +75,26 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   Future<void> fetchAttendees() async {
-    _responseNotifier.value.copyWith(state: RequestState.active);
+    _responseNotifier.value =
+        _responseNotifier.value.copyWith(state: RequestState.active);
     try {
       attendees = [];
       attendees = await EventService.getAttendees(widget.event.id!);
+
+      // Check if user is attending the event
       Attendee? attendee =
           attendees.firstWhere((element) => element.user_id == user!.id!);
-      _responseNotifier.value.copyWith(state: RequestState.done);
+      if (attendee != null) {
+        _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
+      } else {
+        _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
+      }
+
+      _responseNotifier.value =
+          _responseNotifier.value.copyWith(state: RequestState.done);
     } catch (e) {
-      _responseNotifier.value.copyWith(state: RequestState.error);
+      _responseNotifier.value =
+          _responseNotifier.value.copyWith(state: RequestState.error);
     }
 
     // To update attendees count on rsvp
@@ -92,6 +103,7 @@ class _EventDetailState extends State<EventDetail> {
 
   final ValueNotifier<Response> _responseNotifier =
       ValueNotifier<Response>(Response.init(data: false));
+
   List<Attendee> attendees = [];
   bool _isCollapsed = false;
   Size? size;
