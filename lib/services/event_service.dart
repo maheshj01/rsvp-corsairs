@@ -93,7 +93,7 @@ class EventService {
     return eventResponse;
   }
 
-  static Future<List<EventModel>> getAllEvents(context,
+  static Future<List<EventModel>> getAllEvents(BuildContext context,
       {bool sort = false}) async {
     final response = await DatabaseService.findRowsByInnerJoinOnColumn();
     List<EventModel> events = [];
@@ -119,6 +119,27 @@ class EventService {
       }
     }
     return filteredEvents;
+  }
+
+  static Future<List<EventModel>> searchEvents(String query,
+      {bool sort = false}) async {
+    try {
+      final response = await DatabaseService.findRowsContainingColumnValue(
+          query,
+          columnName: Constants.EVENT_NAME_COLUMN,
+          tableName: Constants.EVENTS_TABLE_NAME);
+      if (response.status == 200) {
+        final result = (response.data as List)
+            .map((e) => EventModel.fromAllSchema(e))
+            .toList();
+        return result;
+      } else {
+        return [];
+      }
+    } catch (_) {
+      _logger.e('Error searching events:$query: error: $_');
+      return [];
+    }
   }
 
   static Future<List<EventModel>> getGoingEvents(BuildContext context) async {
@@ -358,20 +379,20 @@ class EventService {
     }
   }
 
-  static Future<List<EventModel>> searchEvents(String query,
-      {bool sort = false}) async {
-    final response = await DatabaseService.findRowsContaining(query,
-        columnName: Constants.EVENT_NAME_COLUMN, tableName: tableName);
-    List<EventModel> words = [];
-    if (response.status == 200) {
-      words =
-          (response.data as List).map((e) => EventModel.fromJson(e)).toList();
-      // if (sort) {
-      //   words.sort((a, b) => a.word.compareTo(b.word));
-      // }
-    }
-    return words;
-  }
+  // static Future<List<EventModel>> searchEvents(String query,
+  //     {bool sort = false}) async {
+  //   final response = await DatabaseService.findRowsContaining(query,
+  //       columnName: Constants.EVENT_NAME_COLUMN, tableName: tableName);
+  //   List<EventModel> words = [];
+  //   if (response.status == 200) {
+  //     words =
+  //         (response.data as List).map((e) => EventModel.fromJson(e)).toList();
+  //     // if (sort) {
+  //     //   words.sort((a, b) => a.word.compareTo(b.word));
+  //     // }
+  //   }
+  //   return words;
+  // }
 
   Future<bool> downloadFile() async {
     try {

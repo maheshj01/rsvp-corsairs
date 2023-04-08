@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:rsvp/constants/const.dart';
 import 'package:rsvp/services/auth/authentication.dart';
 import 'package:rsvp/utils/logger.dart';
@@ -208,6 +206,20 @@ class DatabaseService {
         .from(tableName)
         .select()
         .eq(columnName, columnValue)
+        .execute();
+    return response;
+  }
+
+  // finds all rows with a column value
+  static Future<PostgrestResponse> findRowsContainingColumnValue(
+      String columnValue,
+      {String columnName = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME,
+      String table2 = Constants.USER_TABLE_NAME}) async {
+    final response = await _supabase
+        .from(tableName)
+        .select('*, $table2!inner(*)')
+        .ilike(columnName, '%$columnValue%')
         .execute();
     return response;
   }
