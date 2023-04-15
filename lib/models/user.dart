@@ -95,6 +95,7 @@ class UserModel extends ChangeNotifier {
     List<EventModel>? hosted,
   }) {
     return UserModel(
+        id: id ?? id,
         name: name ?? this.name,
         email: email ?? this.email,
         avatarUrl: avatarUrl ?? this.avatarUrl,

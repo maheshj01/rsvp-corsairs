@@ -29,6 +29,8 @@ class AuthService {
 
   SupabaseClient get supabaseClient => Supabase.instance.client;
 
+  bool isAuthentificated() => supabaseClient.auth.currentUser != null;
+
   void setAuthStrategy(AuthStrategy strategy) {
     _authStrategy = strategy;
   }
@@ -61,6 +63,7 @@ class AuthService {
       if (response.status == 200 || response.status == 204) {
         return resp.copyWith(
           didSucced: true,
+          data: response.data,
           message: 'Success',
         );
       } else {
