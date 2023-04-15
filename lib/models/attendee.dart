@@ -7,11 +7,13 @@ class Attendee {
   final String event_id;
   final String user_id;
   final String? createdAt;
+  final AttendeeStatus status;
   final UserModel user;
   final EventModel event;
 
   Attendee({
     this.id,
+    this.status = AttendeeStatus.not_responded,
     required this.event_id,
     required this.user_id,
     this.createdAt,
@@ -20,10 +22,11 @@ class Attendee {
   });
 
   factory Attendee.fromJson(Map<String, dynamic> json) => Attendee(
-        id: json['id'],
-        event_id: json['event_id'],
-        user_id: json['user_id'],
-        createdAt: json['created_at'],
+        id: json[Constants.ID_COLUMN],
+        status: AttendeeStatus.fromInt(json[Constants.ATTENDEE_STATUS_COLUMN]),
+        event_id: json[Constants.EVENT_ID_COLUMN],
+        user_id: json[Constants.USER_ID_COLUMN],
+        createdAt: json[Constants.USER_CREATED_AT_COLUMN],
         user: json.containsKey(Constants.USER_TABLE_NAME)
             ? UserModel.fromJson(json[Constants.USER_TABLE_NAME])
             : UserModel.init(),
@@ -34,6 +37,7 @@ class Attendee {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'status': status.toInt(),
         'event_id': event_id,
         'user_id': user_id,
         'created_at': createdAt,

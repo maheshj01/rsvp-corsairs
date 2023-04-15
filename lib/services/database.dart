@@ -65,6 +65,9 @@ class DatabaseService {
       return response;
     } on PostgrestException catch (_) {
       _logger.e('Error: $_');
+      if (_.toString().contains('JWT expired')) {
+        await AuthService.instance().supabaseClient.auth.refreshSession();
+      }
       rethrow;
     }
   }
@@ -163,8 +166,13 @@ class DatabaseService {
 
   static Future<PostgrestResponse> findAll(
       {String tableName = Constants.EVENTS_TABLE_NAME}) async {
-    final response = await _supabase.from(tableName).select().execute();
-    return response;
+    try {
+      final response = await _supabase.from(tableName).select().execute();
+      return response;
+    } catch (e) {
+      _logger.e('Error: $e');
+      rethrow;
+    }
   }
 
   // static Future<PostgrestResponse> findAllFromTwoTables(
@@ -334,6 +342,23 @@ class DatabaseService {
     // delete row based on two columns
     final response = await _supabase.from(tableName).delete().match(
         {column1Name: column1Value, column2Name: column2Value}).execute();
+    return response;
+  }
+
+  static Future<PostgrestResponse> updateRowBy2ColumnValue(
+      String column1Value, String column2Value, Map<String, dynamic> data,
+      {String column1Name = Constants.ID_COLUMN,
+      String column2Name = Constants.ID_COLUMN,
+      String tableName = Constants.EVENTS_TABLE_NAME}) async {
+    // delete row based on two columns
+    final response = await _supabase
+        .from(tableName)
+        .update(data)
+        .match({column1Name: column1Value, column2Name: column2Value})
+        .execute()
+        .onError((error, stackTrace) {
+          throw error!;
+        });
     return response;
   }
 }

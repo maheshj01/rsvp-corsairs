@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS csevents.attendees (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   event_id uuid NOT NULL,
   user_id uuid NOT NULL,
+  status int NULL DEFAULT 1,
   created_at TIMESTAMP,
   PRIMARY KEY (id),
   CONSTRAINT fk_attendees_event_id

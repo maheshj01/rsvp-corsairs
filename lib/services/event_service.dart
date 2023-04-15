@@ -210,7 +210,7 @@ class EventService {
         .from(Constants.ATTENDEES_TABLE_NAME)
         .select(
             '*, ${Constants.USER_TABLE_NAME}!inner(*), ${Constants.EVENTS_TABLE_NAME}!inner(*)')
-        .filter('event_id', 'eq', id)
+        .filter(Constants.EVENT_ID_COLUMN, 'eq', id)
         // .eq(Constants.ATTENDEES_TABLE_NAME, id)
         // .order('created_at', ascending: ascending)
         .execute();
@@ -337,13 +337,16 @@ class EventService {
 
   //  ADD/REMOVE ATTENDEE
   static Future<PostgrestResponse> rsvpEvent(String eventId, String userId,
-      {bool going = true,
+      {AttendeeStatus status = AttendeeStatus.going,
       String tableName = Constants.ATTENDEES_TABLE_NAME}) async {
     try {
-      if (going) {
+      // Going -> insert into Database
+      // Cancel -> Going -> Update status
+      if (status == AttendeeStatus.going) {
         final response = await DatabaseService.insertIntoTable({
-          'event_id': eventId,
-          'user_id': userId,
+          Constants.EVENT_ID_COLUMN: eventId,
+          Constants.EVENT_USER_ID_COLUMN: userId,
+          Constants.ATTENDEE_STATUS_COLUMN: status.toInt(),
         }, table: tableName);
         return response;
       } else {
@@ -364,7 +367,7 @@ class EventService {
 
   static Future<EventModel> getLastUpdatedRecord() async {
     final response = await DatabaseService.findRecentlyUpdatedRow(
-        'created_at', '',
+        Constants.CREATED_AT_COLUMN, '',
         table1: Constants.WORD_OF_THE_DAY_TABLE_NAME,
         table2: Constants.EVENTS_TABLE_NAME,
         ascending: false);
@@ -372,7 +375,7 @@ class EventService {
       EventModel lastWordOfTheDay =
           EventModel.fromJson(response.data[0][Constants.EVENTS_TABLE_NAME]);
       lastWordOfTheDay.createdAt =
-          DateTime.parse(response.data[0]['created_at']);
+          DateTime.parse(response.data[0][Constants.CREATED_AT_COLUMN]);
       return lastWordOfTheDay;
     } else {
       throw "Failed to get last updated record";

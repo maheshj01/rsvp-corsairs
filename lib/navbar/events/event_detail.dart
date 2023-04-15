@@ -85,9 +85,11 @@ class _EventDetailState extends State<EventDetail> {
       Attendee? attendee =
           attendees.firstWhere((element) => element.user_id == user!.id!);
       if (attendee != null) {
-        _responseNotifier.value = _responseNotifier.value.copyWith(data: true);
+        _responseNotifier.value =
+            _responseNotifier.value.copyWith(data: attendee.status);
       } else {
-        _responseNotifier.value = _responseNotifier.value.copyWith(data: false);
+        _responseNotifier.value = _responseNotifier.value
+            .copyWith(data: AttendeeStatus.not_responded);
       }
 
       _responseNotifier.value =
@@ -101,8 +103,8 @@ class _EventDetailState extends State<EventDetail> {
     setState(() {});
   }
 
-  final ValueNotifier<Response> _responseNotifier =
-      ValueNotifier<Response>(Response.init(data: false));
+  final ValueNotifier<Response> _responseNotifier = ValueNotifier<Response>(
+      Response.init(data: AttendeeStatus.not_responded));
 
   List<Attendee> attendees = [];
   bool _isCollapsed = false;
@@ -383,22 +385,23 @@ class _EventDetailState extends State<EventDetail> {
                       valueListenable: _responseNotifier,
                       builder: (context, response, child) {
                         return CSButton(
-                          width: size!.width * 0.8,
-                          isLoading: response.state == RequestState.active,
-                          onTap: () async {
-                            _responseNotifier.value =
-                                response.copyWith(state: RequestState.active);
-                            await EventService.rsvpEvent(
-                                widget.event.id!, user!.id!,
-                                going: !(response.data as bool));
-                            _responseNotifier.value = response.copyWith(
-                                data: !(response.data as bool),
-                                state: RequestState.done);
-                            fetchAttendees();
-                          },
-                          backgroundColor: CorsairsTheme.primaryYellow,
-                          label: !(response.data as bool) ? 'Going' : 'Cancel',
-                        );
+                            width: size!.width * 0.8,
+                            isLoading: response.state == RequestState.active,
+                            onTap: () async {
+                              _responseNotifier.value =
+                                  response.copyWith(state: RequestState.active);
+                              final status = AttendeeStatus.toggleStatus(
+                                  response.data as AttendeeStatus);
+                              final resp = await EventService.rsvpEvent(
+                                  widget.event.id!, user!.id!,
+                                  status: status);
+                              _responseNotifier.value = response.copyWith(
+                                  data: status, state: RequestState.done);
+                              fetchAttendees();
+                            },
+                            backgroundColor: CorsairsTheme.primaryYellow,
+                            label: AttendeeStatus.labelFromStatus(
+                                response.data as AttendeeStatus));
                       }),
                 ),
           24.0.vSpacer()

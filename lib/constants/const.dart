@@ -71,6 +71,7 @@ class Constants {
   static const USER_CREATED_AT_COLUMN = 'created_at';
   static const USER_LOGGEDIN_COLUMN = 'isLoggedIn';
   static const STUDENT_ID_COLUMN = 'studentId';
+  static const ATTENDEE_STATUS_COLUMN = 'status';
 
   /// EDIT HISTORY TABLE COLUMNS
   static const EDIT_ID_COLUMN = 'edit_id';
@@ -118,6 +119,7 @@ enum EditState {
 
   /// Admin has rejected the request
   rejected('rejected'),
+
   pending('pending'),
 
   /// user can cancel the edit request
@@ -142,4 +144,48 @@ enum EditType {
 
   /// request to delete an existing word
   delete,
+}
+
+enum AttendeeStatus {
+  /// user has not responded to the event
+  not_responded(0),
+
+  /// user has responded to the event
+  going(1),
+
+  /// user has checked in to the event
+  attended(2);
+
+  final int value;
+
+  int toInt() => value;
+
+  static AttendeeStatus fromInt(value) => AttendeeStatus.values[value];
+
+  /// returns the label for the status
+  static String labelFromStatus(AttendeeStatus status) {
+    int value = status.toInt();
+    switch (value) {
+      case 0:
+        return 'Going';
+      case 1:
+        return 'Cancel';
+      case 2:
+        return 'Attended';
+      default:
+        return 'Going';
+    }
+  }
+
+  static AttendeeStatus toggleStatus(AttendeeStatus status) {
+    if (status == AttendeeStatus.going) {
+      return AttendeeStatus.not_responded;
+    } else if (status == AttendeeStatus.not_responded) {
+      return AttendeeStatus.going;
+    } else {
+      return AttendeeStatus.attended;
+    }
+  }
+
+  const AttendeeStatus(this.value);
 }
