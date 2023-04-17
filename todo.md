@@ -1,15 +1,12 @@
 ### TODO
 
-### App
-
-- [ ] Use fonts similar to duolingo
-
 ### Release
 - [ ] Fix Architecture Scalability Issues
 - [ ] Update Privacy Policy
 - [ ] Implement event search
 - [ ] Host should be able to see the attendees list
 - [ ] User Profile: events attended, missed (not public), hosted
+- [ ] User should be able to update the profile picture
 
 ### Events
 - [X] Create a new Event
@@ -24,22 +21,22 @@
 - [X] Event Duration should be shown in days if >24
 - [] View attendees
 - [X] Add filter out expired events
-- [] Search Events
-- [] Delete an event
-- [] Categorize the events (custom categories)
-- [] Share an event
-- [] Prevent editing of events in last hour
-- [] Disable RSVP to events in last hour
-- [] Draft save events for publishing later
+- [ ] Search Events
+- [ ] Delete an event
+- [ ] Categorize the events (custom categories)
+- [ ] Share an event
+- [ ] Prevent editing of events in last hour
+- [ ] Disable RSVP to events in last hour
+- [ ] Draft save events for publishing later
 
 ### Profile
 - [X] View host/users profile
 - [X] View events attended/hosted
-- [ ] Update user profile picture
+- [ ] User should be able to update the profile picture
 
 ### Leaderboard
-- [] Create table for leaderboard
-- [] Allocate points for attending and creating events
+- [X] Create table for leaderboard
+- [ ] Allocate points for attending and creating events
 
 ### Authentication
 - [ ] Login and signup seamless
@@ -52,23 +49,23 @@
 - [ ] For first time GoogleSignIn users, we should prompt them to enter their details along with user avatar (Should be skippable)
 
 
-### Game elements
+### Introduce Game elements
 
-- [] Points system.
-- [] 
+- [ ] Points system.
+- [ ] 
 
 ### UMD Points
-- [] Get points for attending events
-- [] Get points for creating events
-- [] Get points for inviting friends
-- [] Points to be allocated for public events only
+- [ ] Get points for attending events
+- [ ] Get points for creating events
+- [ ] Get points for inviting friends
+- [ ] Points to be allocated for public events only
 
 
 Known UX Issues
 
 - [X] On incorrect password (existing User) we are currently prompting user to signup.
-- [] No option for forgot password
-- [] We are storing passwords in a plain text format atleasr we should be using bcrypt or something similar.
+- [ ] No option for forgot password
+- [ ] We are storing passwords in a plain text format atleast we should be using bcrypt or something similar.
 
 ### Architecture Scalability Issues
 - [X] Unposted images are being stored in the server
