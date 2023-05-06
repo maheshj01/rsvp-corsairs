@@ -10,7 +10,7 @@ The presentation can be found [here](https://docs.google.com/presentation/d/1MnP
 
 ![Frame](https://user-images.githubusercontent.com/31410839/207100949-337fe7cc-9d99-4152-8507-d0a42f9b0947.png)
 
-### Running the app (The schema has changed and is not compatible with the current code yet)
+### Running the app
 
 1. Clone the repo
 
